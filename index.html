@@ -316,6 +316,22 @@ body{color:var(--t1)}
 .ch2 .rev{font-size:20px;font-weight:700;color:var(--t1)}
 .ch2 .rl{font-size:10px;color:var(--t3)}
 .camp .cbody{border-top:none;padding:0}
+
+/* 展開內容字體加大 */
+.camp .brief{font-size:14px;line-height:1.7}
+.camp .who{font-size:13px}
+.camp .pn{font-size:15px;font-weight:600}
+.camp .prow{font-size:13px}
+.ch2 .cmeta{font-size:13px}
+.recToggle{font-size:13px}
+.rrow .rn{font-size:14px}
+.rrow{font-size:13px}
+.catb{font-size:13px;padding:5px 12px}
+.flagb{font-size:12px;padding:4px 11px}
+.qtybox input{font-size:14px}
+.sl{font-size:13px}
+.camp .empty{font-size:13px}
+.pstatus,.prow-sub{font-size:12px}
 </style></head><body><div id="loginBox"><div class="lg-card">
 <div class="lg-title">TZG 選品排程</div>
 <div class="lg-sub">請選擇你是誰並輸入密碼</div>
@@ -328,7 +344,7 @@ body{color:var(--t1)}
 <div class="hero"><div class="kicker">泰熙爾札娜 · 選品排程</div><div class="h-title">選品排程 <b>＋ 備貨預估</b></div>
 <div class="h-sub">排程→狀態追蹤→進度看板 ｜ 選品/拍片/行銷/官網/LINE 五關 ｜ 雲端即時共用</div>
 <div id="userBar"></div><div class="tabs"><button class="tab on" onclick="sw(0)">首頁</button><button class="tab" onclick="sw(1)">選品</button><button class="tab" onclick="sw(2)">campaign</button><button class="tab" onclick="sw(3)">官網</button><button class="tab" onclick="sw(4)">lineoa</button><button class="tab" onclick="sw(5)">甘特圖</button><button class="tab" onclick="sw(6)">總覽</button><button class="impb" style="margin-left:auto;align-self:center" onclick="importJune()">⬇ 匯入6月</button><button class="rstopen" style="align-self:center;margin-left:8px" onclick="openRestore()">↩ 還原</button><button class="expb" style="align-self:center;margin-left:8px" onclick="exportYear()">⤓ 全年PDF</button></div></div>
-<div class="wrap"><div class="page on" id="phome"></div><div class="page" id="ppick"></div><div class="page" id="pcamp"></div><div class="page" id="pweb"></div><div class="page" id="pline"></div><div class="page" id="pg"></div><div class="page" id="p1"></div><div class="footer">TZG 泰熙爾札娜珠寶 ｜ 選品排程（雲端即時共用，自動同步） ｜ 版本 06/05 17:25</div></div>
+<div class="wrap"><div class="page on" id="phome"></div><div class="page" id="ppick"></div><div class="page" id="pcamp"></div><div class="page" id="pweb"></div><div class="page" id="pline"></div><div class="page" id="pg"></div><div class="page" id="p1"></div><div class="footer">TZG 泰熙爾札娜珠寶 ｜ 選品排程（雲端即時共用，自動同步） ｜ 版本 06/05 17:31</div></div>
 <div id="restoreBox" style="display:none;position:fixed;inset:0;background:rgba(26,20,16,.45);z-index:200;align-items:center;justify-content:center" onclick="if(event.target===this)this.style.display='none'">
 <div style="background:#fff;border-radius:14px;max-width:460px;width:90%;max-height:80vh;overflow:auto;padding:22px">
 <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px"><div style="font-family:'Cormorant Garamond',serif;font-size:20px;font-weight:700">還原備份</div><button onclick="document.getElementById('restoreBox').style.display='none'" style="border:none;background:none;font-size:22px;cursor:pointer;color:#999999">×</button></div>
@@ -501,10 +517,10 @@ function toggleFlagEl(el){
     const was=p.flags.film&&p.flags.mkt&&p.flags.web&&p.flags.line;
     p.flags[f]=true;
     const now=p.flags.film&&p.flags.mkt&&p.flags.web&&p.flags.line;
-    save();render();if(now&&!was)celebrateBtn(id,name,f);
+    save();fineUpdate(id);if(now&&!was)celebrateBtn(id,name,f);
   }else{
     // 取消：連帶取消依賴它的後續關
-    p.flags[f]=false;clearDepend(p,f);save();render();
+    p.flags[f]=false;clearDepend(p,f);save();fineUpdate(id);
   }
 }
 function celebrateBtn(id,name,f){
@@ -835,7 +851,7 @@ function jumpTo(cid,encName){
 }
 
 
-function openEditCamp(id){if(!canPlan()){toast('只有管理員能編輯檔期');return;}
+function openEditCamp(id){if(!canAddPick()){toast('沒有權限');return;}
   const c=CAMP[id];if(!c)return;
   document.getElementById('ec_id').value=id;
   document.getElementById('ec_name').value=cv(c,'name');
