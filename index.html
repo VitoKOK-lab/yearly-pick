@@ -39,7 +39,7 @@ body{background:var(--bg);color:var(--t1);font-family:'DM Sans','Noto Serif TC',
 .rrow .rp{color:var(--rose);font-size:11.5px;white-space:nowrap}.rrow .rm{font-size:10px;color:var(--t3);white-space:nowrap}
 .rrow .ab{font-size:11px;color:var(--teal);border:1px solid var(--teal);background:#fff;border-radius:4px;padding:2px 10px;white-space:nowrap}
 .picked{margin-top:10px}
-.prow{display:flex;align-items:center;gap:10px;padding:8px 12px;background:#F0FBFA;border-radius:4px;margin-bottom:6px}
+.prow{display:block;padding:12px 14px;background:#fff;border-radius:5px;margin-bottom:10px}
 .prow .pn{flex:1;font-size:13px;font-weight:500}.prow .used{font-size:10px;color:var(--t3);white-space:nowrap}
 .qtybox{display:flex;align-items:center;gap:4px}.qtybox label{font-size:10px;color:var(--t3)}
 .qtybox input{width:62px;border:1px solid var(--b1);border-radius:3px;padding:5px 7px;font-size:12px;text-align:right;outline:none;font-family:inherit}.qtybox input:focus{border-color:var(--teal)}
@@ -334,7 +334,7 @@ body{color:var(--t1)}
 .pstatus,.prow-sub{font-size:12px}
 
 /* === 品行三層分區，清楚的視覺語言 === */
-.prow{border:1px solid var(--b1);border-radius:5px;padding:12px 14px;margin-bottom:10px;background:#fff}
+.prow{display:block;border:1px solid var(--b1);border-radius:5px;padding:12px 14px;margin-bottom:10px;background:#fff}
 .prow.allok{border-left:3px solid var(--blue);background:#FAFEFD}
 /* 上層：品名 + 純文字info + 營收 + 刪除 */
 .prow-top{display:flex;align-items:center;gap:10px;margin-bottom:10px}
@@ -385,7 +385,7 @@ body{color:var(--t1)}
 <div class="hero"><div class="kicker">泰熙爾札娜 · 選品排程</div><div class="h-title">選品排程 <b>＋ 備貨預估</b></div>
 <div class="h-sub">排程→狀態追蹤→進度看板 ｜ 選品/拍片/行銷/官網/LINE 五關 ｜ 雲端即時共用</div>
 <div id="userBar"></div><div class="tabs"><button class="tab on" onclick="sw(0)">首頁</button><button class="tab" onclick="sw(1)">選品</button><button class="tab" onclick="sw(2)">campaign</button><button class="tab" onclick="sw(3)">官網</button><button class="tab" onclick="sw(4)">lineoa</button><button class="tab" onclick="sw(5)">甘特圖</button><button class="tab" onclick="sw(6)">總覽</button><button class="impb" style="margin-left:auto;align-self:center" onclick="importJune()">⬇ 匯入6月</button><button class="rstopen" style="align-self:center;margin-left:8px" onclick="openRestore()">↩ 還原</button><button class="expb" style="align-self:center;margin-left:8px" onclick="exportYear()">⤓ 全年PDF</button></div></div>
-<div class="wrap"><div class="page on" id="phome"></div><div class="page" id="ppick"></div><div class="page" id="pcamp"></div><div class="page" id="pweb"></div><div class="page" id="pline"></div><div class="page" id="pg"></div><div class="page" id="p1"></div><div class="footer">TZG 泰熙爾札娜珠寶 ｜ 選品排程（雲端即時共用，自動同步） ｜ 版本 06/05 17:35</div></div>
+<div class="wrap"><div class="page on" id="phome"></div><div class="page" id="ppick"></div><div class="page" id="pcamp"></div><div class="page" id="pweb"></div><div class="page" id="pline"></div><div class="page" id="pg"></div><div class="page" id="p1"></div><div class="footer">TZG 泰熙爾札娜珠寶 ｜ 選品排程（雲端即時共用，自動同步） ｜ 版本 06/05 17:42</div></div>
 <div id="restoreBox" style="display:none;position:fixed;inset:0;background:rgba(26,20,16,.45);z-index:200;align-items:center;justify-content:center" onclick="if(event.target===this)this.style.display='none'">
 <div style="background:#fff;border-radius:14px;max-width:460px;width:90%;max-height:80vh;overflow:auto;padding:22px">
 <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px"><div style="font-family:'Cormorant Garamond',serif;font-size:20px;font-weight:700">還原備份</div><button onclick="document.getElementById('restoreBox').style.display='none'" style="border:none;background:none;font-size:22px;cursor:pointer;color:#999999">×</button></div>
