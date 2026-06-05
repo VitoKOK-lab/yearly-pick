@@ -266,7 +266,7 @@ body{background:var(--bg);color:var(--t1);font-family:'DM Sans','Noto Serif TC',
 <div class="hero"><div class="kicker">泰熙爾札娜 · 選品排程</div><div class="h-title">選品排程 <b>＋ 備貨預估</b></div>
 <div class="h-sub">排程→狀態追蹤→進度看板 ｜ 選品/拍片/行銷/官網/LINE 五關 ｜ 雲端即時共用</div>
 <div id="userBar"></div><div class="tabs"><button class="tab on" onclick="sw(0)">首頁</button><button class="tab" onclick="sw(1)">選品</button><button class="tab" onclick="sw(2)">campaign</button><button class="tab" onclick="sw(3)">官網</button><button class="tab" onclick="sw(4)">lineoa</button><button class="tab" onclick="sw(5)">甘特圖</button><button class="tab" onclick="sw(6)">總覽</button><button class="impb" style="margin-left:auto;align-self:center" onclick="importJune()">⬇ 匯入6月</button><button class="rstopen" style="align-self:center;margin-left:8px" onclick="openRestore()">↩ 還原</button><button class="expb" style="align-self:center;margin-left:8px" onclick="exportYear()">⤓ 全年PDF</button></div></div>
-<div class="wrap"><div class="page on" id="phome"></div><div class="page" id="ppick"></div><div class="page" id="pcamp"></div><div class="page" id="pweb"></div><div class="page" id="pline"></div><div class="page" id="pg"></div><div class="page" id="p1"></div><div class="footer">TZG 泰熙爾札娜珠寶 ｜ 選品排程（雲端即時共用，自動同步） ｜ 版本 06/05 15:30</div></div>
+<div class="wrap"><div class="page on" id="phome"></div><div class="page" id="ppick"></div><div class="page" id="pcamp"></div><div class="page" id="pweb"></div><div class="page" id="pline"></div><div class="page" id="pg"></div><div class="page" id="p1"></div><div class="footer">TZG 泰熙爾札娜珠寶 ｜ 選品排程（雲端即時共用，自動同步） ｜ 版本 06/05 15:46</div></div>
 <div id="restoreBox" style="display:none;position:fixed;inset:0;background:rgba(26,20,16,.45);z-index:200;align-items:center;justify-content:center" onclick="if(event.target===this)this.style.display='none'">
 <div style="background:#fff;border-radius:14px;max-width:460px;width:90%;max-height:80vh;overflow:auto;padding:22px">
 <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px"><div style="font-family:'Cormorant Garamond',serif;font-size:20px;font-weight:700">還原備份</div><button onclick="document.getElementById('restoreBox').style.display='none'" style="border:none;background:none;font-size:22px;cursor:pointer;color:#999999">×</button></div>
@@ -478,6 +478,7 @@ let ROLEVIEW={pick:{type:null,open:null,userSet:false},campaign:{type:null,open:
 function typeHasPicks(type){const wt=type==='週檔'?['週檔','寵粉']:[type];for(const id in PICKS){const c=CAMP[id];if(c&&wt.indexOf(c.type)>=0&&getPicks(id).length>0)return true;}return false;}
 function autoType(){for(const t of ['大檔','季檔','週檔']){if(typeHasPicks(t))return t;}return '大檔';}
 function roleStat(role,c){
+  if(!c)return {done:0,total:0,label:"",ok:false};
   const picks=getPicks(c.id);const tot=picks.length;
   if(role==="pick")return {done:tot,total:tot,label:tot>0?("已選 "+tot+" 品"):"還沒選品",ok:tot>0};
   const flag=ROLECFG[role].flag;let d=0;for(const p of picks){if((p.flags||{})[flag])d++;}
@@ -510,9 +511,8 @@ function renderHome(){
   const cards=[["pick","選品","Regina","ppick"],["campaign","設計 campaign","Vito","pcamp"],["web","建官網","家逸","pweb"],["line","lineoa 運營","Jessica","pline"]];
   let h='<div class="home-hero"><div class="home-t">今天想做什麼？</div><div class="home-s">點一個工作進去</div></div><div class="home-grid">';
   for(const [role,title,who,pg] of cards){
-    let d=0,t=0;for(const id in PICKS){for(const p of PICKS[id]){const r=roleStat(role,CAMP[id]);}}
-    // 全年該關進度
-    let done=0,total=0;for(const id in PICKS){const s=roleStat(role,CAMP[id]);if(role==="pick"){total+=s.total;done+=s.total;}else{total+=s.total;done+=s.done;}}
+    // 全年該關進度（跳過找不到的孤兒檔id）
+    let done=0,total=0;for(const id in PICKS){if(!CAMP[id])continue;const s=roleStat(role,CAMP[id]);if(role==="pick"){total+=s.total;done+=s.total;}else{total+=s.total;done+=s.done;}}
     const pct=total?Math.round(done/total*100):0;
     const idx={pick:1,campaign:2,web:3,line:4}[role];
     h+='<div class="home-card" data-act="home" data-idx="'+idx+'"><div class="hc-title">我要'+title+'</div><div class="hc-who">'+who+'</div><div class="hc-bar"><div class="hc-fill" style="width:'+(role==="pick"?100:pct)+'%"></div></div><div class="hc-num">'+(role==="pick"?("已選 "+total+" 品"):(done+"/"+total+"・"+pct+"%"))+'</div></div>';
