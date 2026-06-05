@@ -327,6 +327,7 @@ const CATS=["主題建議","裸石","飾品","水晶能量","訂製","其他"];
 let PICKS={},LOCKED={};
 let _writing=false;        // 自己正在寫入時，忽略一次回拋
 let _loaded=false;
+setTimeout(function(){if(!_loaded){_loaded=true;try{render();}catch(e){console.error(e);}}},5000);
 // 即時同步：監聽 Firestore，別人改了這裡自動更新
 DOCREF.onSnapshot(doc=>{
   if(_writing){_writing=false;return;}            // 跳過自己寫入觸發的回拋
@@ -338,7 +339,8 @@ DOCREF.onSnapshot(doc=>{
   else render();
 },err=>{
   console.error("Firestore 連線錯誤",err);
-  toast("雲端連線失敗，檢查網路");
+  _loaded=true;render();
+  toast("雲端連線失敗，先用本機顯示");
 });
 function pushCloud(){_writing=true;DOCREF.set({picks:PICKS,locked:LOCKED,notes:NOTES,cover:COVER,updated:Date.now()}).catch(e=>{_writing=false;console.error("寫入失敗",e);toast("儲存失敗，請重試");});}
 function saveLock(){pushCloud();}
