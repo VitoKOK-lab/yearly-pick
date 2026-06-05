@@ -319,7 +319,7 @@ body{color:var(--t1)}
 <div class="hero"><div class="kicker">泰熙爾札娜 · 選品排程</div><div class="h-title">選品排程 <b>＋ 備貨預估</b></div>
 <div class="h-sub">排程→狀態追蹤→進度看板 ｜ 選品/拍片/行銷/官網/LINE 五關 ｜ 雲端即時共用</div>
 <div id="userBar"></div><div class="tabs"><button class="tab on" onclick="sw(0)">首頁</button><button class="tab" onclick="sw(1)">選品</button><button class="tab" onclick="sw(2)">campaign</button><button class="tab" onclick="sw(3)">官網</button><button class="tab" onclick="sw(4)">lineoa</button><button class="tab" onclick="sw(5)">甘特圖</button><button class="tab" onclick="sw(6)">總覽</button><button class="impb" style="margin-left:auto;align-self:center" onclick="importJune()">⬇ 匯入6月</button><button class="rstopen" style="align-self:center;margin-left:8px" onclick="openRestore()">↩ 還原</button><button class="expb" style="align-self:center;margin-left:8px" onclick="exportYear()">⤓ 全年PDF</button></div></div>
-<div class="wrap"><div class="page on" id="phome"></div><div class="page" id="ppick"></div><div class="page" id="pcamp"></div><div class="page" id="pweb"></div><div class="page" id="pline"></div><div class="page" id="pg"></div><div class="page" id="p1"></div><div class="footer">TZG 泰熙爾札娜珠寶 ｜ 選品排程（雲端即時共用，自動同步） ｜ 版本 06/05 16:42</div></div>
+<div class="wrap"><div class="page on" id="phome"></div><div class="page" id="ppick"></div><div class="page" id="pcamp"></div><div class="page" id="pweb"></div><div class="page" id="pline"></div><div class="page" id="pg"></div><div class="page" id="p1"></div><div class="footer">TZG 泰熙爾札娜珠寶 ｜ 選品排程（雲端即時共用，自動同步） ｜ 版本 06/05 17:16</div></div>
 <div id="restoreBox" style="display:none;position:fixed;inset:0;background:rgba(26,20,16,.45);z-index:200;align-items:center;justify-content:center" onclick="if(event.target===this)this.style.display='none'">
 <div style="background:#fff;border-radius:14px;max-width:460px;width:90%;max-height:80vh;overflow:auto;padding:22px">
 <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px"><div style="font-family:'Cormorant Garamond',serif;font-size:20px;font-weight:700">還原備份</div><button onclick="document.getElementById('restoreBox').style.display='none'" style="border:none;background:none;font-size:22px;cursor:pointer;color:#999999">×</button></div>
@@ -471,7 +471,7 @@ function addPick(id,name){if(!canAddPick()){toast('只有 Regina 或管理員能
   if(PICKS[id].some(p=>p.name===name)){toast("這檔已加過");return;}
   const pm=PMAP[name];const c=CAMP[id];
   PICKS[id].push({name,price:pm?pm.price:0,qty:pm?estStock(name,c.mult):10,flags:{}});
-  save();refreshCamp(id);toast("已加入「"+name+"」");
+  save();fineUpdate(id,name);toast("已加入「"+name+"」");
 }
 function delPick(id,name){PICKS[id]=getPicks(id).filter(p=>p.name!==name);save();render();}
 function setQty(id,name,v){if(!canPlan()){toast('只有管理員能改備貨');return;}const p=getPicks(id).find(p=>p.name===name);if(p){p.qty=Math.max(0,parseInt(v)||0);save();render();}}
@@ -503,7 +503,7 @@ function celebrateBtn(id,name,f){
   btns.forEach(function(b){if(decodeURIComponent(b.dataset.n)===name){b.classList.add('fxpulse');setTimeout(function(){b.classList.remove('fxpulse');},700);}});
 }
 function toggleSrc(el){if(!canPlan()){toast('只有管理員能改貨源');return;}const id=el.dataset.c;const name=decodeURIComponent(el.dataset.n);const p=getPicks(id).find(x=>x.name===name);if(!p)return;p.source=(p.source==='hc')?'':'hc';save();render();}
-function addCustom(id){if(!canAddPick()){toast('只有 Regina 或管理員能加品');return;}const inp=document.getElementById('inp-'+id);const v=inp.value.trim();if(!v)return;PICKS[id]=PICKS[id]||[];if(!PICKS[id].some(p=>p.name===v)){PICKS[id].push({name:v,price:0,qty:10,flags:{}});save();refreshCamp(id);toast("已加入「"+v+"」");}}
+function addCustom(id){if(!canAddPick()){toast('只有 Regina 或管理員能加品');return;}const inp=document.getElementById('inp-'+id);const v=inp.value.trim();if(!v)return;PICKS[id]=PICKS[id]||[];if(!PICKS[id].some(p=>p.name===v)){PICKS[id].push({name:v,price:0,qty:10,flags:{}});save();fineUpdate(id,v);toast("已加入「"+v+"」");}}
 function toggleOpen(id){document.getElementById('camp-'+id).classList.toggle('open');}
 function toggleRec(id){const w=document.getElementById('rec-'+id);if(!w)return;const open=w.style.display==='none';w.style.display=open?'block':'none';const ar=w.parentNode.querySelector('.recarrow');if(ar)ar.textContent=open?'▾':'▸';}
 function setCat(id,cat){
@@ -552,6 +552,30 @@ function recsHTML(c){
     recs+=`<div class="rrow ${added?'added':''}" data-act="addpick" data-cid="${encodeURIComponent(c.id)}" data-pn="${encodeURIComponent(r.name)}"><span class="rn">${r.name}</span><span class="rcat" style="background:${CATC[r.cat]}">${r.cat}</span><span class="rp">$${r.price.toLocaleString()}</span><span class="rm">月均${r.monthly}</span><span class="ab">${added?'✓':'＋'}</span></div>`;}
   return recs;
 }
+
+function fineUpdate(id,name){
+  const c=CAMP[id];if(!c)return;
+  const cur=document.querySelector('.rcamp.open[data-cid="'+encodeURIComponent(id)+'"]');
+  if(!cur){render();return;}
+  // 1) 列表那一行打勾(不重渲染整個列表,滾動不變)
+  if(name){const rrow=cur.querySelector('.rrow[data-pn="'+encodeURIComponent(name)+'"]');
+    if(rrow){rrow.classList.add('added');const ab=rrow.querySelector('.ab');if(ab)ab.textContent='✓';}}
+  // 2) 已選區更新
+  const pk=cur.querySelector('.picked');
+  if(pk){const addrow=pk.querySelector('.addrow');pk.innerHTML=pickedHTML(c)+(addrow?addrow.outerHTML:'');}
+  // 3) 營收數字
+  renderTotals&&renderTotals();
+}
+
+function pickedHTML(c){
+  const picks=getPicks(c.id);
+  let picked="";
+      if(picks.length===0)picked=`<div class="empty">還沒選品。上面切類別挑（裸石也在），或自己打。</div>`;
+      else for(const p of picks){const uc=usedCount(p.name);
+        const um=usedLabel(p.name,c.month);const fl=p.flags||{};let flagbtns=FLAGS.map(function(f){var pre=({mkt:[],film:['mkt'],web:['mkt'],line:['web']})[f[0]]||[];var locked=!fl[f[0]]&&pre.some(function(k){return !fl[k];});var notmine=!canToggle(f[0]);return '<span class="flagb '+(fl[f[0]]?'on':'')+(locked?' locked':'')+(notmine?' notmine':'')+'" data-c="'+c.id+'" data-n="'+encodeURIComponent(p.name)+'" data-f="'+f[0]+'" onclick="toggleFlagEl(this)">'+f[1]+'</span>';}).join("");var allok=fl.film&&fl.mkt&&fl.web&&fl.line;if(allok)flagbtns+='<span class="okbadge">ok</span>';picked+=`<div class="prow prow2 ${allok?'allok':''}" data-pn="${encodeURIComponent(p.name)}"><div class="prow-main"><span class="pn">${p.name}</span><span class="used">${p.week?"<b>第"+p.week+"週</b> · ":""}${uc>1?`全年${uc}檔`:"僅此檔"}${um?` · 另排:${um}`:""}</span><span class="memob" data-c="${c.id}" data-n="${encodeURIComponent(p.name)}" onclick="editMemoEl(this)">${p.memo?("📝"+p.memo):"＋備註"}</span><div class="qtybox"><label>預估售價</label><input type="number" value="${p.price||0}" onchange="setPrice('${c.id}','${p.name.replace(/'/g,"\\'")}',this.value)"></div><div class="qtybox"><label>備貨</label><input type="number" value="${p.qty}" onchange="setQty('${c.id}','${p.name.replace(/'/g,"\\'")}',this.value)"></div><span class="srcb ${p.source==='hc'?'hc':''}" data-c="${c.id}" data-n="${encodeURIComponent(p.name)}" onclick="toggleSrc(this)">${p.source==='hc'?'彰化現貨':'叫貨'}</span><span class="prowrev">${p.price?(Math.round(p.qty*p.price/1000)/10)+'萬':'—'}</span><button class="delb" onclick="delPick('${c.id}','${p.name.replace(/'/g,"\\'")}')">×</button></div><div class="prow-flags">${flagbtns}${p.memo?`<span class="pmemo">📝${p.memo}</span>`:""}</div></div>`;}
+  return picked;
+}
+
 
 
 const ROLECFG={
@@ -641,10 +665,7 @@ function renderOneCamp(c){
       let catbar="";
       for(const ct of CATS){const cnt = ct==="主題建議"?"":` `;catbar+=`<div class="catb ${curcat===ct?'on':''}" data-act="cat" data-cid="${encodeURIComponent(c.id)}" data-cat="${ct}">${ct}</div>`;}
       let recs=recsHTML(c);
-      let picked="";
-      if(picks.length===0)picked=`<div class="empty">還沒選品。上面切類別挑（裸石也在），或自己打。</div>`;
-      else for(const p of picks){const uc=usedCount(p.name);
-        const um=usedLabel(p.name,c.month);const fl=p.flags||{};let flagbtns=FLAGS.map(function(f){var pre=({mkt:[],film:['mkt'],web:['mkt'],line:['web']})[f[0]]||[];var locked=!fl[f[0]]&&pre.some(function(k){return !fl[k];});var notmine=!canToggle(f[0]);return '<span class="flagb '+(fl[f[0]]?'on':'')+(locked?' locked':'')+(notmine?' notmine':'')+'" data-c="'+c.id+'" data-n="'+encodeURIComponent(p.name)+'" data-f="'+f[0]+'" onclick="toggleFlagEl(this)">'+f[1]+'</span>';}).join("");var allok=fl.film&&fl.mkt&&fl.web&&fl.line;if(allok)flagbtns+='<span class="okbadge">ok</span>';picked+=`<div class="prow prow2 ${allok?'allok':''}" data-pn="${encodeURIComponent(p.name)}"><div class="prow-main"><span class="pn">${p.name}</span><span class="used">${p.week?"<b>第"+p.week+"週</b> · ":""}${uc>1?`全年${uc}檔`:"僅此檔"}${um?` · 另排:${um}`:""}</span><span class="memob" data-c="${c.id}" data-n="${encodeURIComponent(p.name)}" onclick="editMemoEl(this)">${p.memo?("📝"+p.memo):"＋備註"}</span><div class="qtybox"><label>預估售價</label><input type="number" value="${p.price||0}" onchange="setPrice('${c.id}','${p.name.replace(/'/g,"\\'")}',this.value)"></div><div class="qtybox"><label>備貨</label><input type="number" value="${p.qty}" onchange="setQty('${c.id}','${p.name.replace(/'/g,"\\'")}',this.value)"></div><span class="srcb ${p.source==='hc'?'hc':''}" data-c="${c.id}" data-n="${encodeURIComponent(p.name)}" onclick="toggleSrc(this)">${p.source==='hc'?'彰化現貨':'叫貨'}</span><span class="prowrev">${p.price?(Math.round(p.qty*p.price/1000)/10)+'萬':'—'}</span><button class="delb" onclick="delPick('${c.id}','${p.name.replace(/'/g,"\\'")}')">×</button></div><div class="prow-flags">${flagbtns}${p.memo?`<span class="pmemo">📝${p.memo}</span>`:""}</div></div>`;}
+      let picked=pickedHTML(c);
       h+=`<div class="camp ${done?'done':''} ${LOCKED[c.month]?'lockedm':''}" id="camp-${c.id}">
         <div class="ch" onclick="toggleOpen('${c.id}')"><div><div class="cname">${cv(c,'name')} <span class="ctype" style="background:${TYC[c.type]}">${c.type}</span> <span class="editc" onclick="event.stopPropagation();openEditCamp('${c.id}')">✎ 編輯</span></div><div class="cmeta">${cv(c,'date')} · <span class="cgoal">${cv(c,'goal')}</span> · ${picks.length}品 · 備貨×${c.mult}</div></div><div class="cright"><div class="rev">${rev?wan(rev).toFixed(0):'0'}<span style="font-size:11px"> 萬</span></div><div class="rl">預估</div></div></div>
         <div class="cbody"><div class="brief">${cv(c,'brief')}<br><span class="who">客層：${c.who}</span></div>
