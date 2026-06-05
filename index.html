@@ -266,7 +266,7 @@ body{background:var(--bg);color:var(--t1);font-family:'DM Sans','Noto Serif TC',
 <div class="hero"><div class="kicker">泰熙爾札娜 · 選品排程</div><div class="h-title">選品排程 <b>＋ 備貨預估</b></div>
 <div class="h-sub">排程→狀態追蹤→進度看板 ｜ 選品/拍片/行銷/官網/LINE 五關 ｜ 雲端即時共用</div>
 <div id="userBar"></div><div class="tabs"><button class="tab on" onclick="sw(0)">首頁</button><button class="tab" onclick="sw(1)">選品</button><button class="tab" onclick="sw(2)">campaign</button><button class="tab" onclick="sw(3)">官網</button><button class="tab" onclick="sw(4)">lineoa</button><button class="tab" onclick="sw(5)">甘特圖</button><button class="tab" onclick="sw(6)">總覽</button><button class="impb" style="margin-left:auto;align-self:center" onclick="importJune()">⬇ 匯入6月</button><button class="rstopen" style="align-self:center;margin-left:8px" onclick="openRestore()">↩ 還原</button><button class="expb" style="align-self:center;margin-left:8px" onclick="exportYear()">⤓ 全年PDF</button></div></div>
-<div class="wrap"><div class="page on" id="phome"></div><div class="page" id="ppick"></div><div class="page" id="pcamp"></div><div class="page" id="pweb"></div><div class="page" id="pline"></div><div class="page" id="pg"></div><div class="page" id="p1"></div><div class="footer">TZG 泰熙爾札娜珠寶 ｜ 選品排程（雲端即時共用，自動同步） ｜ 版本 06/05 15:07</div></div>
+<div class="wrap"><div class="page on" id="phome"></div><div class="page" id="ppick"></div><div class="page" id="pcamp"></div><div class="page" id="pweb"></div><div class="page" id="pline"></div><div class="page" id="pg"></div><div class="page" id="p1"></div><div class="footer">TZG 泰熙爾札娜珠寶 ｜ 選品排程（雲端即時共用，自動同步） ｜ 版本 06/05 15:30</div></div>
 <div id="restoreBox" style="display:none;position:fixed;inset:0;background:rgba(26,20,16,.45);z-index:200;align-items:center;justify-content:center" onclick="if(event.target===this)this.style.display='none'">
 <div style="background:#fff;border-radius:14px;max-width:460px;width:90%;max-height:80vh;overflow:auto;padding:22px">
 <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px"><div style="font-family:'Cormorant Garamond',serif;font-size:20px;font-weight:700">還原備份</div><button onclick="document.getElementById('restoreBox').style.display='none'" style="border:none;background:none;font-size:22px;cursor:pointer;color:#999999">×</button></div>
@@ -484,7 +484,28 @@ function roleStat(role,c){
   return {done:d,total:tot,label:tot>0?(d+"/"+tot+" 完成"):"（還沒選品）",ok:tot>0&&d>=tot};
 }
 function selRoleType(role,t){const v=ROLEVIEW[role];v.userSet=true;v.type=(v.type===t?null:t);if(v.type===null)v.userSet=false;v.open=null;render();}
-function selRoleCamp(role,cid){ROLEVIEW[role].open=(ROLEVIEW[role].open===cid?null:cid);render();}
+function selRoleCamp(role,cid){
+  const v=ROLEVIEW[role];
+  const pid={pick:"ppick",campaign:"pcamp",web:"pweb",line:"pline"}[role];
+  const cont=document.getElementById(pid);if(!cont)return;
+  // 先收掉目前展開的
+  if(v.open&&v.open!==cid){
+    const prev=cont.querySelector('.rcamp[data-cid="'+encodeURIComponent(v.open)+'"]');
+    if(prev){prev.classList.remove("open");const pb=prev.querySelector(".rcamp-body");if(pb)pb.remove();}
+  }
+  if(v.open===cid){
+    // 收合
+    v.open=null;
+    const cur=cont.querySelector('.rcamp[data-cid="'+encodeURIComponent(cid)+'"]');
+    if(cur){cur.classList.remove("open");const b=cur.querySelector(".rcamp-body");if(b)b.remove();}
+  }else{
+    // 展開
+    v.open=cid;
+    const cur=cont.querySelector('.rcamp[data-cid="'+encodeURIComponent(cid)+'"]');
+    const c=CAMP[cid];
+    if(cur&&c){cur.classList.add("open");if(!cur.querySelector(".rcamp-body")){const bd=document.createElement("div");bd.className="rcamp-body";bd.innerHTML=renderOneCamp(c);cur.appendChild(bd);}}
+  }
+}
 function renderHome(){
   const cards=[["pick","選品","Regina","ppick"],["campaign","設計 campaign","Vito","pcamp"],["web","建官網","家逸","pweb"],["line","lineoa 運營","Jessica","pline"]];
   let h='<div class="home-hero"><div class="home-t">今天想做什麼？</div><div class="home-s">點一個工作進去</div></div><div class="home-grid">';
@@ -516,7 +537,7 @@ function renderRole(role,cid){
   for(const c of camps){
     const s=roleStat(role,c);const dl=dlInfo(c);
     const statCls=s.ok?"rc-ok":(s.total===0?"rc-none":"rc-todo");
-    h+='<div class="rcamp '+(v.open===c.id?"open":"")+'"><div class="rcamp-head" data-act="camp" data-role="'+role+'" data-cid="'+encodeURIComponent(c.id)+'">';
+    h+='<div class="rcamp '+(v.open===c.id?"open":"")+'" data-cid="'+encodeURIComponent(c.id)+'"><div class="rcamp-head" data-act="camp" data-role="'+role+'" data-cid="'+encodeURIComponent(c.id)+'">';
     h+='<span class="rc-name">'+cv(c,"name")+'</span><span class="rc-mon">'+ML[c.month]+'</span>';
     h+='<span class="rc-stat '+statCls+'">'+s.label+'</span><span class="dldl '+dl.cls+'">'+dl.txt+'</span></div>';
     if(v.open===c.id){h+='<div class="rcamp-body">'+renderOneCamp(c)+'</div>';}
