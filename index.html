@@ -319,7 +319,7 @@ body{color:var(--t1)}
 <div class="hero"><div class="kicker">泰熙爾札娜 · 選品排程</div><div class="h-title">選品排程 <b>＋ 備貨預估</b></div>
 <div class="h-sub">排程→狀態追蹤→進度看板 ｜ 選品/拍片/行銷/官網/LINE 五關 ｜ 雲端即時共用</div>
 <div id="userBar"></div><div class="tabs"><button class="tab on" onclick="sw(0)">首頁</button><button class="tab" onclick="sw(1)">選品</button><button class="tab" onclick="sw(2)">campaign</button><button class="tab" onclick="sw(3)">官網</button><button class="tab" onclick="sw(4)">lineoa</button><button class="tab" onclick="sw(5)">甘特圖</button><button class="tab" onclick="sw(6)">總覽</button><button class="impb" style="margin-left:auto;align-self:center" onclick="importJune()">⬇ 匯入6月</button><button class="rstopen" style="align-self:center;margin-left:8px" onclick="openRestore()">↩ 還原</button><button class="expb" style="align-self:center;margin-left:8px" onclick="exportYear()">⤓ 全年PDF</button></div></div>
-<div class="wrap"><div class="page on" id="phome"></div><div class="page" id="ppick"></div><div class="page" id="pcamp"></div><div class="page" id="pweb"></div><div class="page" id="pline"></div><div class="page" id="pg"></div><div class="page" id="p1"></div><div class="footer">TZG 泰熙爾札娜珠寶 ｜ 選品排程（雲端即時共用，自動同步） ｜ 版本 06/05 16:10</div></div>
+<div class="wrap"><div class="page on" id="phome"></div><div class="page" id="ppick"></div><div class="page" id="pcamp"></div><div class="page" id="pweb"></div><div class="page" id="pline"></div><div class="page" id="pg"></div><div class="page" id="p1"></div><div class="footer">TZG 泰熙爾札娜珠寶 ｜ 選品排程（雲端即時共用，自動同步） ｜ 版本 06/05 16:19</div></div>
 <div id="restoreBox" style="display:none;position:fixed;inset:0;background:rgba(26,20,16,.45);z-index:200;align-items:center;justify-content:center" onclick="if(event.target===this)this.style.display='none'">
 <div style="background:#fff;border-radius:14px;max-width:460px;width:90%;max-height:80vh;overflow:auto;padding:22px">
 <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px"><div style="font-family:'Cormorant Garamond',serif;font-size:20px;font-weight:700">還原備份</div><button onclick="document.getElementById('restoreBox').style.display='none'" style="border:none;background:none;font-size:22px;cursor:pointer;color:#999999">×</button></div>
@@ -375,6 +375,8 @@ document.addEventListener("click",function(e){
   if(act==="type"){selRoleType(el.dataset.role,el.dataset.t);}
   else if(act==="camp"){selRoleCamp(el.dataset.role,decodeURIComponent(el.dataset.cid));}
   else if(act==="home"){sw(parseInt(el.dataset.idx));}
+  else if(act==="cat"){setCat(decodeURIComponent(el.dataset.cid),el.dataset.cat);}
+  else if(act==="rec"){toggleRec(decodeURIComponent(el.dataset.cid));}
 });
 
 function initAuth(){
@@ -617,7 +619,7 @@ function renderOneCamp(c){
       const picks=getPicks(c.id);const rev=campRev(c.id);const done=picks.length>0;
       const curcat=CATSEL[c.id]||"主題建議";
       let catbar="";
-      for(const ct of CATS){const cnt = ct==="主題建議"?"":` `;catbar+=`<div class="catb ${curcat===ct?'on':''}" onclick="event.stopPropagation();setCat('${c.id}','${ct}')">${ct}</div>`;}
+      for(const ct of CATS){const cnt = ct==="主題建議"?"":` `;catbar+=`<div class="catb ${curcat===ct?'on':''}" data-act="cat" data-cid="${encodeURIComponent(c.id)}" data-cat="${ct}">${ct}</div>`;}
       let recs="";
       for(const r of recsFor(c)){const added=picks.some(p=>p.name===r.name);
         recs+=`<div class="rrow ${added?'added':''}" onclick="addPick('${c.id}','${r.name.replace(/'/g,"\\'")}')"><span class="rn">${r.name}</span><span class="rcat" style="background:${CATC[r.cat]}">${r.cat}</span><span class="rp">$${r.price.toLocaleString()}</span><span class="rm">月均${r.monthly}</span><span class="ab">${added?'✓':'＋'}</span></div>`;}
@@ -628,7 +630,7 @@ function renderOneCamp(c){
       h+=`<div class="camp ${done?'done':''} ${LOCKED[c.month]?'lockedm':''}" id="camp-${c.id}">
         <div class="ch" onclick="toggleOpen('${c.id}')"><div><div class="cname">${cv(c,'name')} <span class="ctype" style="background:${TYC[c.type]}">${c.type}</span> <span class="editc" onclick="event.stopPropagation();openEditCamp('${c.id}')">✎ 編輯</span></div><div class="cmeta">${cv(c,'date')} · <span class="cgoal">${cv(c,'goal')}</span> · ${picks.length}品 · 備貨×${c.mult}</div></div><div class="cright"><div class="rev">${rev?wan(rev).toFixed(0):'0'}<span style="font-size:11px"> 萬</span></div><div class="rl">預估</div></div></div>
         <div class="cbody"><div class="brief">${cv(c,'brief')}<br><span class="who">客層：${c.who}</span></div>
-        <div class="sl recToggle" onclick="toggleRec('${c.id}')"><span class="recarrow">▸</span> 從建議挑選品（點開・切類別・月均=歷史每月賣幾件）</div>
+        <div class="sl recToggle" data-act="rec" data-cid="${encodeURIComponent(c.id)}"><span class="recarrow">▸</span> 從建議挑選品（點開・切類別・月均=歷史每月賣幾件）</div>
         <div class="recwrap" id="rec-${c.id}" style="display:none"><div class="catbar">${catbar}</div><div class="recs">${recs}</div></div>
         <div class="sl">這檔選品＋備貨（初估=月均×${c.mult}，可改，自動算營收）</div>
         <div class="picked">${picked}<div class="addrow"><input id="inp-${c.id}" placeholder="商品名（需與官網上架品名一模一樣，才抓得到數據）" onkeydown="if(event.key==='Enter')addCustom('${c.id}')"><button onclick="addCustom('${c.id}')">加入</button></div></div>
