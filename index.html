@@ -332,6 +332,47 @@ body{color:var(--t1)}
 .sl{font-size:13px}
 .camp .empty{font-size:13px}
 .pstatus,.prow-sub{font-size:12px}
+
+/* === 品行三層分區，清楚的視覺語言 === */
+.prow{border:1px solid var(--b1);border-radius:5px;padding:12px 14px;margin-bottom:10px;background:#fff}
+.prow.allok{border-left:3px solid var(--blue);background:#FAFEFD}
+/* 上層：品名 + 純文字info + 營收 + 刪除 */
+.prow-top{display:flex;align-items:center;gap:10px;margin-bottom:10px}
+.prow-top .pn{font-size:15px;font-weight:700;color:var(--t1)}
+.prow-top .pinfo{font-size:12px;color:var(--t3)}  /* 純文字：灰、小、不像能點 */
+.prow-top .prowrev{margin-left:auto;font-size:13px;font-weight:600;color:var(--blue)}
+.prow-top .delb{width:24px;height:24px;border:1px solid var(--b2);background:#fff;border-radius:4px;color:#999;cursor:pointer;font-size:14px;line-height:1;flex-shrink:0}
+.prow-top .delb:hover{border-color:#D9534F;color:#D9534F}
+/* 中層：狀態鈕（明顯可點） */
+.prow-flags{display:flex;align-items:center;gap:6px;margin-bottom:10px}
+.prow-flags .flbl{font-size:11px;color:var(--t3);margin-right:2px}
+.flagb{font-size:12px;font-weight:600;padding:5px 14px;border-radius:4px;border:1px solid var(--b2);background:#fff;color:var(--t2);cursor:pointer;transition:all .12s}
+.flagb:hover{border-color:var(--blue)}
+.flagb.on{background:var(--blue);color:#fff;border-color:var(--blue)}
+.flagb.locked{opacity:.4;cursor:not-allowed;background:#F5F5F5}
+.flagb.notmine{opacity:.4;cursor:not-allowed}
+/* 下層：填寫區（input明顯+label，貨源/備註是鈕） */
+.prow-edit{display:flex;align-items:flex-end;gap:12px;flex-wrap:wrap}
+.prow-edit .fld{display:flex;flex-direction:column;gap:3px}
+.prow-edit .fld label{font-size:11px;color:var(--t3)}
+.prow-edit .fld input{width:90px;border:1px solid var(--b2);border-radius:4px;padding:7px 9px;font-size:14px;background:#fff;color:var(--t1)}
+.prow-edit .fld input:focus{border-color:var(--blue);outline:none}
+.srcb{padding:7px 12px;border:1px solid var(--b2);border-radius:4px;background:#fff;color:var(--t2);cursor:pointer;font-size:12px}
+.srcb:hover{border-color:var(--blue)}
+.srcb.hc{background:#FBF3E0;border-color:#E0CC93;color:#8A6A1E}
+.memob{padding:7px 12px;border:1px dashed var(--b2);border-radius:4px;background:#fff;color:var(--t3);cursor:pointer;font-size:12px}
+.memob:hover{border-color:var(--blue);color:var(--blue)}
+/* 建議下拉商品行：整行可點(加入)，hover提示 */
+.rrow{display:flex;align-items:center;gap:8px;padding:9px 12px;border-bottom:1px solid #F0F0F0;cursor:pointer;transition:background .1s}
+.rrow:hover{background:#F0FAF9}
+.rrow .rn{flex:1;font-size:14px;color:var(--t1)}
+.rrow .rcat{font-size:11px;color:#fff;padding:2px 8px;border-radius:3px}  /* 標籤：圓角小、不像鈕 */
+.rrow .rp{font-size:13px;font-weight:600;color:var(--t2)}
+.rrow .rm{font-size:11px;color:var(--t3)}
+.rrow .ab{width:26px;height:26px;display:flex;align-items:center;justify-content:center;border:1px solid var(--b2);border-radius:4px;color:var(--blue);font-size:15px;flex-shrink:0}
+.rrow:hover .ab{background:var(--blue);color:#fff;border-color:var(--blue)}
+.rrow.added{background:#F0FAF9}
+.rrow.added .ab{background:#E0F2EF;color:#0E6B62;border-color:#9DD4CC}
 </style></head><body><div id="loginBox"><div class="lg-card">
 <div class="lg-title">TZG 選品排程</div>
 <div class="lg-sub">請選擇你是誰並輸入密碼</div>
@@ -344,7 +385,7 @@ body{color:var(--t1)}
 <div class="hero"><div class="kicker">泰熙爾札娜 · 選品排程</div><div class="h-title">選品排程 <b>＋ 備貨預估</b></div>
 <div class="h-sub">排程→狀態追蹤→進度看板 ｜ 選品/拍片/行銷/官網/LINE 五關 ｜ 雲端即時共用</div>
 <div id="userBar"></div><div class="tabs"><button class="tab on" onclick="sw(0)">首頁</button><button class="tab" onclick="sw(1)">選品</button><button class="tab" onclick="sw(2)">campaign</button><button class="tab" onclick="sw(3)">官網</button><button class="tab" onclick="sw(4)">lineoa</button><button class="tab" onclick="sw(5)">甘特圖</button><button class="tab" onclick="sw(6)">總覽</button><button class="impb" style="margin-left:auto;align-self:center" onclick="importJune()">⬇ 匯入6月</button><button class="rstopen" style="align-self:center;margin-left:8px" onclick="openRestore()">↩ 還原</button><button class="expb" style="align-self:center;margin-left:8px" onclick="exportYear()">⤓ 全年PDF</button></div></div>
-<div class="wrap"><div class="page on" id="phome"></div><div class="page" id="ppick"></div><div class="page" id="pcamp"></div><div class="page" id="pweb"></div><div class="page" id="pline"></div><div class="page" id="pg"></div><div class="page" id="p1"></div><div class="footer">TZG 泰熙爾札娜珠寶 ｜ 選品排程（雲端即時共用，自動同步） ｜ 版本 06/05 17:31</div></div>
+<div class="wrap"><div class="page on" id="phome"></div><div class="page" id="ppick"></div><div class="page" id="pcamp"></div><div class="page" id="pweb"></div><div class="page" id="pline"></div><div class="page" id="pg"></div><div class="page" id="p1"></div><div class="footer">TZG 泰熙爾札娜珠寶 ｜ 選品排程（雲端即時共用，自動同步） ｜ 版本 06/05 17:35</div></div>
 <div id="restoreBox" style="display:none;position:fixed;inset:0;background:rgba(26,20,16,.45);z-index:200;align-items:center;justify-content:center" onclick="if(event.target===this)this.style.display='none'">
 <div style="background:#fff;border-radius:14px;max-width:460px;width:90%;max-height:80vh;overflow:auto;padding:22px">
 <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px"><div style="font-family:'Cormorant Garamond',serif;font-size:20px;font-weight:700">還原備份</div><button onclick="document.getElementById('restoreBox').style.display='none'" style="border:none;background:none;font-size:22px;cursor:pointer;color:#999999">×</button></div>
@@ -598,7 +639,21 @@ function pickedHTML(c){
   let picked="";
       if(picks.length===0)picked=`<div class="empty">還沒選品。上面切類別挑（裸石也在），或自己打。</div>`;
       else for(const p of picks){const uc=usedCount(p.name);
-        const um=usedLabel(p.name,c.month);const fl=p.flags||{};let flagbtns=FLAGS.map(function(f){var pre=({mkt:[],film:['mkt'],web:['mkt'],line:['web']})[f[0]]||[];var locked=!fl[f[0]]&&pre.some(function(k){return !fl[k];});var notmine=!canToggle(f[0]);return '<span class="flagb '+(fl[f[0]]?'on':'')+(locked?' locked':'')+(notmine?' notmine':'')+'" data-c="'+c.id+'" data-n="'+encodeURIComponent(p.name)+'" data-f="'+f[0]+'" onclick="toggleFlagEl(this)">'+f[1]+'</span>';}).join("");var allok=fl.film&&fl.mkt&&fl.web&&fl.line;if(allok)flagbtns+='<span class="okbadge">ok</span>';picked+=`<div class="prow prow2 ${allok?'allok':''}" data-pn="${encodeURIComponent(p.name)}"><div class="prow-main"><span class="pn">${p.name}</span><span class="used">${p.week?"<b>第"+p.week+"週</b> · ":""}${uc>1?`全年${uc}檔`:"僅此檔"}${um?` · 另排:${um}`:""}</span><span class="memob" data-c="${c.id}" data-n="${encodeURIComponent(p.name)}" onclick="editMemoEl(this)">${p.memo?("📝"+p.memo):"＋備註"}</span><div class="qtybox"><label>預估售價</label><input type="number" value="${p.price||0}" onchange="setPrice('${c.id}','${p.name.replace(/'/g,"\\'")}',this.value)"></div><div class="qtybox"><label>備貨</label><input type="number" value="${p.qty}" onchange="setQty('${c.id}','${p.name.replace(/'/g,"\\'")}',this.value)"></div><span class="srcb ${p.source==='hc'?'hc':''}" data-c="${c.id}" data-n="${encodeURIComponent(p.name)}" onclick="toggleSrc(this)">${p.source==='hc'?'彰化現貨':'叫貨'}</span><span class="prowrev">${p.price?(Math.round(p.qty*p.price/1000)/10)+'萬':'—'}</span><button class="delb" onclick="delPick('${c.id}','${p.name.replace(/'/g,"\\'")}')">×</button></div><div class="prow-flags">${flagbtns}${p.memo?`<span class="pmemo">📝${p.memo}</span>`:""}</div></div>`;}
+        const um=usedLabel(p.name,c.month);const fl=p.flags||{};let flagbtns=FLAGS.map(function(f){var pre=({mkt:[],film:['mkt'],web:['mkt'],line:['web']})[f[0]]||[];var locked=!fl[f[0]]&&pre.some(function(k){return !fl[k];});var notmine=!canToggle(f[0]);return '<span class="flagb '+(fl[f[0]]?'on':'')+(locked?' locked':'')+(notmine?' notmine':'')+'" data-c="'+c.id+'" data-n="'+encodeURIComponent(p.name)+'" data-f="'+f[0]+'" onclick="toggleFlagEl(this)">'+f[1]+'</span>';}).join("");var allok=fl.film&&fl.mkt&&fl.web&&fl.line;if(allok)flagbtns+='<span class="okbadge">ok</span>';picked+=`<div class="prow ${allok?'allok':''}" data-pn="${encodeURIComponent(p.name)}">
+  <div class="prow-top">
+    <span class="pn">${p.name}</span>
+    <span class="pinfo">${p.week?"第"+p.week+"週":""}${uc>1?` · 全年${uc}檔`:""}${um?` · 另排:${um}`:""}</span>
+    <span class="prowrev">${p.price?(Math.round(p.qty*p.price/1000)/10)+'萬':''}</span>
+    <button class="delb" onclick="delPick('${c.id}','${p.name.replace(/'/g,"\\'")}')" title="移除">×</button>
+  </div>
+  <div class="prow-flags"><span class="flbl">狀態</span>${flagbtns}</div>
+  <div class="prow-edit">
+    <div class="fld"><label>預估售價</label><input type="number" value="${p.price||0}" onchange="setPrice('${c.id}','${p.name.replace(/'/g,"\\'")}',this.value)"></div>
+    <div class="fld"><label>備貨量</label><input type="number" value="${p.qty}" onchange="setQty('${c.id}','${p.name.replace(/'/g,"\\'")}',this.value)"></div>
+    <button class="srcb ${p.source==='hc'?'hc':''}" data-c="${c.id}" data-n="${encodeURIComponent(p.name)}" onclick="toggleSrc(this)">${p.source==='hc'?'彰化現貨':'叫貨'}</button>
+    <button class="memob" data-c="${c.id}" data-n="${encodeURIComponent(p.name)}" onclick="editMemoEl(this)">${p.memo?("📝 "+p.memo):"＋ 備註"}</button>
+  </div>
+</div>`;}
   return picked;
 }
 
