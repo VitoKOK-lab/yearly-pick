@@ -266,15 +266,15 @@ body{background:var(--bg);color:var(--t1);font-family:'DM Sans','Noto Serif TC',
 <div class="hero"><div class="kicker">泰熙爾札娜 · 選品排程</div><div class="h-title">選品排程 <b>＋ 備貨預估</b></div>
 <div class="h-sub">排程→狀態追蹤→進度看板 ｜ 選品/拍片/行銷/官網/LINE 五關 ｜ 雲端即時共用</div>
 <div id="userBar"></div><div class="tabs"><button class="tab on" onclick="sw(0)">首頁</button><button class="tab" onclick="sw(1)">選品</button><button class="tab" onclick="sw(2)">campaign</button><button class="tab" onclick="sw(3)">官網</button><button class="tab" onclick="sw(4)">lineoa</button><button class="tab" onclick="sw(5)">甘特圖</button><button class="tab" onclick="sw(6)">總覽</button><button class="impb" style="margin-left:auto;align-self:center" onclick="importJune()">⬇ 匯入6月</button><button class="rstopen" style="align-self:center;margin-left:8px" onclick="openRestore()">↩ 還原</button><button class="expb" style="align-self:center;margin-left:8px" onclick="exportYear()">⤓ 全年PDF</button></div></div>
-<div class="wrap"><div class="page on" id="phome"></div><div class="page" id="ppick"></div><div class="page" id="pcamp"></div><div class="page" id="pweb"></div><div class="page" id="pline"></div><div class="page" id="pg"></div><div class="page" id="p1"></div><div class="footer">TZG 泰熙爾札娜珠寶 ｜ 選品排程（填寫自動存本機）</div></div>
+<div class="wrap"><div class="page on" id="phome"></div><div class="page" id="ppick"></div><div class="page" id="pcamp"></div><div class="page" id="pweb"></div><div class="page" id="pline"></div><div class="page" id="pg"></div><div class="page" id="p1"></div><div class="footer">TZG 泰熙爾札娜珠寶 ｜ 選品排程（雲端即時共用，自動同步）</div></div>
 <div id="restoreBox" style="display:none;position:fixed;inset:0;background:rgba(26,20,16,.45);z-index:200;align-items:center;justify-content:center" onclick="if(event.target===this)this.style.display='none'">
 <div style="background:#fff;border-radius:14px;max-width:460px;width:90%;max-height:80vh;overflow:auto;padding:22px">
-<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px"><div style="font-family:'Cormorant Garamond',serif;font-size:20px;font-weight:700">還原備份</div><button onclick="document.getElementById('restoreBox').style.display='none'" style="border:none;background:none;font-size:22px;cursor:pointer;color:#A89A8C">×</button></div>
-<div style="font-size:11.5px;color:#A89A8C;margin-bottom:14px">每次鎖定月份自動存的還原點。點任一個拉回那時的選品（還原前會先備份現況，後悔得回來）。</div>
+<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px"><div style="font-family:'Cormorant Garamond',serif;font-size:20px;font-weight:700">還原備份</div><button onclick="document.getElementById('restoreBox').style.display='none'" style="border:none;background:none;font-size:22px;cursor:pointer;color:#999999">×</button></div>
+<div style="font-size:11.5px;color:#999999;margin-bottom:14px">每次鎖定月份自動存的還原點。點任一個拉回那時的選品（還原前會先備份現況，後悔得回來）。</div>
 <div id="restoreList"></div></div></div>
 <div id="editBox" style="display:none;position:fixed;inset:0;background:rgba(26,20,16,.45);z-index:200;align-items:center;justify-content:center" onclick="if(event.target===this)this.style.display='none'">
 <div style="background:#fff;border-radius:14px;max-width:480px;width:90%;max-height:85vh;overflow:auto;padding:22px">
-<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px"><div id="ec_title" style="font-family:'Cormorant Garamond',serif;font-size:20px;font-weight:700">編輯企劃</div><button onclick="document.getElementById('editBox').style.display='none'" style="border:none;background:none;font-size:22px;cursor:pointer;color:#A89A8C">×</button></div>
+<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px"><div id="ec_title" style="font-family:'Cormorant Garamond',serif;font-size:20px;font-weight:700">編輯企劃</div><button onclick="document.getElementById('editBox').style.display='none'" style="border:none;background:none;font-size:22px;cursor:pointer;color:#999999">×</button></div>
 <input type="hidden" id="ec_id">
 <div class="efield"><label>檔名</label><input id="ec_name" type="text"></div>
 <div class="efield"><label>日期</label><input id="ec_date" type="text" placeholder="例：6/7 或 整月週五"></div>
@@ -362,10 +362,10 @@ async function listBackups(){
 }
 async function openRestore(){
   const box=document.getElementById('restoreBox');const list=document.getElementById('restoreList');
-  list.innerHTML='<div style="padding:20px;text-align:center;color:#A89A8C">載入備份中…</div>';
+  list.innerHTML='<div style="padding:20px;text-align:center;color:#999999">載入備份中…</div>';
   box.style.display='flex';
   const bks=await listBackups();
-  if(bks.length===0){list.innerHTML='<div style="padding:20px;text-align:center;color:#A89A8C">還沒有備份。每次按「鎖定本月」就會自動存一份。</div>';return;}
+  if(bks.length===0){list.innerHTML='<div style="padding:20px;text-align:center;color:#999999">還沒有備份。每次按「鎖定本月」就會自動存一份。</div>';return;}
   list.innerHTML=bks.map(b=>`<div class="rstrow"><div><div class="rstt">${b.label}</div><div class="rstm">當下全年預估 ${(b.rev/10000).toFixed(0)} 萬</div></div><button class="rstb" onclick="doRestore('${b.id}')">還原到這個時間點</button></div>`).join('');
 }
 async function doRestore(id){
@@ -732,7 +732,7 @@ function renderGantt(){
   document.getElementById('pg').innerHTML=head+'<div class="gt-body">'+rows+'</div>';
 }
 
-function render(){if(!_loaded){var _ld=document.getElementById('phome');if(_ld)_ld.innerHTML='<div style="text-align:center;padding:60px;color:#A89A8C">☁️ 連線雲端、載入共用資料中…</div>';return;}renderHome();renderRole('pick','ppick');renderRole('campaign','pcamp');renderRole('web','pweb');renderRole('line','pline');renderGantt();renderOverview();}
+function render(){if(!_loaded){var _ld=document.getElementById('phome');if(_ld)_ld.innerHTML='<div style="text-align:center;padding:60px;color:#999999">☁️ 連線雲端、載入共用資料中…</div>';return;}renderHome();renderRole('pick','ppick');renderRole('campaign','pcamp');renderRole('web','pweb');renderRole('line','pline');renderGantt();renderOverview();}
 function sw(i){document.querySelectorAll(".tab").forEach(function(t,n){t.classList.toggle("on",n===i);});document.querySelectorAll(".page").forEach(function(p,n){p.classList.toggle("on",n===i);});if(i===0)renderHome();if(i===5)renderGantt();if(i===6)renderOverview();window.scrollTo(0,0);}
 render();
 initAuth();
