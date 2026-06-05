@@ -316,7 +316,7 @@ function doLogout(){CUR=null;try{localStorage.removeItem("tzg_user");}catch(e){}
 function showUserBar(){const b=document.getElementById("userBar");if(b)b.innerHTML=CUR?('目前：<b>'+CUR.label+'</b> <span class="logout" onclick="doLogout()">登出</span>'):'';}
 function initAuth(){
   let saved=null;try{saved=localStorage.getItem("tzg_user");}catch(e){}
-  if(saved&&ACCOUNTS[saved]){const a=ACCOUNTS[saved];CUR={name:saved,flag:a.flag,admin:a.admin,label:a.label};document.getElementById("loginBox").style.display="none";}
+  if(saved&&ACCOUNTS[saved]){const a=ACCOUNTS[saved];CUR={name:saved,flag:a.flag,admin:a.admin,label:a.label};document.getElementById("loginBox").style.display="none";render();}
   else{document.getElementById("loginBox").style.display="flex";}
   showUserBar();
 }
@@ -327,13 +327,15 @@ const CATS=["主題建議","裸石","飾品","水晶能量","訂製","其他"];
 let PICKS={},LOCKED={};
 let _writing=false;        // 自己正在寫入時，忽略一次回拋
 let _loaded=false;
+try{var _c=localStorage.getItem('tzg_cache');if(_c){var _cd=JSON.parse(_c);PICKS=_cd.picks||{};LOCKED=_cd.locked||{};NOTES=_cd.notes||{};COVER=_cd.cover||{};}}catch(e){}
+setTimeout(function(){if(!_loaded){_loaded=true;try{render();}catch(e){console.error(e);}}},3000);
 setTimeout(function(){if(!_loaded){_loaded=true;try{render();}catch(e){console.error(e);}}},5000);
 // 即時同步：監聽 Firestore，別人改了這裡自動更新
 DOCREF.onSnapshot(doc=>{
   if(_writing){_writing=false;return;}            // 跳過自己寫入觸發的回拋
   const d=doc.exists?doc.data():{};
   PICKS=d.picks||{};LOCKED=d.locked||{};NOTES=d.notes||{};COVER=d.cover||{};
-  _loaded=true;
+  _loaded=true;try{localStorage.setItem('tzg_cache',JSON.stringify({picks:PICKS,locked:LOCKED,notes:NOTES,cover:COVER}));}catch(e){}
   // 若正在編輯備貨輸入框，只更新數字不重繪整頁，避免打斷
   if(document.activeElement&&document.activeElement.tagName==="INPUT"){renderTotals();renderOverview();}
   else render();
@@ -707,7 +709,6 @@ function resetEditCamp(){
 
 
 function renderGantt(){
-  if(!_loaded){document.getElementById('pg').innerHTML='';return;}
   const totalW=52;const colW=100/totalW;
   const MW={"2026-06":0,"2026-07":4,"2026-08":8,"2026-09":13,"2026-10":17,"2026-11":22,"2026-12":26,"2027-01":31,"2027-02":35,"2027-03":39,"2027-04":43,"2027-05":47};
   let head='<div class="gt-head"><div class="gt-lbl"></div><div class="gt-track">';
@@ -732,7 +733,7 @@ function renderGantt(){
   document.getElementById('pg').innerHTML=head+'<div class="gt-body">'+rows+'</div>';
 }
 
-function render(){if(!_loaded){var _ld=document.getElementById('phome');if(_ld)_ld.innerHTML='<div style="text-align:center;padding:60px;color:#999999">☁️ 連線雲端、載入共用資料中…</div>';return;}renderHome();renderRole('pick','ppick');renderRole('campaign','pcamp');renderRole('web','pweb');renderRole('line','pline');renderGantt();renderOverview();}
+function render(){renderHome();renderRole('pick','ppick');renderRole('campaign','pcamp');renderRole('web','pweb');renderRole('line','pline');renderGantt();renderOverview();}
 function sw(i){document.querySelectorAll(".tab").forEach(function(t,n){t.classList.toggle("on",n===i);});document.querySelectorAll(".page").forEach(function(p,n){p.classList.toggle("on",n===i);});if(i===0)renderHome();if(i===5)renderGantt();if(i===6)renderOverview();window.scrollTo(0,0);}
 render();
 initAuth();
