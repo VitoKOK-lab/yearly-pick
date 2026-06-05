@@ -221,6 +221,39 @@ body{background:var(--bg);color:var(--t1);font-family:'DM Sans','Noto Serif TC',
 .logout{color:#50C8BE;cursor:pointer;margin-left:8px;text-decoration:underline}
 .flagb.notmine{opacity:.35;cursor:not-allowed;background:#F2F2F2}
 .flagb.notmine:hover{border-color:#E8E8E8}
+
+.home-hero{padding:30px 4px 18px}
+.home-t{font-family:'Cormorant Garamond',serif;font-size:30px;font-weight:700;color:var(--t1)}
+.home-s{font-size:13px;color:var(--t3);margin-top:2px}
+.home-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.home-card{background:#fff;border:1px solid var(--b1);border-radius:14px;padding:24px;cursor:pointer;transition:all .15s}
+.home-card:hover{border-color:var(--teal);box-shadow:0 4px 20px rgba(80,200,190,.12);transform:translateY(-2px)}
+.hc-title{font-size:19px;font-weight:700;color:var(--t1)}
+.hc-who{font-size:12px;color:var(--t3);margin:4px 0 14px}
+.hc-bar{height:8px;background:#EEE;border-radius:4px;overflow:hidden}
+.hc-fill{height:100%;background:var(--teal);border-radius:4px}
+.hc-num{font-size:12px;color:var(--t2);margin-top:7px;font-weight:600}
+.role-head{padding:18px 4px 14px}
+.rh-title{font-family:'Cormorant Garamond',serif;font-size:24px;font-weight:700;color:var(--t1)}
+.rh-who{font-size:13px;color:var(--t3);font-weight:400;margin-left:10px}
+.rh-hint{font-size:12px;color:var(--t3);margin-top:3px}
+.rtype-bar{display:flex;gap:10px;margin-bottom:16px}
+.rtype{flex:1;padding:14px;border:1px solid var(--b1);background:#fff;border-radius:11px;font-size:15px;font-weight:600;color:var(--t2);cursor:pointer}
+.rtype:hover{border-color:var(--teal)}
+.rtype.on{background:var(--teal);color:#fff;border-color:var(--teal)}
+.role-empty{text-align:center;padding:40px;color:var(--t3);font-size:13px}
+.rcamp-list{display:flex;flex-direction:column;gap:10px}
+.rcamp{border:1px solid var(--b1);border-radius:12px;background:#fff;overflow:hidden}
+.rcamp.open{border-color:var(--teal);box-shadow:0 2px 14px rgba(80,200,190,.1)}
+.rcamp-head{display:flex;align-items:center;gap:12px;padding:15px 18px;cursor:pointer}
+.rcamp-head:hover{background:#FAFEFE}
+.rc-name{font-weight:600;color:var(--t1);font-size:15px;flex:1}
+.rc-mon{font-size:12px;color:var(--t3)}
+.rc-stat{font-size:12px;font-weight:600;padding:4px 12px;border-radius:11px}
+.rc-ok{background:#E3F7F4;color:#1A8C82}
+.rc-todo{background:#FBF0DD;color:#B8841F}
+.rc-none{background:#F2F2F2;color:#999}
+.rcamp-body{padding:0 12px 14px;border-top:1px solid #F0F0F0}
 </style></head><body><div id="loginBox"><div class="lg-card">
 <div class="lg-title">TZG 選品排程</div>
 <div class="lg-sub">請選擇你是誰並輸入密碼</div>
@@ -232,8 +265,8 @@ body{background:var(--bg);color:var(--t1);font-family:'DM Sans','Noto Serif TC',
 
 <div class="hero"><div class="kicker">泰熙爾札娜 · 選品排程</div><div class="h-title">選品排程 <b>＋ 備貨預估</b></div>
 <div class="h-sub">排程→狀態追蹤→進度看板 ｜ 選品/拍片/行銷/官網/LINE 五關 ｜ 雲端即時共用</div>
-<div id="userBar"></div><div class="tabs"><button class="tab on" onclick="sw(0)">總覽</button><button class="tab" onclick="sw(1)">大檔</button><button class="tab" onclick="sw(2)">季檔</button><button class="tab" onclick="sw(3)">週檔</button><button class="tab" onclick="sw(4)">甘特圖</button><button class="tab" onclick="sw(5)">進度</button><button class="impb" style="margin-left:auto;align-self:center" onclick="importJune()">⬇ 匯入6月</button><button class="rstopen" style="align-self:center;margin-left:8px" onclick="openRestore()">↩ 還原</button><button class="expb" style="align-self:center;margin-left:8px" onclick="exportYear()">⤓ 全年PDF</button></div></div>
-<div class="wrap"><div class="page on" id="p1"></div><div class="page" id="p0"></div><div class="page" id="ps"></div><div class="page" id="pw"></div><div class="page" id="pg"></div><div class="page" id="p2"></div><div class="footer">TZG 泰熙爾札娜珠寶 ｜ 選品排程（填寫自動存本機）</div></div>
+<div id="userBar"></div><div class="tabs"><button class="tab on" onclick="sw(0)">首頁</button><button class="tab" onclick="sw(1)">選品</button><button class="tab" onclick="sw(2)">campaign</button><button class="tab" onclick="sw(3)">官網</button><button class="tab" onclick="sw(4)">lineoa</button><button class="tab" onclick="sw(5)">甘特圖</button><button class="tab" onclick="sw(6)">總覽</button><button class="impb" style="margin-left:auto;align-self:center" onclick="importJune()">⬇ 匯入6月</button><button class="rstopen" style="align-self:center;margin-left:8px" onclick="openRestore()">↩ 還原</button><button class="expb" style="align-self:center;margin-left:8px" onclick="exportYear()">⤓ 全年PDF</button></div></div>
+<div class="wrap"><div class="page on" id="phome"></div><div class="page" id="ppick"></div><div class="page" id="pcamp"></div><div class="page" id="pweb"></div><div class="page" id="pline"></div><div class="page" id="pg"></div><div class="page" id="p1"></div><div class="footer">TZG 泰熙爾札娜珠寶 ｜ 選品排程（填寫自動存本機）</div></div>
 <div id="restoreBox" style="display:none;position:fixed;inset:0;background:rgba(26,20,16,.45);z-index:200;align-items:center;justify-content:center" onclick="if(event.target===this)this.style.display='none'">
 <div style="background:#fff;border-radius:14px;max-width:460px;width:90%;max-height:80vh;overflow:auto;padding:22px">
 <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px"><div style="font-family:'Cormorant Garamond',serif;font-size:20px;font-weight:700">還原備份</div><button onclick="document.getElementById('restoreBox').style.display='none'" style="border:none;background:none;font-size:22px;cursor:pointer;color:#A89A8C">×</button></div>
@@ -420,17 +453,65 @@ function recsFor(c){
   return list.slice(0,30);
 }
 
-function renderType(types,cid){
-  const openIds=[...document.querySelectorAll('.camp.open')].map(e=>e.id);
-  const openRecs=[...document.querySelectorAll('.recwrap')].filter(w=>w.style.display!=='none').map(w=>w.id);
+
+const ROLECFG={
+  pick:{title:"選品",who:"Regina",flag:null,verb:"選品",hint:"挑商品進每個檔，填備貨與售價"},
+  campaign:{title:"設計 campaign",who:"Vito",flag:"mkt",verb:"行銷",hint:"看哪些檔行銷還沒做，點進去做"},
+  web:{title:"建官網",who:"家逸",flag:"web",verb:"上架",hint:"看哪些檔還沒上架，點進去標"},
+  line:{title:"lineoa 運營",who:"Jessica",flag:"line",verb:"排程",hint:"看哪些檔還沒排程，點進去標"}
+};
+let ROLEVIEW={pick:{type:null,open:null},campaign:{type:null,open:null},web:{type:null,open:null},line:{type:null,open:null}};
+function roleStat(role,c){
+  const picks=getPicks(c.id);const tot=picks.length;
+  if(role==="pick")return {done:tot,total:tot,label:tot>0?("已選 "+tot+" 品"):"還沒選品",ok:tot>0};
+  const flag=ROLECFG[role].flag;let d=0;for(const p of picks){if((p.flags||{})[flag])d++;}
+  return {done:d,total:tot,label:tot>0?(d+"/"+tot+" 完成"):"（還沒選品）",ok:tot>0&&d>=tot};
+}
+function selRoleType(role,t){ROLEVIEW[role].type=(ROLEVIEW[role].type===t?null:t);ROLEVIEW[role].open=null;render();}
+function selRoleCamp(role,cid){ROLEVIEW[role].open=(ROLEVIEW[role].open===cid?null:cid);render();}
+function renderHome(){
+  const cards=[["pick","選品","Regina","ppick"],["campaign","設計 campaign","Vito","pcamp"],["web","建官網","家逸","pweb"],["line","lineoa 運營","Jessica","pline"]];
+  let h='<div class="home-hero"><div class="home-t">今天想做什麼？</div><div class="home-s">點一個工作進去</div></div><div class="home-grid">';
+  for(const [role,title,who,pg] of cards){
+    let d=0,t=0;for(const id in PICKS){for(const p of PICKS[id]){const r=roleStat(role,CAMP[id]);}}
+    // 全年該關進度
+    let done=0,total=0;for(const id in PICKS){const s=roleStat(role,CAMP[id]);if(role==="pick"){total+=s.total;done+=s.total;}else{total+=s.total;done+=s.done;}}
+    const pct=total?Math.round(done/total*100):0;
+    const idx={pick:1,campaign:2,web:3,line:4}[role];
+    h+='<div class="home-card" onclick="sw('+idx+')"><div class="hc-title">我要'+title+'</div><div class="hc-who">'+who+'</div><div class="hc-bar"><div class="hc-fill" style="width:'+(role==="pick"?100:pct)+'%"></div></div><div class="hc-num">'+(role==="pick"?("已選 "+total+" 品"):(done+"/"+total+"・"+pct+"%"))+'</div></div>';
+  }
+  h+='</div>';
+  document.getElementById("phome").innerHTML=h;
+}
+function renderRole(role,cid){
+  const cfg=ROLECFG[role];const v=ROLEVIEW[role];
+  let h='<div class="role-head"><div class="rh-title">'+cfg.title+'<span class="rh-who">'+cfg.who+'</span></div><div class="rh-hint">'+cfg.hint+'</div></div>';
+  h+='<div class="rtype-bar">';
+  for(const t of ["大檔","季檔","週檔"]){h+='<button class="rtype'+(v.type===t?" on":"")+'" onclick="selRoleType(\''+role+'\',\''+t+'\')">'+t+'</button>';}
+  h+='</div>';
+  if(!v.type){h+='<div class="role-empty">↑ 先點 大檔 / 季檔 / 週檔</div>';document.getElementById(cid).innerHTML=h;return;}
+  // 列該type檔期（週檔含寵粉）
+  const wantTypes=v.type==="週檔"?["週檔","寵粉"]:[v.type];
+  const camps=[];
+  for(const m of MONTHS){for(const c of CAMPS){if(c.month===m&&wantTypes.indexOf(c.type)>=0)camps.push(c);}}
+  if(camps.length===0){h+='<div class="role-empty">這類型還沒有檔期</div>';document.getElementById(cid).innerHTML=h;return;}
+  h+='<div class="rcamp-list">';
+  for(const c of camps){
+    const s=roleStat(role,c);const dl=dlInfo(c);
+    const statCls=s.ok?"rc-ok":(s.total===0?"rc-none":"rc-todo");
+    h+='<div class="rcamp '+(v.open===c.id?"open":"")+'"><div class="rcamp-head" onclick="selRoleCamp(\''+role+'\',\''+c.id+'\')">';
+    h+='<span class="rc-name">'+cv(c,"name")+'</span><span class="rc-mon">'+ML[c.month]+'</span>';
+    h+='<span class="rc-stat '+statCls+'">'+s.label+'</span><span class="dldl '+dl.cls+'">'+dl.txt+'</span></div>';
+    if(v.open===c.id){h+='<div class="rcamp-body">'+renderOneCamp(c)+'</div>';}
+    h+='</div>';
+  }
+  h+='</div>';
+  document.getElementById(cid).innerHTML=h;
+}
+
+function renderOneCamp(c){
   let h="";
-  for(const m of MONTHS){
-    const cs=CAMPS.filter(c=>c.month===m&&types.indexOf(c.type)>=0);
-    if(cs.length===0)continue;const mrev=cs.reduce((s,c)=>s+campRev(c.id),0);
-    const isLk=LOCKED[m];const note=NOTES[m]||"";
-    h+=`<div class="month"><div class="mhead"><span>${ML[m]}${isLk?'<span class="lockbadge">🔒 已定案</span>':''}</span><div class="mhead-btns"><span class="mrev">本月預估 <b>${wan(mrev).toFixed(0)}</b> 萬</span><button class="lockb ${isLk?'locked':''}" onclick="toggleLock('${m}')">${isLk?'🔓 解鎖':'🔒 鎖定本月'}</button>${!isLk?`<button class="clrb" onclick="clearMonth('${m}')">清除本月</button>`:''}${isLk?`<button class="expb" onclick="exportMonth('${m}')">⤓ 匯出 PDF</button>`:''}</div></div>`;
-    h+=note?`<div class="mnote" onclick="editNote('${m}')">📌 ${note.replace(/\n/g,"<br>")}</div>`:`<div class="mnote empty-note" onclick="editNote('${m}')">＋ 加本月活動備註（儲值/直播）</div>`;
-    for(const c of cs){
+
       const picks=getPicks(c.id);const rev=campRev(c.id);const done=picks.length>0;
       const curcat=CATSEL[c.id]||"主題建議";
       let catbar="";
@@ -442,7 +523,7 @@ function renderType(types,cid){
       if(picks.length===0)picked=`<div class="empty">還沒選品。上面切類別挑（裸石也在），或自己打。</div>`;
       else for(const p of picks){const uc=usedCount(p.name);
         const um=usedLabel(p.name,c.month);const fl=p.flags||{};let flagbtns=FLAGS.map(function(f){var pre=({mkt:[],film:['mkt'],web:['mkt'],line:['web']})[f[0]]||[];var locked=!fl[f[0]]&&pre.some(function(k){return !fl[k];});var notmine=!canToggle(f[0]);return '<span class="flagb '+(fl[f[0]]?'on':'')+(locked?' locked':'')+(notmine?' notmine':'')+'" data-c="'+c.id+'" data-n="'+encodeURIComponent(p.name)+'" data-f="'+f[0]+'" onclick="toggleFlagEl(this)">'+f[1]+'</span>';}).join("");var allok=fl.film&&fl.mkt&&fl.web&&fl.line;if(allok)flagbtns+='<span class="okbadge">ok</span>';picked+=`<div class="prow prow2 ${allok?'allok':''}" data-pn="${encodeURIComponent(p.name)}"><div class="prow-main"><span class="pn">${p.name}</span><span class="used">${p.week?"<b>第"+p.week+"週</b> · ":""}${uc>1?`全年${uc}檔`:"僅此檔"}${um?` · 另排:${um}`:""}</span><span class="memob" data-c="${c.id}" data-n="${encodeURIComponent(p.name)}" onclick="editMemoEl(this)">${p.memo?("📝"+p.memo):"＋備註"}</span><div class="qtybox"><label>預估售價</label><input type="number" value="${p.price||0}" onchange="setPrice('${c.id}','${p.name.replace(/'/g,"\\'")}',this.value)"></div><div class="qtybox"><label>備貨</label><input type="number" value="${p.qty}" onchange="setQty('${c.id}','${p.name.replace(/'/g,"\\'")}',this.value)"></div><span class="srcb ${p.source==='hc'?'hc':''}" data-c="${c.id}" data-n="${encodeURIComponent(p.name)}" onclick="toggleSrc(this)">${p.source==='hc'?'彰化現貨':'叫貨'}</span><span class="prowrev">${p.price?(Math.round(p.qty*p.price/1000)/10)+'萬':'—'}</span><button class="delb" onclick="delPick('${c.id}','${p.name.replace(/'/g,"\\'")}')">×</button></div><div class="prow-flags">${flagbtns}${p.memo?`<span class="pmemo">📝${p.memo}</span>`:""}</div></div>`;}
-      h+=`<div class="camp ${done?'done':''} ${LOCKED[m]?'lockedm':''}" id="camp-${c.id}">
+      h+=`<div class="camp ${done?'done':''} ${LOCKED[c.month]?'lockedm':''}" id="camp-${c.id}">
         <div class="ch" onclick="toggleOpen('${c.id}')"><div><div class="cname">${cv(c,'name')} <span class="ctype" style="background:${TYC[c.type]}">${c.type}</span> <span class="editc" onclick="event.stopPropagation();openEditCamp('${c.id}')">✎ 編輯</span></div><div class="cmeta">${cv(c,'date')} · <span class="cgoal">${cv(c,'goal')}</span> · ${picks.length}品 · 備貨×${c.mult}</div></div><div class="cright"><div class="rev">${rev?wan(rev).toFixed(0):'0'}<span style="font-size:11px"> 萬</span></div><div class="rl">預估</div></div></div>
         <div class="cbody"><div class="brief">${cv(c,'brief')}<br><span class="who">客層：${c.who}</span></div>
         <div class="sl recToggle" onclick="toggleRec('${c.id}')"><span class="recarrow">▸</span> 從建議挑選品（點開・切類別・月均=歷史每月賣幾件）</div>
@@ -450,7 +531,21 @@ function renderType(types,cid){
         <div class="sl">這檔選品＋備貨（初估=月均×${c.mult}，可改，自動算營收）</div>
         <div class="picked">${picked}<div class="addrow"><input id="inp-${c.id}" placeholder="商品名（需與官網上架品名一模一樣，才抓得到數據）" onkeydown="if(event.key==='Enter')addCustom('${c.id}')"><button onclick="addCustom('${c.id}')">加入</button></div></div>
         </div></div>`;
-    }
+    
+  return h;
+}
+
+function renderType(types,cid){
+  const openIds=[...document.querySelectorAll('.camp.open')].map(e=>e.id);
+  const openRecs=[...document.querySelectorAll('.recwrap')].filter(w=>w.style.display!=='none').map(w=>w.id);
+  let h="";
+  for(const m of MONTHS){
+    const cs=CAMPS.filter(c=>c.month===m&&types.indexOf(c.type)>=0);
+    if(cs.length===0)continue;const mrev=cs.reduce((s,c)=>s+campRev(c.id),0);
+    const isLk=LOCKED[m];const note=NOTES[m]||"";
+    h+=`<div class="month"><div class="mhead"><span>${ML[m]}${isLk?'<span class="lockbadge">🔒 已定案</span>':''}</span><div class="mhead-btns"><span class="mrev">本月預估 <b>${wan(mrev).toFixed(0)}</b> 萬</span><button class="lockb ${isLk?'locked':''}" onclick="toggleLock('${m}')">${isLk?'🔓 解鎖':'🔒 鎖定本月'}</button>${!isLk?`<button class="clrb" onclick="clearMonth('${m}')">清除本月</button>`:''}${isLk?`<button class="expb" onclick="exportMonth('${m}')">⤓ 匯出 PDF</button>`:''}</div></div>`;
+    h+=note?`<div class="mnote" onclick="editNote('${m}')">📌 ${note.replace(/\n/g,"<br>")}</div>`:`<div class="mnote empty-note" onclick="editNote('${m}')">＋ 加本月活動備註（儲值/直播）</div>`;
+    for(const c of cs){h+=renderOneCamp(c);}
     h+=`</div>`;
   }
   document.getElementById(cid).innerHTML=h;
@@ -635,8 +730,8 @@ function renderGantt(){
   document.getElementById('pg').innerHTML=head+'<div class="gt-body">'+rows+'</div>';
 }
 
-function render(){if(!_loaded){document.getElementById('p0').innerHTML='<div style="text-align:center;padding:60px;color:#A89A8C">☁️ 連線雲端、載入共用資料中…</div>';return;}renderType(['大檔'],'p0');renderType(['季檔'],'ps');renderType(['週檔','寵粉'],'pw');renderGantt();renderOverview();renderDashboard();}
-function sw(i){document.querySelectorAll(".tab").forEach(function(t,n){t.classList.toggle("on",n===i);});document.querySelectorAll(".page").forEach(function(p,n){p.classList.toggle("on",n===i);});if(i===0)renderOverview();if(i===4)renderGantt();if(i===5)renderDashboard();window.scrollTo(0,0);}
+function render(){if(!_loaded){var _ld=document.getElementById('phome');if(_ld)_ld.innerHTML='<div style="text-align:center;padding:60px;color:#A89A8C">☁️ 連線雲端、載入共用資料中…</div>';return;}renderHome();renderRole('pick','ppick');renderRole('campaign','pcamp');renderRole('web','pweb');renderRole('line','pline');renderGantt();renderOverview();}
+function sw(i){document.querySelectorAll(".tab").forEach(function(t,n){t.classList.toggle("on",n===i);});document.querySelectorAll(".page").forEach(function(p,n){p.classList.toggle("on",n===i);});if(i===0)renderHome();if(i===5)renderGantt();if(i===6)renderOverview();window.scrollTo(0,0);}
 render();
 initAuth();
 </script></body></html>
