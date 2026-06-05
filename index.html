@@ -319,7 +319,7 @@ body{color:var(--t1)}
 <div class="hero"><div class="kicker">泰熙爾札娜 · 選品排程</div><div class="h-title">選品排程 <b>＋ 備貨預估</b></div>
 <div class="h-sub">排程→狀態追蹤→進度看板 ｜ 選品/拍片/行銷/官網/LINE 五關 ｜ 雲端即時共用</div>
 <div id="userBar"></div><div class="tabs"><button class="tab on" onclick="sw(0)">首頁</button><button class="tab" onclick="sw(1)">選品</button><button class="tab" onclick="sw(2)">campaign</button><button class="tab" onclick="sw(3)">官網</button><button class="tab" onclick="sw(4)">lineoa</button><button class="tab" onclick="sw(5)">甘特圖</button><button class="tab" onclick="sw(6)">總覽</button><button class="impb" style="margin-left:auto;align-self:center" onclick="importJune()">⬇ 匯入6月</button><button class="rstopen" style="align-self:center;margin-left:8px" onclick="openRestore()">↩ 還原</button><button class="expb" style="align-self:center;margin-left:8px" onclick="exportYear()">⤓ 全年PDF</button></div></div>
-<div class="wrap"><div class="page on" id="phome"></div><div class="page" id="ppick"></div><div class="page" id="pcamp"></div><div class="page" id="pweb"></div><div class="page" id="pline"></div><div class="page" id="pg"></div><div class="page" id="p1"></div><div class="footer">TZG 泰熙爾札娜珠寶 ｜ 選品排程（雲端即時共用，自動同步） ｜ 版本 06/05 16:01</div></div>
+<div class="wrap"><div class="page on" id="phome"></div><div class="page" id="ppick"></div><div class="page" id="pcamp"></div><div class="page" id="pweb"></div><div class="page" id="pline"></div><div class="page" id="pg"></div><div class="page" id="p1"></div><div class="footer">TZG 泰熙爾札娜珠寶 ｜ 選品排程（雲端即時共用，自動同步） ｜ 版本 06/05 16:10</div></div>
 <div id="restoreBox" style="display:none;position:fixed;inset:0;background:rgba(26,20,16,.45);z-index:200;align-items:center;justify-content:center" onclick="if(event.target===this)this.style.display='none'">
 <div style="background:#fff;border-radius:14px;max-width:460px;width:90%;max-height:80vh;overflow:auto;padding:22px">
 <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px"><div style="font-family:'Cormorant Garamond',serif;font-size:20px;font-weight:700">還原備份</div><button onclick="document.getElementById('restoreBox').style.display='none'" style="border:none;background:none;font-size:22px;cursor:pointer;color:#999999">×</button></div>
@@ -503,7 +503,18 @@ function toggleSrc(el){if(!canPlan()){toast('只有管理員能改貨源');retur
 function addCustom(id){if(!canAddPick()){toast('只有 Regina 或管理員能加品');return;}const inp=document.getElementById('inp-'+id);const v=inp.value.trim();if(!v)return;PICKS[id]=PICKS[id]||[];if(!PICKS[id].some(p=>p.name===v)){PICKS[id].push({name:v,price:0,qty:10,flags:{}});save();render();toast("已加入「"+v+"」");}inp.value="";}
 function toggleOpen(id){document.getElementById('camp-'+id).classList.toggle('open');}
 function toggleRec(id){const w=document.getElementById('rec-'+id);if(!w)return;const open=w.style.display==='none';w.style.display=open?'block':'none';const ar=w.parentNode.querySelector('.recarrow');if(ar)ar.textContent=open?'▾':'▸';}
-function setCat(id,cat){CATSEL[id]=cat;render();}
+function setCat(id,cat){
+  CATSEL[id]=cat;
+  const cur=document.querySelector('.rcamp.open[data-cid="'+encodeURIComponent(id)+'"]');
+  if(cur){
+    const body=cur.querySelector('.rcamp-body');const c=CAMP[id];
+    if(body&&c){
+      body.innerHTML=renderOneCamp(c);
+      const w=body.querySelector('.recwrap');
+      if(w){w.style.display='block';const ar=body.querySelector('.recarrow');if(ar)ar.textContent='▾';}
+    }
+  } else { render(); }
+}
 
 // 取某檔某類別的建議品
 function recsFor(c){
