@@ -521,8 +521,13 @@ body{color:var(--t1)}
 .catgrp-h{font-size:14px;font-weight:700;color:var(--t1);margin-bottom:8px;display:flex;align-items:center;gap:8px}
 .catgrp-dot{width:10px;height:10px;border-radius:50%;display:inline-block}
 .catgrp-n{font-size:12px;color:var(--t3);font-weight:400;margin-left:auto}
-.rcamp.flash{animation:flashbox 2s ease}
+.rcamp.flash{animation:flashbox 5s ease}
 @keyframes flashbox{0%,100%{box-shadow:0 0 0 rgba(230,0,126,0)}20%,60%{box-shadow:0 0 0 4px rgba(230,0,126,.35);border-color:#E6007E}}
+
+.ovcat-bar{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:14px}
+.ovcat-btn{padding:8px 16px;border:1px solid var(--b1);border-radius:6px;background:#fff;font-size:13px;font-weight:600;cursor:pointer;font-family:inherit;color:var(--t2);display:flex;align-items:center;gap:6px}
+.ovcat-btn:hover{border-color:var(--t3)}
+.ovcat-n{font-size:11px;opacity:.7}
 </style></head><body><div id="loginBox"><div class="lg-card">
 <div class="lg-title">TZG 選品排程</div>
 <div class="lg-sub">請選擇你是誰並輸入密碼</div>
@@ -535,7 +540,7 @@ body{color:var(--t1)}
 <div class="hero"><div class="kicker">泰熙爾札娜 · 選品排程</div><div class="h-title">泰熙爾札娜<b>年度企劃表</b></div>
 <div class="h-sub">排程→狀態追蹤→進度看板 ｜ 選品/拍片/行銷/官網/LINE 五關 ｜ 雲端即時共用</div>
 <div id="userBar"></div><div class="tabs"><button class="tab on" onclick="sw(0)">首頁</button><button class="tab" onclick="sw(1)">選品</button><button class="tab" onclick="sw(2)">campaign</button><button class="tab" onclick="sw(3)">官網</button><button class="tab" onclick="sw(4)">lineoa</button><button class="tab" onclick="sw(5)">年度規劃</button><button class="tab" onclick="sw(6)">商品分析</button><button class="impb" style="margin-left:auto;align-self:center" onclick="importJune()">⬇ 匯入6月</button><button class="rstopen" style="align-self:center;margin-left:8px" onclick="openRestore()">↩ 還原</button><button class="expb" style="align-self:center;margin-left:8px" onclick="exportYear()">⤓ 全年PDF</button></div></div>
-<div class="wrap"><div class="page on" id="phome"></div><div class="page" id="ppick"></div><div class="page" id="pcamp"></div><div class="page" id="pweb"></div><div class="page" id="pline"></div><div class="page" id="pg"></div><div class="page" id="p1"></div><div class="footer">TZG 泰熙爾札娜珠寶 ｜ 選品排程（雲端即時共用，自動同步） ｜ 版本 06/06 14:10</div></div>
+<div class="wrap"><div class="page on" id="phome"></div><div class="page" id="ppick"></div><div class="page" id="pcamp"></div><div class="page" id="pweb"></div><div class="page" id="pline"></div><div class="page" id="pg"></div><div class="page" id="p1"></div><div class="footer">TZG 泰熙爾札娜珠寶 ｜ 選品排程（雲端即時共用，自動同步） ｜ 版本 06/06 14:18</div></div>
 <div id="restoreBox" style="display:none;position:fixed;inset:0;background:rgba(26,20,16,.45);z-index:200;align-items:center;justify-content:center" onclick="if(event.target===this)this.style.display='none'">
 <div style="background:#fff;border-radius:14px;max-width:460px;width:90%;max-height:80vh;overflow:auto;padding:22px">
 <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px"><div style="font-family:'Cormorant Garamond',serif;font-size:20px;font-weight:700">還原備份</div><button onclick="document.getElementById('restoreBox').style.display='none'" style="border:none;background:none;font-size:22px;cursor:pointer;color:#999999">×</button></div>
@@ -775,6 +780,17 @@ function recsFor(c){
   return list.slice(0,30);
 }
 
+
+function setCat(cid,cat){
+  CATSEL[cid]=cat;
+  const c=CAMP[cid];if(!c)return;
+  const wrap=document.getElementById("rec-"+cid);if(!wrap)return;
+  // 更新類別鈕 on 狀態
+  wrap.querySelectorAll(".catb").forEach(function(b){b.classList.toggle("on",b.dataset.cat===cat);});
+  // 重渲染候選品
+  const recsEl=wrap.querySelector(".recs");if(recsEl)recsEl.innerHTML=recsHTML(c);
+}
+
 function recsHTML(c){
   const picks=getPicks(c.id);let recs="";
   for(const r of recsFor(c)){const added=picks.some(p=>p.name===r.name);
@@ -872,7 +888,7 @@ function gotoTask(role,cid){
   sw(tab);
   setTimeout(function(){
     const el=document.querySelector('#'+pid+' .rcamp[data-cid="'+encodeURIComponent(cid)+'"]');
-    if(el){el.scrollIntoView({block:"center",behavior:"smooth"});el.classList.add("flash");setTimeout(function(){el.classList.remove("flash");},2000);}
+    if(el){el.scrollIntoView({block:"center",behavior:"smooth"});el.classList.add("flash");setTimeout(function(){el.classList.remove("flash");},5000);}
   },250);
 }
 // 蒐集所有未完成待辦（按deadline排序）
@@ -1083,31 +1099,32 @@ function renderTotals(){
   CAMPS.forEach(c=>{const el=document.getElementById('camp-'+c.id);if(!el)return;const rev=campRev(c.id);const r=el.querySelector('.cright .rev');if(r)r.innerHTML=(rev?wan(rev).toFixed(0):'0')+'<span style="font-size:11px"> 萬</span>';
     el.querySelectorAll('.prow').forEach(pr=>{const nm=pr.querySelector('.pn').textContent;const p=getPicks(c.id).find(x=>x.name===nm);if(p){const rv=pr.querySelector('.prowrev');if(rv)rv.textContent=p.price?(Math.round(p.qty*p.price/1000)/10)+'萬':'—';}});});
 }
+let OVCAT=null;
 function renderOverview(){
   let totalItems=0;const byProd={};
   for(const id in PICKS){for(const p of PICKS[id]){const rev=p.qty*p.price;totalItems+=p.qty;
     const cat=(PMAP[p.name]&&PMAP[p.name].cat)||"其他";
     if(!byProd[p.name])byProd[p.name]={n:0,qty:0,rev:0,cat:cat};byProd[p.name].n++;byProd[p.name].qty+=p.qty;byProd[p.name].rev+=rev;}}
-  // 頂部：只留總備貨、已排種類
   let h=`<div class="gb-row"><div class="gb"><div class="l">總備貨件數</div><div class="v">${fmt(totalItems)}<span> 件</span></div></div>
    <div class="gb alt"><div class="l">已排商品種類</div><div class="v">${Object.keys(byProd).length}<span> 種</span></div></div></div>`;
-  h+=`<div class="dsec">商品使用次數（看排太多／太少）</div><div class="dnote">用越多檔＝越主打（≥5檔標紅）；只1檔＝點綴</div>`;
   const prods=Object.entries(byProd);
   if(prods.length===0){h+=`<div class="empty">還沒排任何品。去排程頁一檔一檔選。</div>`;document.getElementById('p1').innerHTML=h;return;}
-  // 按種類分組
   const CATORD=["裸石","飾品","水晶能量","訂製","其他"];
+  const CATC={"裸石":"#1FA89C","飾品":"#E6007E","水晶能量":"#C5A028","訂製":"#B12468","其他":"#888"};
   const groups={};for(const [nm,d] of prods){(groups[d.cat]=groups[d.cat]||[]).push([nm,d]);}
   const cats=Object.keys(groups).sort((a,b)=>(CATORD.indexOf(a)<0?9:CATORD.indexOf(a))-(CATORD.indexOf(b)<0?9:CATORD.indexOf(b)));
-  const maxn=Math.max(...prods.map(x=>x[1].n));
-  const CATC={"裸石":"#1FA89C","飾品":"#E6007E","水晶能量":"#C5A028","訂製":"#B12468","其他":"#888"};
-  for(const cat of cats){
-    const list=groups[cat].sort((a,b)=>b[1].n-a[1].n||b[1].rev-a[1].rev);
-    const catItems=list.reduce((s,x)=>s+x[1].qty,0);
-    h+=`<div class="catgrp"><div class="catgrp-h"><span class="catgrp-dot" style="background:${CATC[cat]||"#888"}"></span>${cat}<span class="catgrp-n">${list.length} 種 · ${fmt(catItems)} 件</span></div>`;
-    h+=`<table class="utable"><thead><tr><th>商品</th><th class="n">用幾檔</th><th class="n">總備貨</th><th class="n">貢獻營收</th></tr></thead><tbody>`;
-    for(const [nm,d] of list){const tag=d.n>=5?'warn-much':(d.n===1?'warn-few':'');h+=`<tr><td>${nm}</td><td class="n"><span class="usedbar" style="width:${d.n/maxn*40+4}px"></span><span class="${tag}">${d.n}</span></td><td class="n">${fmt(d.qty)}</td><td class="n">${wan(d.rev).toFixed(1)}萬</td></tr>`;}
-    h+=`</tbody></table></div>`;
-  }
+  if(!OVCAT||cats.indexOf(OVCAT)<0)OVCAT=cats[0];
+  // 種類按鈕選單
+  h+=`<div class="dsec">商品使用次數（看排太多／太少）</div><div class="dnote">用越多檔＝越主打（≥5檔標紅）</div>`;
+  h+='<div class="ovcat-bar">';
+  for(const cat of cats){const cnt=groups[cat].length;h+=`<button class="ovcat-btn ${OVCAT===cat?'on':''}" onclick="OVCAT='${cat}';renderOverview()" style="${OVCAT===cat?'background:'+(CATC[cat]||'#888')+';color:#fff;border-color:transparent':''}">${cat}<span class="ovcat-n">${cnt}</span></button>`;}
+  h+='</div>';
+  // 只顯示選中種類
+  const list=(groups[OVCAT]||[]).sort((a,b)=>b[1].n-a[1].n||b[1].rev-a[1].rev);
+  const maxn=Math.max(1,...list.map(x=>x[1].n));
+  h+=`<table class="utable"><thead><tr><th>商品</th><th class="n">用幾檔</th><th class="n">總備貨</th><th class="n">貢獻營收</th></tr></thead><tbody>`;
+  for(const [nm,d] of list){const tag=d.n>=5?'warn-much':(d.n===1?'warn-few':'');h+=`<tr><td>${nm}</td><td class="n"><span class="usedbar" style="width:${d.n/maxn*40+4}px"></span><span class="${tag}">${d.n}</span></td><td class="n">${fmt(d.qty)}</td><td class="n">${wan(d.rev).toFixed(1)}萬</td></tr>`;}
+  h+=`</tbody></table>`;
   document.getElementById('p1').innerHTML=h;
 }
 function exportMonth(m){
