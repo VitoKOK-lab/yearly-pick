@@ -1105,7 +1105,7 @@ function renderRole(role,cid){
   let h='<div class="role-head"><div class="rh-title">'+cfg.title+'<span class="rh-who">'+cfg.who+'</span></div><div class="rh-hint">點檔直接做，做完收起、換下一個</div></div>';
   // 收集該角色所有檔，排序：未完成且緊迫在前 → 已完成在後；週檔/寵粉常態放各組末
   const all=[];
-  for(const c of CAMPS){const s=roleStat(role,c);const dl=dlInfoRole(c,role);all.push({c:c,ok:s.ok,label:s.label,days:dl.days,dl:dl,ad:campStartDate(c).getTime()});}
+  for(const c of CAMPS){if(isWeekly(c)&&!roleSeesWeekly(role))continue;const s=roleStat(role,c);const dl=dlInfoRole(c,role);all.push({c:c,ok:s.ok,label:s.label,days:dl.days,dl:dl,ad:campStartDate(c).getTime()});}
   all.sort(function(a,b){
     if(a.ok!==b.ok)return a.ok?1:-1; // 未完成在前
     return a.ad-b.ad; // 按活動日期早→晚
@@ -1277,8 +1277,13 @@ function campStartDate(c){
 }
 // 取某日期所在週的週四
 function toThursday(d){const x=new Date(d);const day=x.getDay();/*0日1一..4四*/const diff=4-day;x.setDate(x.getDate()+diff);return x;}
-// 各關倒推 deadline（對齊週四）：企劃-4週 選品-3 官網-2 lineoa-1
-const ROLE_OFFSET={campaign:4,pick:3,web:2,line:1};
+// 各關倒推 deadline（對齊週四）
+// 大檔/季檔：選品行銷 檔前6週、官網 5週、lineoa上線 4週(=一個月)，環環相扣不卡時間
+// 週檔/寵粉：只跟 lineoa 相關，提前1週預排（僅 Vito/Jessica 相關）
+const ROLE_OFFSET={campaign:6,pick:6,web:5,line:4};
+// 哪些角色看得到週檔/寵粉：行銷(Vito)、lineoa(Jessica)
+function roleSeesWeekly(role){return role==="campaign"||role==="line";}
+function isWeekly(c){return c.type==="週檔"||c.type==="寵粉";}
 function roleDeadline(c,role){
   const A=campStartDate(c);
   const wk=ROLE_OFFSET[role]!==undefined?ROLE_OFFSET[role]:0;
@@ -1286,7 +1291,10 @@ function roleDeadline(c,role){
   return toThursday(d);
 }
 function dlInfoRole(c,role){
-  if(c.type==="週檔"||c.type==="寵粉"){return {cls:'dl-ok',txt:'每週常態',days:999,date:null};}
+  if(isWeekly(c)){
+    if(roleSeesWeekly(role))return {cls:'dl-near',txt:'提前1週預排',days:7,date:null};
+    return {cls:'dl-ok',txt:'—',days:999,date:null};
+  }
   const d=roleDeadline(c,role);const today=new Date(2026,5,5);
   const days=Math.round((d-today)/86400000);
   const md=(d.getMonth()+1)+"/"+d.getDate();
@@ -1383,7 +1391,7 @@ function renderGantt(){
     const RN={campaign:"企劃",pick:"選品",web:"官網",line:"lineoa"};
     const today2=new Date(2026,5,5).getTime();
     const mine=[];
-    for(const c of CAMPS){const s=roleStat(myr,c);const ad=campStartDate(c).getTime();const dd=(ad-today2)/86400000;if(dd<=90){const dl=dlInfoRole(c,myr);mine.push({c:c,dl:dl,ad:ad,ok:s.ok});}}
+    for(const c of CAMPS){if(isWeekly(c)&&!roleSeesWeekly(myr))continue;const s=roleStat(myr,c);const ad=campStartDate(c).getTime();const dd=(ad-today2)/86400000;if(dd<=90){const dl=dlInfoRole(c,myr);mine.push({c:c,dl:dl,ad:ad,ok:s.ok});}}
     mine.sort((a,b)=>{if(a.ok!==b.ok)return a.ok?1:-1;return a.ad-b.ad;});
     h+='<div class="myurgent"><div class="myurgent-t">你的工作 · 三個月內（'+RN[myr]+'）</div>';
     if(mine.length===0)h+='<div class="myurgent-empty">三個月內沒有待辦，輕鬆。</div>';
@@ -1400,8 +1408,9 @@ function renderGantt(){
   }
   h+='<div class="ycal-t">全年檔期總覽</div>';
   h+='<div class="ycal">';
+  const vr=(CUR&&USER_ROLE[CUR.name])||null;
   for(const m of MONTHS){
-    const cs=CAMPS.filter(c=>c.month===m);
+    const cs=CAMPS.filter(c=>c.month===m&&!(isWeekly(c)&&vr&&!roleSeesWeekly(vr)));
     if(cs.length===0)continue;
     const mlbl=(ML[m]||m).replace("2026年","").replace("2027年","'27 ");
     h+='<div class="ycard"><div class="ycard-h">'+mlbl+'</div><div class="ycard-body">';
