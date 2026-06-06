@@ -442,6 +442,20 @@ body{color:var(--t1)}
 .cs-fill{height:100%;background:var(--blue);border-radius:4px}
 .cs-pct{font-size:12px;color:var(--t2);font-weight:600}
 .chain-arrow{color:var(--t3);font-size:18px;flex-shrink:0}
+
+/* 色彩點綴 */
+.cs-dot{display:inline-block;width:9px;height:9px;border-radius:50%;margin-right:7px;vertical-align:middle}
+.wt-hi{background:linear-gradient(90deg,#E6007E,#B12468);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent}
+.wt-cta{background:linear-gradient(90deg,#E6007E,#B12468)!important}
+.wt-cta:hover{background:linear-gradient(90deg,#C5006B,#9A1F58)!important}
+.dash-t,.chain-t,.sec-line{border-left-color:#E6007E!important}
+/* 月曆卡片頭部用品牌漸層 */
+.ycard-h{background:linear-gradient(90deg,#1A1A1A,#3a2030)!important}
+.ycard{border-top:3px solid #E6007E}
+/* tab選中底線桃紅 */
+.tab.on{color:#E6007E!important;border-bottom-color:#E6007E!important}
+/* 進入選品等主鈕保持品牌色 */
+.impb{background:#1FA89C}
 </style></head><body><div id="loginBox"><div class="lg-card">
 <div class="lg-title">TZG 選品排程</div>
 <div class="lg-sub">請選擇你是誰並輸入密碼</div>
@@ -454,7 +468,7 @@ body{color:var(--t1)}
 <div class="hero"><div class="kicker">泰熙爾札娜 · 選品排程</div><div class="h-title">選品排程 <b>＋ 備貨預估</b></div>
 <div class="h-sub">排程→狀態追蹤→進度看板 ｜ 選品/拍片/行銷/官網/LINE 五關 ｜ 雲端即時共用</div>
 <div id="userBar"></div><div class="tabs"><button class="tab on" onclick="sw(0)">首頁</button><button class="tab" onclick="sw(1)">選品</button><button class="tab" onclick="sw(2)">campaign</button><button class="tab" onclick="sw(3)">官網</button><button class="tab" onclick="sw(4)">lineoa</button><button class="tab" onclick="sw(5)">年度規劃</button><button class="tab" onclick="sw(6)">商品分析</button><button class="impb" style="margin-left:auto;align-self:center" onclick="importJune()">⬇ 匯入6月</button><button class="rstopen" style="align-self:center;margin-left:8px" onclick="openRestore()">↩ 還原</button><button class="expb" style="align-self:center;margin-left:8px" onclick="exportYear()">⤓ 全年PDF</button></div></div>
-<div class="wrap"><div class="page on" id="phome"></div><div class="page" id="ppick"></div><div class="page" id="pcamp"></div><div class="page" id="pweb"></div><div class="page" id="pline"></div><div class="page" id="pg"></div><div class="page" id="p1"></div><div class="footer">TZG 泰熙爾札娜珠寶 ｜ 選品排程（雲端即時共用，自動同步） ｜ 版本 06/06 09:19</div></div>
+<div class="wrap"><div class="page on" id="phome"></div><div class="page" id="ppick"></div><div class="page" id="pcamp"></div><div class="page" id="pweb"></div><div class="page" id="pline"></div><div class="page" id="pg"></div><div class="page" id="p1"></div><div class="footer">TZG 泰熙爾札娜珠寶 ｜ 選品排程（雲端即時共用，自動同步） ｜ 版本 06/06 09:30</div></div>
 <div id="restoreBox" style="display:none;position:fixed;inset:0;background:rgba(26,20,16,.45);z-index:200;align-items:center;justify-content:center" onclick="if(event.target===this)this.style.display='none'">
 <div style="background:#fff;border-radius:14px;max-width:460px;width:90%;max-height:80vh;overflow:auto;padding:22px">
 <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px"><div style="font-family:'Cormorant Garamond',serif;font-size:20px;font-weight:700">還原備份</div><button onclick="document.getElementById('restoreBox').style.display='none'" style="border:none;background:none;font-size:22px;cursor:pointer;color:#999999">×</button></div>
@@ -528,7 +542,7 @@ function initAuth(){
   showUserBar();
 }
 let COVER={};let DASHF='all';
-const TYC={"大檔":"#1A8C82","季檔":"#1A1A1A","週檔":"#B89A4E","寵粉":"#888888"};
+const TYC={"大檔":"#E6007E","季檔":"#1FA89C","週檔":"#C5A028","寵粉":"#A98Fb0"};
 const CATC={"主題建議":"#1A8C82","裸石":"#1A1A1A","飾品":"#B89A4E","水晶能量":"#1A8C82","訂製":"#1A1A1A","其他":"#888888"};
 const CATS=["主題建議","裸石","飾品","水晶能量","訂製"];
 let PICKS={},LOCKED={};
@@ -814,6 +828,7 @@ function renderHome(){
   const myrole=USER_ROLE[me]||"all";
   const RN={campaign:"企劃",pick:"選品",web:"官網",line:"lineoa"};
   const RTAB={pick:1,campaign:2,web:3,line:4};
+  const RCOL={campaign:"#E6007E",pick:"#1FA89C",web:"#C5A028",line:"#B12468"};
   // 全鏈進度（各關整體完成度）
   function chainPct(role){let d=0,t=0;for(const c of CAMPS){if(c.type==="寵粉"||c.type==="週檔")continue;const s=roleStat(role,c);if(role==="pick"){t++;if(s.ok)d++;}else{t++;if(s.ok)d++;}}return t?Math.round(d/t*100):0;}
   const chain=[["campaign","企劃","Vito"],["pick","選品","Regina"],["web","官網","家逸"],["line","lineoa","Jessica"]];
@@ -835,7 +850,7 @@ function renderHome(){
     for(const t of tasks.slice(0,20)){
       h+='<div class="task '+t.cls+'" onclick="gotoTask(\''+t.role+'\',\''+t.cid+'\')">'+
          '<span class="task-dl">'+t.dltxt+'</span>'+
-         '<span class="task-role">'+t.rname+'</span>'+
+         '<span class="task-role" style="background:'+(RCOL[t.role]||"#888")+'18;color:'+(RCOL[t.role]||"#888")+'">'+t.rname+'</span>'+
          '<span class="task-name">'+t.cname+'</span>'+
          (t.prevTxt?'<span class="task-prev '+(t.prevOk?"prev-ok":"prev-wait")+'">'+t.prevTxt+'</span>':'')+
          '<span class="task-who">'+t.who+'</span></div>';
@@ -848,10 +863,11 @@ function renderHome(){
   chain.forEach(function(c,idx){
     const pct=chainPct(c[0]);
     const isMe=(c[0]===myrole);
-    h+='<div class="chain-step'+(isMe?" me":"")+'" data-act="home" data-idx="'+RTAB[c[0]]+'">'+
-       '<div class="cs-name">'+c[1]+'<span class="cs-who">'+c[2]+'</span></div>'+
-       '<div class="cs-bar"><div class="cs-fill" style="width:'+pct+'%"></div></div>'+
-       '<div class="cs-pct">'+pct+'%</div></div>';
+    const col=RCOL[c[0]];
+    h+='<div class="chain-step'+(isMe?" me":"")+'" data-act="home" data-idx="'+RTAB[c[0]]+'" style="'+(isMe?"border-color:"+col+";":"")+'">'+
+       '<div class="cs-name"><span class="cs-dot" style="background:'+col+'"></span>'+c[1]+'<span class="cs-who">'+c[2]+'</span></div>'+
+       '<div class="cs-bar"><div class="cs-fill" style="width:'+pct+'%;background:'+col+'"></div></div>'+
+       '<div class="cs-pct" style="color:'+col+'">'+pct+'%</div></div>';
     if(idx<chain.length-1)h+='<div class="chain-arrow">→</div>';
   });
   h+='</div></div>';
