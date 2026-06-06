@@ -506,6 +506,16 @@ body{color:var(--t1)}
 .grp-done~.rcamp,.rcamp .rc-stat.rc-ok{}
 .rc-stat.rc-ok{background:#2E7D32!important;color:#fff!important;font-weight:600}
 .rc-stat.rc-ok::before{content:"✓ "}
+
+/* 工作排列狀態外框 */
+.rcamp.st-ready{border:2px solid #1FA89C;box-shadow:0 2px 8px rgba(31,168,156,.15)}
+.rcamp.st-near{border:2px solid #E0A020;box-shadow:0 2px 8px rgba(224,160,32,.15)}
+.rcamp.st-over{border:2px solid #D9534F;box-shadow:0 2px 8px rgba(217,83,79,.18);background:#FFF8F8}
+.rcamp.st-wait{border:1px solid #E0E0E0;opacity:.55}
+.rcamp.st-done{border:1px solid #CDE8D4}
+.rc-go{font-size:11px;font-weight:700;color:#fff;background:#1FA89C;padding:3px 10px;border-radius:4px;flex-shrink:0}
+.rc-wait{font-size:11px;color:#9A6A1E;background:#FBF0DD;padding:3px 10px;border-radius:4px;flex-shrink:0}
+.rcamp.st-over .rc-name{color:#D9534F;font-weight:700}
 </style></head><body><div id="loginBox"><div class="lg-card">
 <div class="lg-title">TZG 選品排程</div>
 <div class="lg-sub">請選擇你是誰並輸入密碼</div>
@@ -518,7 +528,7 @@ body{color:var(--t1)}
 <div class="hero"><div class="kicker">泰熙爾札娜 · 選品排程</div><div class="h-title">泰熙爾札娜<b>年度企劃表</b></div>
 <div class="h-sub">排程→狀態追蹤→進度看板 ｜ 選品/拍片/行銷/官網/LINE 五關 ｜ 雲端即時共用</div>
 <div id="userBar"></div><div class="tabs"><button class="tab on" onclick="sw(0)">首頁</button><button class="tab" onclick="sw(1)">選品</button><button class="tab" onclick="sw(2)">campaign</button><button class="tab" onclick="sw(3)">官網</button><button class="tab" onclick="sw(4)">lineoa</button><button class="tab" onclick="sw(5)">年度規劃</button><button class="tab" onclick="sw(6)">商品分析</button><button class="impb" style="margin-left:auto;align-self:center" onclick="importJune()">⬇ 匯入6月</button><button class="rstopen" style="align-self:center;margin-left:8px" onclick="openRestore()">↩ 還原</button><button class="expb" style="align-self:center;margin-left:8px" onclick="exportYear()">⤓ 全年PDF</button></div></div>
-<div class="wrap"><div class="page on" id="phome"></div><div class="page" id="ppick"></div><div class="page" id="pcamp"></div><div class="page" id="pweb"></div><div class="page" id="pline"></div><div class="page" id="pg"></div><div class="page" id="p1"></div><div class="footer">TZG 泰熙爾札娜珠寶 ｜ 選品排程（雲端即時共用，自動同步） ｜ 版本 06/06 10:28</div></div>
+<div class="wrap"><div class="page on" id="phome"></div><div class="page" id="ppick"></div><div class="page" id="pcamp"></div><div class="page" id="pweb"></div><div class="page" id="pline"></div><div class="page" id="pg"></div><div class="page" id="p1"></div><div class="footer">TZG 泰熙爾札娜珠寶 ｜ 選品排程（雲端即時共用，自動同步） ｜ 版本 06/06 10:36</div></div>
 <div id="restoreBox" style="display:none;position:fixed;inset:0;background:rgba(26,20,16,.45);z-index:200;align-items:center;justify-content:center" onclick="if(event.target===this)this.style.display='none'">
 <div style="background:#fff;border-radius:14px;max-width:460px;width:90%;max-height:80vh;overflow:auto;padding:22px">
 <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px"><div style="font-family:'Cormorant Garamond',serif;font-size:20px;font-weight:700">還原備份</div><button onclick="document.getElementById('restoreBox').style.display='none'" style="border:none;background:none;font-size:22px;cursor:pointer;color:#999999">×</button></div>
@@ -995,12 +1005,24 @@ function renderRole(role,cid){
   const weekly=all.filter(x=>!x.ok&&isWk(x));
   const done=all.filter(x=>x.ok);
   h+='<div class="rcamp-list">';
+  const PREV={pick:null,campaign:null,web:"pick",line:"web"};
+  const PRN={pick:"選品",web:"官網"};
+  const PWHO={pick:"Regina",web:"家逸"};
   function rowHTML(x){
-    const c=x.c;const statCls=x.ok?"rc-ok":(x.label.indexOf("還沒")>=0?"rc-none":"rc-todo");
-    const tcol={"大檔":"#E6007E","季檔":"#1FA89C","週檔":"#C5A028","寵粉":"#A98Fb0"}[c.type]||"#888";
-    let r='<div class="rcamp '+(v.open===c.id?"open":"")+'" data-cid="'+encodeURIComponent(c.id)+'"><div class="rcamp-head" data-act="camp" data-role="'+role+'" data-cid="'+encodeURIComponent(c.id)+'">';
+    const c=x.c;const tcol={"大檔":"#E6007E","季檔":"#1FA89C","週檔":"#C5A028","寵粉":"#A98Fb0"}[c.type]||"#888";
+    // 狀態：上游ok? + 到期? → 外框
+    const prev=PREV[role];const prevOk=!prev||roleStat(prev,c).ok;
+    let st="",stHint="";
+    if(x.ok){st="st-done";}
+    else if(!prevOk){st="st-wait";stHint='等 '+PWHO[prev]+' '+PRN[prev];}
+    else if(x.days<0&&x.dl.days!==999){st="st-over";}      // 逾期警示
+    else if(x.days<=7&&x.dl.days!==999){st="st-near";}      // 快到期提醒
+    else{st="st-ready";}                                    // 輪到你,可做
+    const statCls=x.ok?"rc-ok":(x.label.indexOf("還沒")>=0?"rc-none":"rc-todo");
+    let r='<div class="rcamp '+st+' '+(v.open===c.id?"open":"")+'" data-cid="'+encodeURIComponent(c.id)+'"><div class="rcamp-head" data-act="camp" data-role="'+role+'" data-cid="'+encodeURIComponent(c.id)+'">';
     r+='<span class="rc-tag" style="background:'+tcol+'">'+c.type+'</span>';
     r+='<span class="rc-name">'+cv(c,"name")+'</span><span class="rc-mon">'+ML[c.month]+'</span>';
+    r+=(stHint?'<span class="rc-wait">⏳ '+stHint+'</span>':(st==="st-ready"?'<span class="rc-go">可做</span>':''));
     r+='<span class="rc-stat '+statCls+'">'+x.label+'</span><span class="dldl '+x.dl.cls+'">'+x.dl.txt+'</span></div>';
     if(v.open===c.id){r+='<div class="rcamp-body">'+((role==="web"||role==="line")?renderViewCamp(c,role):renderOneCamp(c))+'</div>';}
     r+='</div>';return r;
