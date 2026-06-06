@@ -460,6 +460,18 @@ body{color:var(--t1)}
 .ythumb{display:inline-flex;align-items:center;margin-left:6px;flex-shrink:0;animation:pop .3s ease}
 .yrow.alldone{background:#F0FBF9}
 @keyframes pop{0%{transform:scale(0)}70%{transform:scale(1.2)}100%{transform:scale(1)}}
+
+.urgent{background:#FFF8F8;border:1px solid #F3D5D5;border-radius:8px;padding:12px 14px;margin-bottom:18px}
+.urgent-t{font-size:13px;font-weight:700;color:#C0392B;margin-bottom:8px}
+.ub{display:flex;align-items:center;gap:12px;padding:8px 10px;border-radius:5px;cursor:pointer;border-left:3px solid #ccc}
+.ub:hover{background:#fff}
+.ub.dl-over{border-left-color:#D9534F}
+.ub.dl-near{border-left-color:#E0A020}
+.ub-dl{font-size:12px;font-weight:600;width:120px;flex-shrink:0}
+.ub.dl-over .ub-dl{color:#D9534F}
+.ub.dl-near .ub-dl{color:#9A6A1E}
+.ub-name{font-size:13px;color:var(--t1);flex:1}
+.ub-prev{font-size:11px;padding:2px 8px;border-radius:4px;flex-shrink:0}
 </style></head><body><div id="loginBox"><div class="lg-card">
 <div class="lg-title">TZG 選品排程</div>
 <div class="lg-sub">請選擇你是誰並輸入密碼</div>
@@ -472,7 +484,7 @@ body{color:var(--t1)}
 <div class="hero"><div class="kicker">泰熙爾札娜 · 選品排程</div><div class="h-title">泰熙爾札娜<b>年度企劃表</b></div>
 <div class="h-sub">排程→狀態追蹤→進度看板 ｜ 選品/拍片/行銷/官網/LINE 五關 ｜ 雲端即時共用</div>
 <div id="userBar"></div><div class="tabs"><button class="tab on" onclick="sw(0)">首頁</button><button class="tab" onclick="sw(1)">選品</button><button class="tab" onclick="sw(2)">campaign</button><button class="tab" onclick="sw(3)">官網</button><button class="tab" onclick="sw(4)">lineoa</button><button class="tab" onclick="sw(5)">年度規劃</button><button class="tab" onclick="sw(6)">商品分析</button><button class="impb" style="margin-left:auto;align-self:center" onclick="importJune()">⬇ 匯入6月</button><button class="rstopen" style="align-self:center;margin-left:8px" onclick="openRestore()">↩ 還原</button><button class="expb" style="align-self:center;margin-left:8px" onclick="exportYear()">⤓ 全年PDF</button></div></div>
-<div class="wrap"><div class="page on" id="phome"></div><div class="page" id="ppick"></div><div class="page" id="pcamp"></div><div class="page" id="pweb"></div><div class="page" id="pline"></div><div class="page" id="pg"></div><div class="page" id="p1"></div><div class="footer">TZG 泰熙爾札娜珠寶 ｜ 選品排程（雲端即時共用，自動同步） ｜ 版本 06/06 09:48</div></div>
+<div class="wrap"><div class="page on" id="phome"></div><div class="page" id="ppick"></div><div class="page" id="pcamp"></div><div class="page" id="pweb"></div><div class="page" id="pline"></div><div class="page" id="pg"></div><div class="page" id="p1"></div><div class="footer">TZG 泰熙爾札娜珠寶 ｜ 選品排程（雲端即時共用，自動同步） ｜ 版本 06/06 09:59</div></div>
 <div id="restoreBox" style="display:none;position:fixed;inset:0;background:rgba(26,20,16,.45);z-index:200;align-items:center;justify-content:center" onclick="if(event.target===this)this.style.display='none'">
 <div style="background:#fff;border-radius:14px;max-width:460px;width:90%;max-height:80vh;overflow:auto;padding:22px">
 <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px"><div style="font-family:'Cormorant Garamond',serif;font-size:20px;font-weight:700">還原備份</div><button onclick="document.getElementById('restoreBox').style.display='none'" style="border:none;background:none;font-size:22px;cursor:pointer;color:#999999">×</button></div>
@@ -522,6 +534,8 @@ function doLogin(){
   document.getElementById("loginBox").style.display="none";
   showUserBar();render();
   applyNav();
+  const DEFTAB={Vito:0,Regina:1,家逸:3,Jessica:4};
+  sw(DEFTAB[sel]!==undefined?DEFTAB[sel]:0);
 }
 function doLogout(){CUR=null;try{localStorage.removeItem("tzg_user");}catch(e){}document.getElementById("loginBox").style.display="flex";showUserBar();}
 function showUserBar(){const b=document.getElementById("userBar");if(b)b.innerHTML=CUR?('目前：<b>'+CUR.label+'</b> <span class="logout" onclick="doLogout()">登出</span>'):'';}
@@ -882,6 +896,18 @@ function renderRole(role,cid){
   const cfg=ROLECFG[role];const v=ROLEVIEW[role];
   if(!v.userSet)v.type=autoType();
   let h='<div class="role-head"><div class="rh-title">'+cfg.title+'<span class="rh-who">'+cfg.who+'</span></div><div class="rh-hint">'+cfg.hint+'</div></div>';
+  // 本週緊迫摘要（只該角色、最多5筆、緊迫在前）
+  const myr=USER_ROLE[(CUR&&CUR.name)]||role;
+  const urgent=collectTasks().filter(function(t){return t.role===role&&t.days<=14;}).slice(0,5);
+  if(urgent.length){
+    h+='<div class="urgent"><div class="urgent-t">本週緊迫</div>';
+    for(const t of urgent){
+      h+='<div class="ub '+t.cls+'" onclick="gotoTask(\''+role+'\',\''+t.cid+'\')">'+
+         '<span class="ub-dl">'+t.dltxt+'</span><span class="ub-name">'+t.cname+'</span>'+
+         (t.prevTxt?'<span class="ub-prev '+(t.prevOk?"prev-ok":"prev-wait")+'">'+t.prevTxt+'</span>':'')+'</div>';
+    }
+    h+='</div>';
+  }
   h+='<div class="rtype-bar">';
   for(const t of ["大檔","季檔","週檔"]){h+='<button class="rtype'+(v.type===t?" on":"")+'" data-act="type" data-role="'+role+'" data-t="'+t+'">'+t+'</button>';}
   h+='</div>';
@@ -1151,7 +1177,7 @@ function render(){if(typeof applyNav==='function')applyNav();renderHome();render
 
 const USER_ROLE={Regina:"pick",Vito:"campaign",家逸:"web",Jessica:"line"};
 const USER_TABS={
-  Regina:[0,1,5,6], Vito:[0,1,2,3,4,5,6], 家逸:[0,3,5,6], Jessica:[0,4,5,6]
+  Regina:[1,5,6], Vito:[0,1,2,3,4,5,6], 家逸:[3,5,6], Jessica:[4,5,6]
 };
 function applyNav(){
   const u=(CUR&&CUR.name)||"Vito";const allow=USER_TABS[u]||[0,1,2,3,4,5,6];
