@@ -493,6 +493,12 @@ body{color:var(--t1)}
 .vbtn:hover{background:#178A80}
 .vbtn.on{background:#2E7D32}
 .vlock{text-align:center;padding:14px;background:#F5F5F5;border-radius:8px;color:var(--t3);font-size:14px}
+
+.grp-h{font-size:12px;font-weight:700;padding:14px 4px 8px;letter-spacing:.03em}
+.grp-todo{color:#C0392B}
+.grp-done{color:var(--t3)}
+.rc-tag{font-size:10px;color:#fff;padding:2px 8px;border-radius:3px;margin-right:8px;font-weight:600;flex-shrink:0}
+.rcamp.open .rc-stat,.rcamp.open .dldl{}
 </style></head><body><div id="loginBox"><div class="lg-card">
 <div class="lg-title">TZG 選品排程</div>
 <div class="lg-sub">請選擇你是誰並輸入密碼</div>
@@ -505,7 +511,7 @@ body{color:var(--t1)}
 <div class="hero"><div class="kicker">泰熙爾札娜 · 選品排程</div><div class="h-title">泰熙爾札娜<b>年度企劃表</b></div>
 <div class="h-sub">排程→狀態追蹤→進度看板 ｜ 選品/拍片/行銷/官網/LINE 五關 ｜ 雲端即時共用</div>
 <div id="userBar"></div><div class="tabs"><button class="tab on" onclick="sw(0)">首頁</button><button class="tab" onclick="sw(1)">選品</button><button class="tab" onclick="sw(2)">campaign</button><button class="tab" onclick="sw(3)">官網</button><button class="tab" onclick="sw(4)">lineoa</button><button class="tab" onclick="sw(5)">年度規劃</button><button class="tab" onclick="sw(6)">商品分析</button><button class="impb" style="margin-left:auto;align-self:center" onclick="importJune()">⬇ 匯入6月</button><button class="rstopen" style="align-self:center;margin-left:8px" onclick="openRestore()">↩ 還原</button><button class="expb" style="align-self:center;margin-left:8px" onclick="exportYear()">⤓ 全年PDF</button></div></div>
-<div class="wrap"><div class="page on" id="phome"></div><div class="page" id="ppick"></div><div class="page" id="pcamp"></div><div class="page" id="pweb"></div><div class="page" id="pline"></div><div class="page" id="pg"></div><div class="page" id="p1"></div><div class="footer">TZG 泰熙爾札娜珠寶 ｜ 選品排程（雲端即時共用，自動同步） ｜ 版本 06/06 10:15</div></div>
+<div class="wrap"><div class="page on" id="phome"></div><div class="page" id="ppick"></div><div class="page" id="pcamp"></div><div class="page" id="pweb"></div><div class="page" id="pline"></div><div class="page" id="pg"></div><div class="page" id="p1"></div><div class="footer">TZG 泰熙爾札娜珠寶 ｜ 選品排程（雲端即時共用，自動同步） ｜ 版本 06/06 10:18</div></div>
 <div id="restoreBox" style="display:none;position:fixed;inset:0;background:rgba(26,20,16,.45);z-index:200;align-items:center;justify-content:center" onclick="if(event.target===this)this.style.display='none'">
 <div style="background:#fff;border-radius:14px;max-width:460px;width:90%;max-height:80vh;overflow:auto;padding:22px">
 <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px"><div style="font-family:'Cormorant Garamond',serif;font-size:20px;font-weight:700">還原備份</div><button onclick="document.getElementById('restoreBox').style.display='none'" style="border:none;background:none;font-size:22px;cursor:pointer;color:#999999">×</button></div>
@@ -957,43 +963,33 @@ function renderViewCamp(c,role){
 
 function renderRole(role,cid){
   const cfg=ROLECFG[role];const v=ROLEVIEW[role];
-  if(!v.userSet)v.type=autoType();
-  let h='<div class="role-head"><div class="rh-title">'+cfg.title+'<span class="rh-who">'+cfg.who+'</span></div><div class="rh-hint">'+cfg.hint+'</div></div>';
-  // 本週緊迫摘要（只該角色、最多5筆、緊迫在前）
-  const myr=USER_ROLE[(CUR&&CUR.name)]||role;
-  const urgent=collectTasks().filter(function(t){return t.role===role&&t.days<=14;}).slice(0,5);
-  if(urgent.length){
-    h+='<div class="urgent"><div class="urgent-t">本週緊迫</div>';
-    for(const t of urgent){
-      h+='<div class="ub '+t.cls+'" onclick="gotoTask(\''+role+'\',\''+t.cid+'\')">'+
-         '<span class="ub-dl">'+t.dltxt+'</span><span class="ub-name">'+t.cname+'</span>'+
-         (t.prevTxt?'<span class="ub-prev '+(t.prevOk?"prev-ok":"prev-wait")+'">'+t.prevTxt+'</span>':'')+'</div>';
-    }
-    h+='</div>';
-  }
-  h+='<div class="rtype-bar">';
-  for(const t of ["大檔","季檔","週檔"]){h+='<button class="rtype'+(v.type===t?" on":"")+'" data-act="type" data-role="'+role+'" data-t="'+t+'">'+t+'</button>';}
-  h+='</div>';
-  if(!v.type){h+='<div class="role-empty">↑ 先點 大檔 / 季檔 / 週檔</div>';document.getElementById(cid).innerHTML=h;return;}
-  // 列該type檔期（週檔含寵粉）
-  const wantTypes=v.type==="週檔"?["週檔","寵粉"]:[v.type];
-  const camps=[];
-  for(const m of MONTHS){for(const c of CAMPS){if(c.month===m&&wantTypes.indexOf(c.type)>=0)camps.push(c);}}
-  if(camps.length===0){h+='<div class="role-empty">這類型還沒有檔期</div>';document.getElementById(cid).innerHTML=h;return;}
+  let h='<div class="role-head"><div class="rh-title">'+cfg.title+'<span class="rh-who">'+cfg.who+'</span></div><div class="rh-hint">點檔直接做，做完收起、換下一個</div></div>';
+  // 收集該角色所有檔，排序：未完成且緊迫在前 → 已完成在後；週檔/寵粉常態放各組末
+  const all=[];
+  for(const c of CAMPS){const s=roleStat(role,c);const dl=dlInfoRole(c,role);all.push({c:c,ok:s.ok,label:s.label,days:dl.days,dl:dl});}
+  all.sort(function(a,b){
+    if(a.ok!==b.ok)return a.ok?1:-1; // 未完成在前
+    return a.days-b.days; // 緊迫在前(週檔days=999自然排後)
+  });
+  // 分組標頭
+  const todo=all.filter(x=>!x.ok),done=all.filter(x=>x.ok);
   h+='<div class="rcamp-list">';
-  for(const c of camps){
-    const s=roleStat(role,c);const dl=dlInfoRole(c,role);
-    const statCls=s.ok?"rc-ok":(s.total===0?"rc-none":"rc-todo");
-    h+='<div class="rcamp '+(v.open===c.id?"open":"")+'" data-cid="'+encodeURIComponent(c.id)+'"><div class="rcamp-head" data-act="camp" data-role="'+role+'" data-cid="'+encodeURIComponent(c.id)+'">';
-    h+='<span class="rc-name">'+cv(c,"name")+'</span><span class="rc-mon">'+ML[c.month]+'</span>';
-    h+='<span class="rc-stat '+statCls+'">'+s.label+'</span><span class="dldl '+dl.cls+'">'+dl.txt+'</span></div>';
-    if(v.open===c.id){h+='<div class="rcamp-body">'+((role==="web"||role==="line")?renderViewCamp(c,role):renderOneCamp(c))+'</div>';}
-    h+='</div>';
+  function rowHTML(x){
+    const c=x.c;const statCls=x.ok?"rc-ok":(x.label.indexOf("還沒")>=0?"rc-none":"rc-todo");
+    const tcol={"大檔":"#E6007E","季檔":"#1FA89C","週檔":"#C5A028","寵粉":"#A98Fb0"}[c.type]||"#888";
+    let r='<div class="rcamp '+(v.open===c.id?"open":"")+'" data-cid="'+encodeURIComponent(c.id)+'"><div class="rcamp-head" data-act="camp" data-role="'+role+'" data-cid="'+encodeURIComponent(c.id)+'">';
+    r+='<span class="rc-tag" style="background:'+tcol+'">'+c.type+'</span>';
+    r+='<span class="rc-name">'+cv(c,"name")+'</span><span class="rc-mon">'+ML[c.month]+'</span>';
+    r+='<span class="rc-stat '+statCls+'">'+x.label+'</span><span class="dldl '+x.dl.cls+'">'+x.dl.txt+'</span></div>';
+    if(v.open===c.id){r+='<div class="rcamp-body">'+((role==="web"||role==="line")?renderViewCamp(c,role):renderOneCamp(c))+'</div>';}
+    r+='</div>';return r;
   }
+  if(todo.length){h+='<div class="grp-h grp-todo">要做的（'+todo.length+'）</div>';for(const x of todo)h+=rowHTML(x);}
+  if(done.length){h+='<div class="grp-h grp-done">已完成（'+done.length+'）</div>';for(const x of done)h+=rowHTML(x);}
+  if(all.length===0)h+='<div class="role-empty">還沒有檔期</div>';
   h+='</div>';
   document.getElementById(cid).innerHTML=h;
 }
-
 function renderOneCamp(c){
   let h="";
 
