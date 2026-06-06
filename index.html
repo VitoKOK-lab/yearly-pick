@@ -544,6 +544,12 @@ body{color:var(--t1)}
 .mu-tag{font-size:10px;color:#fff;padding:2px 8px;border-radius:3px;flex-shrink:0;font-weight:600}
 .mu-name{font-size:14px;color:var(--t1)}
 .ycal-t{font-size:15px;font-weight:700;color:var(--t1);border-left:3px solid #E6007E;padding-left:12px;margin-bottom:14px}
+
+.mu{display:block;padding:0;overflow:hidden}
+.mu-head{display:flex;align-items:center;gap:12px;padding:10px 12px;cursor:pointer}
+.mu-arrow{margin-left:auto;color:var(--t3);font-size:10px}
+.mu-body{padding:4px 12px 14px;border-top:1px solid var(--b1)}
+.mu.open{border-left-color:#E6007E}
 </style></head><body><div id="loginBox"><div class="lg-card">
 <div class="lg-title">TZG 選品排程</div>
 <div class="lg-sub">請選擇你是誰並輸入密碼</div>
@@ -556,7 +562,7 @@ body{color:var(--t1)}
 <div class="hero"><div class="kicker">泰熙爾札娜</div><div class="h-title">年度企劃表</div>
 <div class="h-sub">企劃 ｜ 選品 ｜ 官網 ｜ lineoa</div>
 <div id="userBar"></div><div class="tabs"><button class="tab on" onclick="sw(5)">年度規劃</button><button class="tab" onclick="sw(1)">選品</button><button class="tab" onclick="sw(2)">campaign</button><button class="tab" onclick="sw(3)">官網</button><button class="tab" onclick="sw(4)">lineoa</button><button class="tab" onclick="sw(6)">商品分析</button><button class="impb" style="margin-left:auto;align-self:center" onclick="importJune()">⬇ 匯入6月</button><button class="rstopen" style="align-self:center;margin-left:8px" onclick="openRestore()">↩ 還原</button><button class="expb" style="align-self:center;margin-left:8px" onclick="exportYear()">⤓ 全年PDF</button></div></div>
-<div class="wrap"><div class="page on" id="phome"></div><div class="page" id="ppick"></div><div class="page" id="pcamp"></div><div class="page" id="pweb"></div><div class="page" id="pline"></div><div class="page" id="pg"></div><div class="page" id="p1"></div><div class="footer">版本 06/06 15:09</div></div>
+<div class="wrap"><div class="page" id="phome"></div><div class="page" id="ppick"></div><div class="page" id="pcamp"></div><div class="page" id="pweb"></div><div class="page" id="pline"></div><div class="page on" id="pg"></div><div class="page" id="p1"></div><div class="footer">版本 06/06 15:27</div></div>
 <div id="restoreBox" style="display:none;position:fixed;inset:0;background:rgba(26,20,16,.45);z-index:200;align-items:center;justify-content:center" onclick="if(event.target===this)this.style.display='none'">
 <div style="background:#fff;border-radius:14px;max-width:460px;width:90%;max-height:80vh;overflow:auto;padding:22px">
 <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px"><div style="font-family:'Cormorant Garamond',serif;font-size:20px;font-weight:700">還原備份</div><button onclick="document.getElementById('restoreBox').style.display='none'" style="border:none;background:none;font-size:22px;cursor:pointer;color:#999999">×</button></div>
@@ -1291,6 +1297,17 @@ function resetEditCamp(){
 }
 
 
+
+let GANTTOPEN=null;
+function toggleGanttOpen(role,cid){
+  GANTTOPEN=(GANTTOPEN===cid?null:cid);
+  renderGantt();
+  if(GANTTOPEN){setTimeout(function(){
+    var el=document.querySelector('#pg .mu[data-cid="'+encodeURIComponent(cid)+'"]');
+    if(el)el.scrollIntoView({block:"center",behavior:"smooth"});
+  },100);}
+}
+
 function renderGantt(){
   let h="";
   // 我的近3個月急迫工作（當前使用者）
@@ -1304,9 +1321,12 @@ function renderGantt(){
     h+='<div class="myurgent"><div class="myurgent-t">你的工作 · 三個月內（'+RN[myr]+'）</div>';
     if(mine.length===0)h+='<div class="myurgent-empty">三個月內沒有待辦，輕鬆。</div>';
     else{h+='<div class="myurgent-list">';
-      for(const x of mine.slice(0,12)){
-        h+='<div class="mu '+x.dl.cls+'" onclick="gotoTask(\''+myr+'\',\''+x.c.id+'\')">'+
-           '<span class="mu-dl">'+x.dl.txt+'</span><span class="mu-tag" style="background:'+({"大檔":"#E6007E","季檔":"#1FA89C","週檔":"#C5A028","寵粉":"#A98Fb0"}[x.c.type]||"#888")+'">'+x.c.type+'</span><span class="mu-name">'+cv(x.c,"name")+'</span></div>';
+      for(const x of mine){
+        const op=(GANTTOPEN===x.c.id);
+        h+='<div class="mu '+x.dl.cls+(op?" open":"")+'" data-cid="'+encodeURIComponent(x.c.id)+'"><div class="mu-head" onclick="toggleGanttOpen(\''+myr+'\',\''+x.c.id+'\')">'+
+           '<span class="mu-dl">'+x.dl.txt+'</span><span class="mu-tag" style="background:'+({"大檔":"#E6007E","季檔":"#1FA89C","週檔":"#C5A028","寵粉":"#A98Fb0"}[x.c.type]||"#888")+'">'+x.c.type+'</span><span class="mu-name">'+cv(x.c,"name")+'</span><span class="mu-arrow">'+(op?"▲":"▼")+'</span></div>';
+        if(op)h+='<div class="mu-body">'+((myr==="web"||myr==="line")?renderViewCamp(x.c,myr):renderOneCamp(x.c))+'</div>';
+        h+='</div>';
       }
       h+='</div>';}
     h+='</div>';
@@ -1332,7 +1352,7 @@ function renderGantt(){
       const isWk=(c.type==="週檔"||c.type==="寵粉");
       const allDone=done.pick&&done.web&&done.line;
       const thumb='<span class="ythumb" title="全部完成"><svg viewBox="0 0 24 24" width="16" height="16" fill="#1FA89C"><path d="M2 21h2.5V10H2v11zm20-9.5c0-.83-.67-1.5-1.5-1.5h-5.65l.85-4.1.03-.32c0-.41-.17-.79-.44-1.06L14.34 3 8.6 8.76c-.28.28-.44.66-.44 1.07V19c0 .83.67 1.5 1.5 1.5h7.5c.62 0 1.15-.38 1.38-.92l2.34-5.48c.07-.18.12-.37.12-.6v-1z"/></svg></span>';
-      h+='<div class="yrow '+(isWk?"wk":"")+(allDone?" alldone":"")+'" onclick="gotoTask((USER_ROLE[(CUR&&CUR.name)]||\'pick\')===\'campaign\'?\'campaign\':(USER_ROLE[(CUR&&CUR.name)]||\'pick\'),\''+c.id+'\')">'+
+      h+='<div class="yrow '+(isWk?"wk":"")+(allDone?" alldone":"")+'" onclick="toggleGanttOpen(USER_ROLE[(CUR&&CUR.name)]||\'pick\',\''+c.id+'\')">'+
          '<span class="ytag" style="background:'+col+'">'+c.type+'</span>'+
          '<span class="yname">'+cv(c,"name")+'</span>'+
          (isWk?'':'<span class="ydate">'+cv(c,"date")+'</span>')+
@@ -1350,7 +1370,7 @@ function render(){if(typeof applyNav==='function')applyNav();renderHome();render
 
 const USER_ROLE={Regina:"pick",Vito:"campaign",家逸:"web",Jessica:"line"};
 const USER_TABS={
-  Regina:[5,1,6], Vito:[5,1,2,3,4,6], 家逸:[5,3,6], Jessica:[5,4,6]
+  Regina:[5,6], Vito:[5,6], 家逸:[5,6], Jessica:[5,6]
 };
 function applyNav(){
   const u=(CUR&&CUR.name)||"Vito";const allow=USER_TABS[u]||[0,1,2,3,4,5,6];
