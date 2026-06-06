@@ -472,6 +472,27 @@ body{color:var(--t1)}
 .ub.dl-near .ub-dl{color:#9A6A1E}
 .ub-name{font-size:13px;color:var(--t1);flex:1}
 .ub-prev{font-size:11px;padding:2px 8px;border-radius:4px;flex-shrink:0}
+
+.vcamp{padding:4px 0}
+.vplan{background:#FBF8F0;border-left:4px solid var(--gold);border-radius:6px;padding:12px 14px;margin-bottom:14px}
+.vplan-t{font-size:13px;font-weight:700;color:#8A6A1E;margin-bottom:6px}
+.vplan-goal{font-size:15px;font-weight:600;margin-bottom:6px}
+.vplan-brief{font-size:14px;line-height:1.7;color:var(--t2)}
+.vsec{font-size:13px;font-weight:700;color:var(--t1);margin:14px 0 8px;border-left:3px solid #E6007E;padding-left:10px}
+.vlist{border:1px solid var(--b1);border-radius:6px;overflow:hidden}
+.vrow{display:flex;justify-content:space-between;padding:9px 14px;border-bottom:1px solid #F0F0F0}
+.vrow:last-child{border-bottom:none}
+.vn{font-size:14px;color:var(--t1)}
+.vp{font-size:13px;color:var(--t2);font-weight:600}
+.vempty{color:var(--t3);font-size:13px;padding:12px}
+.vweb{padding:10px 14px;border-radius:6px;font-size:14px}
+.vweb.ok{background:#E3F5E8;color:#2E7D32}
+.vweb.wait{background:#FBF0DD;color:#9A6A1E}
+.vdone{margin-top:18px}
+.vbtn{width:100%;padding:14px;border:none;border-radius:8px;background:#1FA89C;color:#fff;font-size:16px;font-weight:700;cursor:pointer;font-family:inherit}
+.vbtn:hover{background:#178A80}
+.vbtn.on{background:#2E7D32}
+.vlock{text-align:center;padding:14px;background:#F5F5F5;border-radius:8px;color:var(--t3);font-size:14px}
 </style></head><body><div id="loginBox"><div class="lg-card">
 <div class="lg-title">TZG 選品排程</div>
 <div class="lg-sub">請選擇你是誰並輸入密碼</div>
@@ -484,7 +505,7 @@ body{color:var(--t1)}
 <div class="hero"><div class="kicker">泰熙爾札娜 · 選品排程</div><div class="h-title">泰熙爾札娜<b>年度企劃表</b></div>
 <div class="h-sub">排程→狀態追蹤→進度看板 ｜ 選品/拍片/行銷/官網/LINE 五關 ｜ 雲端即時共用</div>
 <div id="userBar"></div><div class="tabs"><button class="tab on" onclick="sw(0)">首頁</button><button class="tab" onclick="sw(1)">選品</button><button class="tab" onclick="sw(2)">campaign</button><button class="tab" onclick="sw(3)">官網</button><button class="tab" onclick="sw(4)">lineoa</button><button class="tab" onclick="sw(5)">年度規劃</button><button class="tab" onclick="sw(6)">商品分析</button><button class="impb" style="margin-left:auto;align-self:center" onclick="importJune()">⬇ 匯入6月</button><button class="rstopen" style="align-self:center;margin-left:8px" onclick="openRestore()">↩ 還原</button><button class="expb" style="align-self:center;margin-left:8px" onclick="exportYear()">⤓ 全年PDF</button></div></div>
-<div class="wrap"><div class="page on" id="phome"></div><div class="page" id="ppick"></div><div class="page" id="pcamp"></div><div class="page" id="pweb"></div><div class="page" id="pline"></div><div class="page" id="pg"></div><div class="page" id="p1"></div><div class="footer">TZG 泰熙爾札娜珠寶 ｜ 選品排程（雲端即時共用，自動同步） ｜ 版本 06/06 09:59</div></div>
+<div class="wrap"><div class="page on" id="phome"></div><div class="page" id="ppick"></div><div class="page" id="pcamp"></div><div class="page" id="pweb"></div><div class="page" id="pline"></div><div class="page" id="pg"></div><div class="page" id="p1"></div><div class="footer">TZG 泰熙爾札娜珠寶 ｜ 選品排程（雲端即時共用，自動同步） ｜ 版本 06/06 10:15</div></div>
 <div id="restoreBox" style="display:none;position:fixed;inset:0;background:rgba(26,20,16,.45);z-index:200;align-items:center;justify-content:center" onclick="if(event.target===this)this.style.display='none'">
 <div style="background:#fff;border-radius:14px;max-width:460px;width:90%;max-height:80vh;overflow:auto;padding:22px">
 <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px"><div style="font-family:'Cormorant Garamond',serif;font-size:20px;font-weight:700">還原備份</div><button onclick="document.getElementById('restoreBox').style.display='none'" style="border:none;background:none;font-size:22px;cursor:pointer;color:#999999">×</button></div>
@@ -796,7 +817,7 @@ function selRoleCamp(role,cid){
     v.open=cid;
     const cur=cont.querySelector('.rcamp[data-cid="'+encodeURIComponent(cid)+'"]');
     const c=CAMP[cid];
-    if(cur&&c){cur.classList.add("open");if(!cur.querySelector(".rcamp-body")){const bd=document.createElement("div");bd.className="rcamp-body";bd.innerHTML=renderOneCamp(c);cur.appendChild(bd);}}
+    if(cur&&c){cur.classList.add("open");if(!cur.querySelector(".rcamp-body")){const bd=document.createElement("div");bd.className="rcamp-body";bd.innerHTML=((role==="web"||role==="line")?renderViewCamp(c,role):renderOneCamp(c));cur.appendChild(bd);}}
   }
 }
 
@@ -892,6 +913,48 @@ function renderHome(){
 
   document.getElementById("phome").innerHTML=h;
 }
+
+function toggleAllDone(cid,role){
+  if(!canToggle(ROLECFG[role].flag)){toast("沒有權限");return;}
+  const flag=ROLECFG[role].flag;const c=CAMP[cid];const picks=getPicks(cid);
+  if(picks.length===0){toast("這檔還沒選品");return;}
+  // 前置檢查（官網要選品好；lineoa要官網好）
+  const PREV={web:"pick",line:"web"};const prev=PREV[role];
+  if(prev&&!roleStat(prev,c).ok){toast("要先等"+({pick:"選品",web:"官網"}[prev])+"完成");return;}
+  const allOn=picks.every(p=>(p.flags||{})[flag]);
+  for(const p of picks){p.flags=p.flags||{};p.flags[flag]=!allOn;}
+  save();
+  // 就地更新該檔body
+  const cur=document.querySelector('.rcamp.open[data-cid="'+encodeURIComponent(cid)+'"] .rcamp-body');
+  if(cur)cur.innerHTML=renderViewCamp(c,role);else render();
+}
+function renderViewCamp(c,role){
+  const picks=getPicks(c.id);
+  const RN={web:"官網",line:"lineoa"};
+  let h='<div class="vcamp">';
+  // 企劃（唯讀）
+  h+='<div class="vplan"><div class="vplan-t">📋 企劃</div><div class="vplan-goal">🎯 '+cv(c,"goal")+'</div><div class="vplan-brief">'+cv(c,"brief")+'</div></div>';
+  // 選了什麼品（唯讀清單）
+  h+='<div class="vsec">選了什麼（'+picks.length+' 品）</div>';
+  if(picks.length===0){h+='<div class="vempty">選品還沒好，等 Regina。</div>';}
+  else{h+='<div class="vlist">';
+    for(const p of picks){h+='<div class="vrow"><span class="vn">'+p.name+'</span><span class="vp">$'+(p.price||0).toLocaleString()+'</span></div>';}
+    h+='</div>';}
+  // lineoa 額外：官網狀態
+  if(role==="line"){
+    const webok=roleStat("web",c).ok;
+    h+='<div class="vsec">官網圖文</div><div class="vweb '+(webok?"ok":"wait")+'">'+(webok?"✓ 官網已上架，可做私域圖文":"⏳ 官網還沒好，等家逸")+'</div>';
+  }
+  // 完成鈕
+  const flag=ROLECFG[role].flag;const allOn=picks.length>0&&picks.every(p=>(p.flags||{})[flag]);
+  const PREV={web:"pick",line:"web"};const prev=PREV[role];const prevOk=!prev||roleStat(prev,c).ok;
+  h+='<div class="vdone">';
+  if(!prevOk){h+='<div class="vlock">要先等'+({pick:"選品",web:"官網"}[prev])+'完成</div>';}
+  else{h+='<button class="vbtn '+(allOn?"on":"")+'" onclick="toggleAllDone(\''+c.id+'\',\''+role+'\')">'+(allOn?"✓ "+RN[role]+"已完成（點取消）":RN[role]+"完成")+'</button>';}
+  h+='</div></div>';
+  return h;
+}
+
 function renderRole(role,cid){
   const cfg=ROLECFG[role];const v=ROLEVIEW[role];
   if(!v.userSet)v.type=autoType();
@@ -924,7 +987,7 @@ function renderRole(role,cid){
     h+='<div class="rcamp '+(v.open===c.id?"open":"")+'" data-cid="'+encodeURIComponent(c.id)+'"><div class="rcamp-head" data-act="camp" data-role="'+role+'" data-cid="'+encodeURIComponent(c.id)+'">';
     h+='<span class="rc-name">'+cv(c,"name")+'</span><span class="rc-mon">'+ML[c.month]+'</span>';
     h+='<span class="rc-stat '+statCls+'">'+s.label+'</span><span class="dldl '+dl.cls+'">'+dl.txt+'</span></div>';
-    if(v.open===c.id){h+='<div class="rcamp-body">'+renderOneCamp(c)+'</div>';}
+    if(v.open===c.id){h+='<div class="rcamp-body">'+((role==="web"||role==="line")?renderViewCamp(c,role):renderOneCamp(c))+'</div>';}
     h+='</div>';
   }
   h+='</div>';
