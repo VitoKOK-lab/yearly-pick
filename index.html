@@ -403,6 +403,10 @@ body{color:var(--t1)}
 .task.dl-near .task-dl{color:#9A7E1E}
 .task.dl-ok{border-left-color:var(--teal)}
 .task.dl-ok .task-dl{color:var(--t2)}
+
+.task-prev{font-size:11px;padding:3px 9px;border-radius:4px;flex-shrink:0}
+.task-prev.prev-ok{background:#E3F5E8;color:#2E7D32}
+.task-prev.prev-wait{background:#FBF0DD;color:#9A6A1E}
 </style></head><body><div id="loginBox"><div class="lg-card">
 <div class="lg-title">TZG 選品排程</div>
 <div class="lg-sub">請選擇你是誰並輸入密碼</div>
@@ -415,7 +419,7 @@ body{color:var(--t1)}
 <div class="hero"><div class="kicker">泰熙爾札娜 · 選品排程</div><div class="h-title">選品排程 <b>＋ 備貨預估</b></div>
 <div class="h-sub">排程→狀態追蹤→進度看板 ｜ 選品/拍片/行銷/官網/LINE 五關 ｜ 雲端即時共用</div>
 <div id="userBar"></div><div class="tabs"><button class="tab on" onclick="sw(0)">首頁</button><button class="tab" onclick="sw(1)">選品</button><button class="tab" onclick="sw(2)">campaign</button><button class="tab" onclick="sw(3)">官網</button><button class="tab" onclick="sw(4)">lineoa</button><button class="tab" onclick="sw(5)">甘特圖</button><button class="tab" onclick="sw(6)">總覽</button><button class="impb" style="margin-left:auto;align-self:center" onclick="importJune()">⬇ 匯入6月</button><button class="rstopen" style="align-self:center;margin-left:8px" onclick="openRestore()">↩ 還原</button><button class="expb" style="align-self:center;margin-left:8px" onclick="exportYear()">⤓ 全年PDF</button></div></div>
-<div class="wrap"><div class="page on" id="phome"></div><div class="page" id="ppick"></div><div class="page" id="pcamp"></div><div class="page" id="pweb"></div><div class="page" id="pline"></div><div class="page" id="pg"></div><div class="page" id="p1"></div><div class="footer">TZG 泰熙爾札娜珠寶 ｜ 選品排程（雲端即時共用，自動同步） ｜ 版本 06/06 08:21</div></div>
+<div class="wrap"><div class="page on" id="phome"></div><div class="page" id="ppick"></div><div class="page" id="pcamp"></div><div class="page" id="pweb"></div><div class="page" id="pline"></div><div class="page" id="pg"></div><div class="page" id="p1"></div><div class="footer">TZG 泰熙爾札娜珠寶 ｜ 選品排程（雲端即時共用，自動同步） ｜ 版本 06/06 08:24</div></div>
 <div id="restoreBox" style="display:none;position:fixed;inset:0;background:rgba(26,20,16,.45);z-index:200;align-items:center;justify-content:center" onclick="if(event.target===this)this.style.display='none'">
 <div style="background:#fff;border-radius:14px;max-width:460px;width:90%;max-height:80vh;overflow:auto;padding:22px">
 <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px"><div style="font-family:'Cormorant Garamond',serif;font-size:20px;font-weight:700">還原備份</div><button onclick="document.getElementById('restoreBox').style.display='none'" style="border:none;background:none;font-size:22px;cursor:pointer;color:#999999">×</button></div>
@@ -756,7 +760,14 @@ function collectTasks(){
       const s=roleStat(role,c);
       if(s.ok)continue; // 已完成跳過
       const dl=dlInfoRole(c,role);
-      tasks.push({role:role,rname:RN[role],who:RWHO[role],cid:c.id,cname:cv(c,"name"),days:dl.days,dltxt:dl.txt,cls:dl.cls});
+      // 上游關：選品→官網→lineoa
+      const PREV={pick:null,campaign:null,web:"pick",line:"web"};
+      const prev=PREV[role];let prevOk=true,prevTxt="";
+      if(prev){const ps=roleStat(prev,c);prevOk=ps.ok;
+        if(prevOk)prevTxt="✓ 可開始";
+        else prevTxt="⏳ 等 "+RWHO[prev]+" "+RN[prev];
+      }
+      tasks.push({role:role,rname:RN[role],who:RWHO[role],cid:c.id,cname:cv(c,"name"),days:dl.days,dltxt:dl.txt,cls:dl.cls,prevOk:prevOk,prevTxt:prevTxt});
     }
   }
   tasks.sort((a,b)=>a.days-b.days);
@@ -784,6 +795,7 @@ function renderHome(){
          '<span class="task-dl">'+t.dltxt+'</span>'+
          '<span class="task-role">'+t.rname+'</span>'+
          '<span class="task-name">'+t.cname+'</span>'+
+         (t.prevTxt?'<span class="task-prev '+(t.prevOk?"prev-ok":"prev-wait")+'">'+t.prevTxt+'</span>':'')+
          '<span class="task-who">'+t.who+'</span></div>';
     }
     h+='</div>';}
