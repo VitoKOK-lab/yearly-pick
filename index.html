@@ -518,7 +518,7 @@ body{color:var(--t1)}
 <div class="hero"><div class="kicker">泰熙爾札娜 · 選品排程</div><div class="h-title">泰熙爾札娜<b>年度企劃表</b></div>
 <div class="h-sub">排程→狀態追蹤→進度看板 ｜ 選品/拍片/行銷/官網/LINE 五關 ｜ 雲端即時共用</div>
 <div id="userBar"></div><div class="tabs"><button class="tab on" onclick="sw(0)">首頁</button><button class="tab" onclick="sw(1)">選品</button><button class="tab" onclick="sw(2)">campaign</button><button class="tab" onclick="sw(3)">官網</button><button class="tab" onclick="sw(4)">lineoa</button><button class="tab" onclick="sw(5)">年度規劃</button><button class="tab" onclick="sw(6)">商品分析</button><button class="impb" style="margin-left:auto;align-self:center" onclick="importJune()">⬇ 匯入6月</button><button class="rstopen" style="align-self:center;margin-left:8px" onclick="openRestore()">↩ 還原</button><button class="expb" style="align-self:center;margin-left:8px" onclick="exportYear()">⤓ 全年PDF</button></div></div>
-<div class="wrap"><div class="page on" id="phome"></div><div class="page" id="ppick"></div><div class="page" id="pcamp"></div><div class="page" id="pweb"></div><div class="page" id="pline"></div><div class="page" id="pg"></div><div class="page" id="p1"></div><div class="footer">TZG 泰熙爾札娜珠寶 ｜ 選品排程（雲端即時共用，自動同步） ｜ 版本 06/06 10:25</div></div>
+<div class="wrap"><div class="page on" id="phome"></div><div class="page" id="ppick"></div><div class="page" id="pcamp"></div><div class="page" id="pweb"></div><div class="page" id="pline"></div><div class="page" id="pg"></div><div class="page" id="p1"></div><div class="footer">TZG 泰熙爾札娜珠寶 ｜ 選品排程（雲端即時共用，自動同步） ｜ 版本 06/06 10:28</div></div>
 <div id="restoreBox" style="display:none;position:fixed;inset:0;background:rgba(26,20,16,.45);z-index:200;align-items:center;justify-content:center" onclick="if(event.target===this)this.style.display='none'">
 <div style="background:#fff;border-radius:14px;max-width:460px;width:90%;max-height:80vh;overflow:auto;padding:22px">
 <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px"><div style="font-family:'Cormorant Garamond',serif;font-size:20px;font-weight:700">還原備份</div><button onclick="document.getElementById('restoreBox').style.display='none'" style="border:none;background:none;font-size:22px;cursor:pointer;color:#999999">×</button></div>
@@ -548,21 +548,31 @@ const JUNE={"note": "【A·年終慶儲值活動 BN】5萬贈1300｜10萬贈2800
 const FLAGS=[["mkt","銷"],["film","拍"],["web","官"],["line","OA"]];
 let NOTES={};
 const ACCOUNTS={
-  "Regina":{pw:"regina",flag:"film",admin:false,label:"Regina（選品·拍片）"},
-  "Vito":{pw:"vito",flag:"mkt",admin:true,label:"Vito（行銷·管理）"},
-  "家逸":{pw:"jiayi",flag:"web",admin:false,label:"家逸（官網）"},
-  "Jessica":{pw:"jessica",flag:"line",admin:false,label:"Jessica（lineoa）"}
+  "Regina":{pw:"1234",flag:"film",admin:false,label:"Regina（選品·拍片）"},
+  "Vito":{pw:"1234",flag:"mkt",admin:true,label:"Vito（行銷·管理）"},
+  "家逸":{pw:"1234",flag:"web",admin:false,label:"家逸（官網）"},
+  "Jessica":{pw:"1234",flag:"line",admin:false,label:"Jessica（lineoa）"}
 };
 let CUR=null;
 function canToggle(f){if(!CUR)return false;if(CUR.admin)return true;return CUR.flag===f;}
 function canPlan(){return CUR&&CUR.admin;}
 function canAddPick(){return CUR&&(CUR.admin||CUR.name==="Regina");}
 function whoOwns(f){for(const k in ACCOUNTS){if(ACCOUNTS[k].flag===f)return k;}return "";}
+
+function changePw(){
+  if(!CUR){return;}
+  const np=prompt("輸入新密碼（給 "+CUR.name+"）：");
+  if(np===null)return;
+  if(!np||np.length<4){toast("密碼至少4個字");return;}
+  PWMAP[CUR.name]=np;save();toast("密碼已改，下次登入用新密碼");
+}
+
 function doLogin(){
   const sel=document.getElementById("lg_user").value;
   const pw=document.getElementById("lg_pw").value;
   const a=ACCOUNTS[sel];
-  if(!a||a.pw!==pw){document.getElementById("lg_err").textContent="密碼不對";return;}
+  const realpw=(PWMAP[sel]!==undefined?PWMAP[sel]:a&&a.pw);
+  if(!a||realpw!==pw){document.getElementById("lg_err").textContent="密碼不對";return;}
   CUR={name:sel,flag:a.flag,admin:a.admin,label:a.label};
   try{localStorage.setItem("tzg_user",sel);}catch(e){}
   document.getElementById("loginBox").style.display="none";
@@ -572,7 +582,7 @@ function doLogin(){
   sw(DEFTAB[sel]!==undefined?DEFTAB[sel]:0);
 }
 function doLogout(){CUR=null;try{localStorage.removeItem("tzg_user");}catch(e){}document.getElementById("loginBox").style.display="flex";showUserBar();}
-function showUserBar(){const b=document.getElementById("userBar");if(b)b.innerHTML=CUR?('目前：<b>'+CUR.label+'</b> <span class="logout" onclick="doLogout()">登出</span>'):'';}
+function showUserBar(){const b=document.getElementById("userBar");if(b)b.innerHTML=CUR?('目前：<b>'+CUR.label+'</b> <span class="logout" onclick="doLogout()">登出</span> <span class="logout" onclick="changePw()" style="margin-left:8px">改密碼</span>'):'';}
 
 document.addEventListener("click",function(e){
   var el=e.target.closest("[data-act]");
@@ -597,18 +607,18 @@ let COVER={};let DASHF='all';
 const TYC={"大檔":"#E6007E","季檔":"#1FA89C","週檔":"#C5A028","寵粉":"#A98Fb0"};
 const CATC={"主題建議":"#1A8C82","裸石":"#1A1A1A","飾品":"#B89A4E","水晶能量":"#1A8C82","訂製":"#1A1A1A","其他":"#888888"};
 const CATS=["主題建議","裸石","飾品","水晶能量","訂製"];
-let PICKS={},LOCKED={};
+let PICKS={},LOCKED={},PWMAP={};
 let _writing=false;        // 自己正在寫入時，忽略一次回拋
 let _loaded=false;
-try{var _c=localStorage.getItem('tzg_cache');if(_c){var _cd=JSON.parse(_c);PICKS=_cd.picks||{};LOCKED=_cd.locked||{};NOTES=_cd.notes||{};COVER=_cd.cover||{};}}catch(e){}
+try{var _c=localStorage.getItem('tzg_cache');if(_c){var _cd=JSON.parse(_c);PICKS=_cd.picks||{};LOCKED=_cd.locked||{};NOTES=_cd.notes||{};COVER=_cd.cover||{};PWMAP=_cd.pwmap||{};}}catch(e){}
 setTimeout(function(){if(!_loaded){_loaded=true;try{render();}catch(e){console.error(e);}}},3000);
 setTimeout(function(){if(!_loaded){_loaded=true;try{render();}catch(e){console.error(e);}}},5000);
 // 即時同步：監聽 Firestore，別人改了這裡自動更新
 DOCREF.onSnapshot(doc=>{
   if(_writing){_writing=false;return;}            // 跳過自己寫入觸發的回拋
   const d=doc.exists?doc.data():{};
-  PICKS=d.picks||{};LOCKED=d.locked||{};NOTES=d.notes||{};COVER=d.cover||{};
-  _loaded=true;try{localStorage.setItem('tzg_cache',JSON.stringify({picks:PICKS,locked:LOCKED,notes:NOTES,cover:COVER}));}catch(e){}
+  PICKS=d.picks||{};LOCKED=d.locked||{};NOTES=d.notes||{};COVER=d.cover||{};PWMAP=d.pwmap||{};
+  _loaded=true;try{localStorage.setItem('tzg_cache',JSON.stringify({picks:PICKS,locked:LOCKED,notes:NOTES,cover:COVER,pwmap:PWMAP}));}catch(e){}
   // 若正在編輯備貨輸入框，只更新數字不重繪整頁，避免打斷
   if(document.activeElement&&document.activeElement.tagName==="INPUT"){renderTotals();renderOverview();}
   else render();
@@ -617,7 +627,7 @@ DOCREF.onSnapshot(doc=>{
   _loaded=true;render();
   toast("雲端連線失敗，先用本機顯示");
 });
-function pushCloud(){_writing=true;DOCREF.set({picks:PICKS,locked:LOCKED,notes:NOTES,cover:COVER,updated:Date.now()}).catch(e=>{_writing=false;console.error("寫入失敗",e);toast("儲存失敗，請重試");});}
+function pushCloud(){_writing=true;DOCREF.set({picks:PICKS,locked:LOCKED,notes:NOTES,cover:COVER,pwmap:PWMAP,updated:Date.now()}).catch(e=>{_writing=false;console.error("寫入失敗",e);toast("儲存失敗，請重試");});}
 function saveLock(){pushCloud();}
 function tsLabel(){const d=new Date();const p=n=>String(n).padStart(2,"0");return `${d.getFullYear()}/${p(d.getMonth()+1)}/${p(d.getDate())} ${p(d.getHours())}:${p(d.getMinutes())}`;}
 function tsId(){const d=new Date();const p=n=>String(n).padStart(2,"0");return `backup_${d.getFullYear()}${p(d.getMonth()+1)}${p(d.getDate())}_${p(d.getHours())}${p(d.getMinutes())}${p(d.getSeconds())}`;}
@@ -973,15 +983,15 @@ function renderRole(role,cid){
   let h='<div class="role-head"><div class="rh-title">'+cfg.title+'<span class="rh-who">'+cfg.who+'</span></div><div class="rh-hint">點檔直接做，做完收起、換下一個</div></div>';
   // 收集該角色所有檔，排序：未完成且緊迫在前 → 已完成在後；週檔/寵粉常態放各組末
   const all=[];
-  for(const c of CAMPS){const s=roleStat(role,c);const dl=dlInfoRole(c,role);all.push({c:c,ok:s.ok,label:s.label,days:dl.days,dl:dl});}
+  for(const c of CAMPS){const s=roleStat(role,c);const dl=dlInfoRole(c,role);all.push({c:c,ok:s.ok,label:s.label,days:dl.days,dl:dl,ad:campStartDate(c).getTime()});}
   all.sort(function(a,b){
     if(a.ok!==b.ok)return a.ok?1:-1; // 未完成在前
-    return a.days-b.days; // 緊迫在前(週檔days=999自然排後)
+    return a.ad-b.ad; // 按活動日期早→晚
   });
   // 分組：近期要做(大檔季檔,未完成,deadline<=60天) / 每週常態(週檔寵粉,未完成) / 已完成 / 遠期(提示)
   const isWk=function(x){return x.c.type==="週檔"||x.c.type==="寵粉";};
-  const todo=all.filter(x=>!x.ok&&!isWk(x)&&x.days<=60);
-  const later=all.filter(x=>!x.ok&&!isWk(x)&&x.days>60);
+  const today2=new Date(2026,5,5).getTime();const todo=all.filter(x=>!x.ok&&!isWk(x)&&(x.ad-today2)/86400000<=60);
+  const later=all.filter(x=>!x.ok&&!isWk(x)&&(x.ad-today2)/86400000>60);
   const weekly=all.filter(x=>!x.ok&&isWk(x));
   const done=all.filter(x=>x.ok);
   h+='<div class="rcamp-list">';
