@@ -553,6 +553,45 @@ body{color:var(--t1)}
 
 .mu.mu-done{opacity:.6;border-left-color:#2E7D32}
 .mu-ok{color:#2E7D32;font-weight:700}
+
+@media(max-width:600px){
+  .hero{padding:12px 4vw 0;position:static}
+  .h-title{font-size:24px}
+  .kicker{font-size:10px}
+  .h-sub{font-size:11px}
+  .tabs{flex-wrap:wrap}
+  .tab{padding:8px 10px;font-size:13px}
+  .page{padding:0 3vw}
+  .pwrap,.main{padding-left:0;padding-right:0}
+  /* 標題列右側按鈕(匯入/還原/PDF)換行 */
+  .hero .topbtns,.topbtns{flex-wrap:wrap}
+  /* 你的工作 */
+  .myurgent{padding:12px 10px}
+  .mu-dl{width:auto;min-width:80px;font-size:11px}
+  .mu-head{flex-wrap:wrap;gap:6px}
+  .mu-body{padding:4px 6px 12px}
+  /* 月曆單欄、卡片不擠 */
+  .ycal{grid-template-columns:1fr}
+  /* 選品展開內元素 */
+  .addrow{flex-wrap:wrap}
+  .addrow input{flex:1 1 100%;margin-bottom:6px}
+  .addcat{flex:1 1 auto;margin:0 6px 0 0}
+  .field input,.field select{font-size:16px}
+  /* 已選品行：層內元素可換行不溢出 */
+  .prow{padding:10px}
+  .prow input,.prow select{max-width:100%}
+  .catbar{flex-wrap:wrap}
+  .recwrap .rrow{flex-wrap:wrap}
+  /* 全鏈進度橫條手機改直排 */
+  .chain-flow{flex-direction:column}
+  .chain-arrow{transform:rotate(90deg)}
+  /* 商品分析種類鈕 */
+  .ovcat-bar{gap:6px}
+  .ovcat-btn{padding:6px 12px;font-size:12px}
+  /* 防止任何寬元素橫向溢出 */
+  table.utable{font-size:12px}
+  *{max-width:100%}
+}
 </style></head><body><div id="loginBox"><div class="lg-card">
 <div class="lg-title">TZG 選品排程</div>
 <div class="lg-sub">請選擇你是誰</div>
@@ -565,7 +604,7 @@ body{color:var(--t1)}
 <div class="hero"><div class="kicker">泰熙爾札娜</div><div class="h-title">年度企劃表</div>
 <div class="h-sub">企劃 ｜ 選品 ｜ 官網 ｜ lineoa</div>
 <div id="userBar"></div><div class="tabs"><button class="tab on" onclick="sw(5)">年度規劃</button><button class="tab" onclick="sw(1)">選品</button><button class="tab" onclick="sw(2)">campaign</button><button class="tab" onclick="sw(3)">官網</button><button class="tab" onclick="sw(4)">lineoa</button><button class="tab" onclick="sw(6)">商品分析</button><button class="impb" style="margin-left:auto;align-self:center" onclick="importJune()">⬇ 匯入6月</button><button class="rstopen" style="align-self:center;margin-left:8px" onclick="openRestore()">↩ 還原</button><button class="expb" style="align-self:center;margin-left:8px" onclick="exportYear()">⤓ 全年PDF</button></div></div>
-<div class="wrap"><div class="page" id="phome"></div><div class="page" id="ppick"></div><div class="page" id="pcamp"></div><div class="page" id="pweb"></div><div class="page" id="pline"></div><div class="page on" id="pg"></div><div class="page" id="p1"></div><div class="footer">版本 06/06 15:55</div></div>
+<div class="wrap"><div class="page" id="phome"></div><div class="page" id="ppick"></div><div class="page" id="pcamp"></div><div class="page" id="pweb"></div><div class="page" id="pline"></div><div class="page on" id="pg"></div><div class="page" id="p1"></div><div class="footer">版本 06/06 16:57</div></div>
 <div id="restoreBox" style="display:none;position:fixed;inset:0;background:rgba(26,20,16,.45);z-index:200;align-items:center;justify-content:center" onclick="if(event.target===this)this.style.display='none'">
 <div style="background:#fff;border-radius:14px;max-width:460px;width:90%;max-height:80vh;overflow:auto;padding:22px">
 <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px"><div style="font-family:'Cormorant Garamond',serif;font-size:20px;font-weight:700">還原備份</div><button onclick="document.getElementById('restoreBox').style.display='none'" style="border:none;background:none;font-size:22px;cursor:pointer;color:#999999">×</button></div>
