@@ -456,6 +456,10 @@ body{color:var(--t1)}
 .tab.on{color:#E6007E!important;border-bottom-color:#E6007E!important}
 /* 進入選品等主鈕保持品牌色 */
 .impb{background:#1FA89C}
+
+.ythumb{display:inline-flex;align-items:center;margin-left:6px;flex-shrink:0;animation:pop .3s ease}
+.yrow.alldone{background:#F0FBF9}
+@keyframes pop{0%{transform:scale(0)}70%{transform:scale(1.2)}100%{transform:scale(1)}}
 </style></head><body><div id="loginBox"><div class="lg-card">
 <div class="lg-title">TZG 選品排程</div>
 <div class="lg-sub">請選擇你是誰並輸入密碼</div>
@@ -468,7 +472,7 @@ body{color:var(--t1)}
 <div class="hero"><div class="kicker">泰熙爾札娜 · 選品排程</div><div class="h-title">選品排程 <b>＋ 備貨預估</b></div>
 <div class="h-sub">排程→狀態追蹤→進度看板 ｜ 選品/拍片/行銷/官網/LINE 五關 ｜ 雲端即時共用</div>
 <div id="userBar"></div><div class="tabs"><button class="tab on" onclick="sw(0)">首頁</button><button class="tab" onclick="sw(1)">選品</button><button class="tab" onclick="sw(2)">campaign</button><button class="tab" onclick="sw(3)">官網</button><button class="tab" onclick="sw(4)">lineoa</button><button class="tab" onclick="sw(5)">年度規劃</button><button class="tab" onclick="sw(6)">商品分析</button><button class="impb" style="margin-left:auto;align-self:center" onclick="importJune()">⬇ 匯入6月</button><button class="rstopen" style="align-self:center;margin-left:8px" onclick="openRestore()">↩ 還原</button><button class="expb" style="align-self:center;margin-left:8px" onclick="exportYear()">⤓ 全年PDF</button></div></div>
-<div class="wrap"><div class="page on" id="phome"></div><div class="page" id="ppick"></div><div class="page" id="pcamp"></div><div class="page" id="pweb"></div><div class="page" id="pline"></div><div class="page" id="pg"></div><div class="page" id="p1"></div><div class="footer">TZG 泰熙爾札娜珠寶 ｜ 選品排程（雲端即時共用，自動同步） ｜ 版本 06/06 09:30</div></div>
+<div class="wrap"><div class="page on" id="phome"></div><div class="page" id="ppick"></div><div class="page" id="pcamp"></div><div class="page" id="pweb"></div><div class="page" id="pline"></div><div class="page" id="pg"></div><div class="page" id="p1"></div><div class="footer">TZG 泰熙爾札娜珠寶 ｜ 選品排程（雲端即時共用，自動同步） ｜ 版本 06/06 09:34</div></div>
 <div id="restoreBox" style="display:none;position:fixed;inset:0;background:rgba(26,20,16,.45);z-index:200;align-items:center;justify-content:center" onclick="if(event.target===this)this.style.display='none'">
 <div style="background:#fff;border-radius:14px;max-width:460px;width:90%;max-height:80vh;overflow:auto;padding:22px">
 <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px"><div style="font-family:'Cormorant Garamond',serif;font-size:20px;font-weight:700">還原備份</div><button onclick="document.getElementById('restoreBox').style.display='none'" style="border:none;background:none;font-size:22px;cursor:pointer;color:#999999">×</button></div>
@@ -1127,11 +1131,14 @@ function renderGantt(){
         dots+='<span class="ydot '+(x[1]?"on":"")+'">'+x[0]+'</span>';
       });
       const isWk=(c.type==="週檔"||c.type==="寵粉");
-      h+='<div class="yrow '+(isWk?"wk":"")+'" onclick="gotoTask(\'pick\',\''+c.id+'\')">'+
+      const allDone=done.pick&&done.web&&done.line;
+      const thumb='<span class="ythumb" title="全部完成"><svg viewBox="0 0 24 24" width="16" height="16" fill="#1FA89C"><path d="M2 21h2.5V10H2v11zm20-9.5c0-.83-.67-1.5-1.5-1.5h-5.65l.85-4.1.03-.32c0-.41-.17-.79-.44-1.06L14.34 3 8.6 8.76c-.28.28-.44.66-.44 1.07V19c0 .83.67 1.5 1.5 1.5h7.5c.62 0 1.15-.38 1.38-.92l2.34-5.48c.07-.18.12-.37.12-.6v-1z"/></svg></span>';
+      h+='<div class="yrow '+(isWk?"wk":"")+(allDone?" alldone":"")+'" onclick="gotoTask(\'pick\',\''+c.id+'\')">'+
          '<span class="ytag" style="background:'+col+'">'+c.type+'</span>'+
          '<span class="yname">'+cv(c,"name")+'</span>'+
          (isWk?'':'<span class="ydate">'+cv(c,"date")+'</span>')+
          (isWk?'':'<span class="ydots">'+dots+'</span>')+
+         (allDone?thumb:'')+
          '</div>';
     }
     h+='</div></div>';
