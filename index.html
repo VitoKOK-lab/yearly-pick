@@ -1,4 +1,4 @@
-<!DOCTYPE html><html lang="zh-Hant"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>TZG 選品排程＋備貨</title>
+<!DOCTYPE html><html lang="zh-Hant"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>泰熙爾札娜選品行銷系統</title>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
 <script>
@@ -609,7 +609,7 @@ body{color:var(--t1)}
 .hero #userBar{margin:6px 0}
 .hero .kicker,.hero .h-title,.hero .h-sub{text-align:center}
 </style></head><body><div id="loginBox"><div class="lg-card">
-<div class="lg-title">TZG 選品排程</div>
+<div class="lg-title">泰熙爾札娜選品行銷系統</div>
 <div class="lg-sub">請選擇你是誰</div>
 <select id="lg_user"><option value="Regina">Regina（選品·拍片）</option><option value="Vito">Vito（行銷·管理）</option><option value="家逸">家逸（官網）</option><option value="Jessica">Jessica（lineoa）</option></select>
 
@@ -619,7 +619,7 @@ body{color:var(--t1)}
 
 <div class="hero"><div class="kicker">泰熙爾札娜</div><div class="h-title">年度企劃表</div>
 
-<div id="userBar"></div><div class="tabs"><button class="tab on" onclick="sw(5)">年度規劃</button><button class="tab" onclick="sw(1)">選品</button><button class="tab" onclick="sw(2)">campaign</button><button class="tab" onclick="sw(3)">官網</button><button class="tab" onclick="sw(4)">lineoa</button><button class="tab" onclick="sw(6)">商品分析</button><button class="impb" style="align-self:center" onclick="importJune()">⬇ 匯入6月</button><button class="rstopen" style="align-self:center;margin-left:8px" onclick="openRestore()">↩ 還原</button><button class="expb" style="align-self:center;margin-left:8px" onclick="exportYear()">⤓ 全年PDF</button></div></div>
+<div id="userBar"></div><div class="tabs"><button class="tab on" onclick="sw(5)">年度規劃</button><button class="tab" onclick="sw(1)">選品</button><button class="tab" onclick="sw(2)">campaign</button><button class="tab" onclick="sw(3)">官網</button><button class="tab" onclick="sw(4)">lineoa</button><button class="tab" onclick="sw(6)">商品分析</button><button class="impb" style="align-self:center" onclick="importJune()">⬇ 匯入6月</button><button class="rstopen" style="align-self:center;margin-left:8px" onclick="openRestore()">↩ 還原</button><button class="expb" style="align-self:center;margin-left:8px" onclick="exportYear()">⤓ 全年PDF</button><button class="rstopen" style="align-self:center;margin-left:8px;border-color:#C0392B;color:#C0392B" onclick="wipeAll()">🗑 清空全部</button></div></div>
 <div class="wrap"><div class="page" id="phome"></div><div class="page" id="ppick"></div><div class="page" id="pcamp"></div><div class="page" id="pweb"></div><div class="page" id="pline"></div><div class="page on" id="pg"></div><div class="page" id="p1"></div><div class="footer">版本 06/06 17:50</div></div>
 <div id="restoreBox" style="display:none;position:fixed;inset:0;background:rgba(26,20,16,.45);z-index:200;align-items:center;justify-content:center" onclick="if(event.target===this)this.style.display='none'">
 <div style="background:#fff;border-radius:14px;max-width:460px;width:90%;max-height:80vh;overflow:auto;padding:22px">
@@ -762,6 +762,18 @@ async function doRestore(id){
     document.getElementById('restoreBox').style.display='none';
     toast("已還原到 "+(x.label||id));
   }catch(e){console.error(e);toast("還原失敗，請重試");}
+}
+// 清空全部：清掉選品/鎖定/備註/封面/密碼對應，回到全新狀態（清前自動備份一份選品，可從「還原」拉回）
+async function wipeAll(){
+  if(!canPlan()){toast("只有管理員能清空全部");return;}
+  if(!confirm("確定清空全部資料？\n\n所有選品、鎖定月份、備註、封面、密碼設定都會清掉，所有登入的人看到的都會變空白。\n\n（清空前會自動備份一份目前選品，事後可用「還原」拉回。）"))return;
+  if(!confirm("再次確認：這個動作會立刻同步到雲端、影響所有人。真的要清空全部嗎？"))return;
+  try{
+    await makeBackup(); // 清空前先存一份現況，後悔還能用「還原」拉回
+    PICKS={};LOCKED={};NOTES={};COVER={};PWMAP={};
+    pushCloud();render();
+    toast("已清空全部資料（已先備份，可從「還原」拉回選品）");
+  }catch(e){console.error(e);toast("清空失敗，請重試");}
 }
 
 function toggleLock(m){if(!canPlan()){toast('只有管理員能鎖定');return;}LOCKED[m]=!LOCKED[m];saveLock();if(LOCKED[m]){makeBackup();toast(ML[m]+" 已鎖定，並備份一份");}else{toast(ML[m]+" 已解鎖");}render();}
