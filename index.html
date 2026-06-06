@@ -550,6 +550,9 @@ body{color:var(--t1)}
 .mu-arrow{margin-left:auto;color:var(--t3);font-size:10px}
 .mu-body{padding:4px 12px 14px;border-top:1px solid var(--b1)}
 .mu.open{border-left-color:#E6007E}
+
+.mu.mu-done{opacity:.6;border-left-color:#2E7D32}
+.mu-ok{color:#2E7D32;font-weight:700}
 </style></head><body><div id="loginBox"><div class="lg-card">
 <div class="lg-title">TZG 選品排程</div>
 <div class="lg-sub">請選擇你是誰並輸入密碼</div>
@@ -562,7 +565,7 @@ body{color:var(--t1)}
 <div class="hero"><div class="kicker">泰熙爾札娜</div><div class="h-title">年度企劃表</div>
 <div class="h-sub">企劃 ｜ 選品 ｜ 官網 ｜ lineoa</div>
 <div id="userBar"></div><div class="tabs"><button class="tab on" onclick="sw(5)">年度規劃</button><button class="tab" onclick="sw(1)">選品</button><button class="tab" onclick="sw(2)">campaign</button><button class="tab" onclick="sw(3)">官網</button><button class="tab" onclick="sw(4)">lineoa</button><button class="tab" onclick="sw(6)">商品分析</button><button class="impb" style="margin-left:auto;align-self:center" onclick="importJune()">⬇ 匯入6月</button><button class="rstopen" style="align-self:center;margin-left:8px" onclick="openRestore()">↩ 還原</button><button class="expb" style="align-self:center;margin-left:8px" onclick="exportYear()">⤓ 全年PDF</button></div></div>
-<div class="wrap"><div class="page" id="phome"></div><div class="page" id="ppick"></div><div class="page" id="pcamp"></div><div class="page" id="pweb"></div><div class="page" id="pline"></div><div class="page on" id="pg"></div><div class="page" id="p1"></div><div class="footer">版本 06/06 15:27</div></div>
+<div class="wrap"><div class="page" id="phome"></div><div class="page" id="ppick"></div><div class="page" id="pcamp"></div><div class="page" id="pweb"></div><div class="page" id="pline"></div><div class="page on" id="pg"></div><div class="page" id="p1"></div><div class="footer">版本 06/06 15:46</div></div>
 <div id="restoreBox" style="display:none;position:fixed;inset:0;background:rgba(26,20,16,.45);z-index:200;align-items:center;justify-content:center" onclick="if(event.target===this)this.style.display='none'">
 <div style="background:#fff;border-radius:14px;max-width:460px;width:90%;max-height:80vh;overflow:auto;padding:22px">
 <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px"><div style="font-family:'Cormorant Garamond',serif;font-size:20px;font-weight:700">還原備份</div><button onclick="document.getElementById('restoreBox').style.display='none'" style="border:none;background:none;font-size:22px;cursor:pointer;color:#999999">×</button></div>
@@ -1316,15 +1319,15 @@ function renderGantt(){
     const RN={campaign:"企劃",pick:"選品",web:"官網",line:"lineoa"};
     const today2=new Date(2026,5,5).getTime();
     const mine=[];
-    for(const c of CAMPS){const s=roleStat(myr,c);if(s.ok)continue;const ad=campStartDate(c).getTime();const dd=(ad-today2)/86400000;if(dd<=90){const dl=dlInfoRole(c,myr);mine.push({c:c,dl:dl,ad:ad});}}
-    mine.sort((a,b)=>a.ad-b.ad);
+    for(const c of CAMPS){const s=roleStat(myr,c);const ad=campStartDate(c).getTime();const dd=(ad-today2)/86400000;if(dd<=90){const dl=dlInfoRole(c,myr);mine.push({c:c,dl:dl,ad:ad,ok:s.ok});}}
+    mine.sort((a,b)=>{if(a.ok!==b.ok)return a.ok?1:-1;return a.ad-b.ad;});
     h+='<div class="myurgent"><div class="myurgent-t">你的工作 · 三個月內（'+RN[myr]+'）</div>';
     if(mine.length===0)h+='<div class="myurgent-empty">三個月內沒有待辦，輕鬆。</div>';
     else{h+='<div class="myurgent-list">';
       for(const x of mine){
         const op=(GANTTOPEN===x.c.id);
-        h+='<div class="mu '+x.dl.cls+(op?" open":"")+'" data-cid="'+encodeURIComponent(x.c.id)+'"><div class="mu-head" onclick="toggleGanttOpen(\''+myr+'\',\''+x.c.id+'\')">'+
-           '<span class="mu-dl">'+x.dl.txt+'</span><span class="mu-tag" style="background:'+({"大檔":"#E6007E","季檔":"#1FA89C","週檔":"#C5A028","寵粉":"#A98Fb0"}[x.c.type]||"#888")+'">'+x.c.type+'</span><span class="mu-name">'+cv(x.c,"name")+'</span><span class="mu-arrow">'+(op?"▲":"▼")+'</span></div>';
+        h+='<div class="mu '+x.dl.cls+(op?" open":"")+(x.ok?" mu-done":"")+'" data-cid="'+encodeURIComponent(x.c.id)+'"><div class="mu-head" onclick="toggleGanttOpen(\''+myr+'\',\''+x.c.id+'\')">'+
+           '<span class="mu-dl">'+(x.ok?'<span class="mu-ok">✓ 完成</span>':x.dl.txt)+'</span><span class="mu-tag" style="background:'+({"大檔":"#E6007E","季檔":"#1FA89C","週檔":"#C5A028","寵粉":"#A98Fb0"}[x.c.type]||"#888")+'">'+x.c.type+'</span><span class="mu-name">'+cv(x.c,"name")+'</span><span class="mu-arrow">'+(op?"▲":"▼")+'</span></div>';
         if(op)h+='<div class="mu-body">'+((myr==="web"||myr==="line")?renderViewCamp(x.c,myr):renderOneCamp(x.c))+'</div>';
         h+='</div>';
       }
