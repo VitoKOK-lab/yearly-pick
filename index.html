@@ -516,6 +516,13 @@ body{color:var(--t1)}
 .rc-go{font-size:11px;font-weight:700;color:#fff;background:#1FA89C;padding:3px 10px;border-radius:4px;flex-shrink:0}
 .rc-wait{font-size:11px;color:#9A6A1E;background:#FBF0DD;padding:3px 10px;border-radius:4px;flex-shrink:0}
 .rcamp.st-over .rc-name{color:#D9534F;font-weight:700}
+
+.catgrp{margin-bottom:22px}
+.catgrp-h{font-size:14px;font-weight:700;color:var(--t1);margin-bottom:8px;display:flex;align-items:center;gap:8px}
+.catgrp-dot{width:10px;height:10px;border-radius:50%;display:inline-block}
+.catgrp-n{font-size:12px;color:var(--t3);font-weight:400;margin-left:auto}
+.rcamp.flash{animation:flashbox 2s ease}
+@keyframes flashbox{0%,100%{box-shadow:0 0 0 rgba(230,0,126,0)}20%,60%{box-shadow:0 0 0 4px rgba(230,0,126,.35);border-color:#E6007E}}
 </style></head><body><div id="loginBox"><div class="lg-card">
 <div class="lg-title">TZG 選品排程</div>
 <div class="lg-sub">請選擇你是誰並輸入密碼</div>
@@ -528,7 +535,7 @@ body{color:var(--t1)}
 <div class="hero"><div class="kicker">泰熙爾札娜 · 選品排程</div><div class="h-title">泰熙爾札娜<b>年度企劃表</b></div>
 <div class="h-sub">排程→狀態追蹤→進度看板 ｜ 選品/拍片/行銷/官網/LINE 五關 ｜ 雲端即時共用</div>
 <div id="userBar"></div><div class="tabs"><button class="tab on" onclick="sw(0)">首頁</button><button class="tab" onclick="sw(1)">選品</button><button class="tab" onclick="sw(2)">campaign</button><button class="tab" onclick="sw(3)">官網</button><button class="tab" onclick="sw(4)">lineoa</button><button class="tab" onclick="sw(5)">年度規劃</button><button class="tab" onclick="sw(6)">商品分析</button><button class="impb" style="margin-left:auto;align-self:center" onclick="importJune()">⬇ 匯入6月</button><button class="rstopen" style="align-self:center;margin-left:8px" onclick="openRestore()">↩ 還原</button><button class="expb" style="align-self:center;margin-left:8px" onclick="exportYear()">⤓ 全年PDF</button></div></div>
-<div class="wrap"><div class="page on" id="phome"></div><div class="page" id="ppick"></div><div class="page" id="pcamp"></div><div class="page" id="pweb"></div><div class="page" id="pline"></div><div class="page" id="pg"></div><div class="page" id="p1"></div><div class="footer">TZG 泰熙爾札娜珠寶 ｜ 選品排程（雲端即時共用，自動同步） ｜ 版本 06/06 10:39</div></div>
+<div class="wrap"><div class="page on" id="phome"></div><div class="page" id="ppick"></div><div class="page" id="pcamp"></div><div class="page" id="pweb"></div><div class="page" id="pline"></div><div class="page" id="pg"></div><div class="page" id="p1"></div><div class="footer">TZG 泰熙爾札娜珠寶 ｜ 選品排程（雲端即時共用，自動同步） ｜ 版本 06/06 14:10</div></div>
 <div id="restoreBox" style="display:none;position:fixed;inset:0;background:rgba(26,20,16,.45);z-index:200;align-items:center;justify-content:center" onclick="if(event.target===this)this.style.display='none'">
 <div style="background:#fff;border-radius:14px;max-width:460px;width:90%;max-height:80vh;overflow:auto;padding:22px">
 <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px"><div style="font-family:'Cormorant Garamond',serif;font-size:20px;font-weight:700">還原備份</div><button onclick="document.getElementById('restoreBox').style.display='none'" style="border:none;background:none;font-size:22px;cursor:pointer;color:#999999">×</button></div>
@@ -771,7 +778,7 @@ function recsFor(c){
 function recsHTML(c){
   const picks=getPicks(c.id);let recs="";
   for(const r of recsFor(c)){const added=picks.some(p=>p.name===r.name);
-    recs+=`<div class="rrow ${added?'added':''}" data-act="addpick" data-cid="${encodeURIComponent(c.id)}" data-pn="${encodeURIComponent(r.name)}"><span class="rn">${r.name}</span><span class="rcat" style="background:${CATC[r.cat]}">${r.cat}</span><span class="rp">$${r.price.toLocaleString()}</span><span class="rm">月均${r.monthly}</span><span class="ab">${added?'✓':'＋'}</span></div>`;}
+    recs+=`<div class="rrow ${added?'added':''}" data-act="addpick" data-cid="${encodeURIComponent(c.id)}" data-pn="${encodeURIComponent(r.name)}"><span class="rn">${r.name}</span><span class="rcat" style="background:${CATC[r.cat]}">${r.cat}</span><span class="rp">$${r.price.toLocaleString()}</span><span class="rm">用過 ${r.sold||0} 次</span><span class="ab">${added?'✓':'＋'}</span></div>`;}
   return recs;
 }
 
@@ -865,8 +872,8 @@ function gotoTask(role,cid){
   sw(tab);
   setTimeout(function(){
     const el=document.querySelector('#'+pid+' .rcamp[data-cid="'+encodeURIComponent(cid)+'"]');
-    if(el)el.scrollIntoView({block:"center",behavior:"smooth"});
-  },200);
+    if(el){el.scrollIntoView({block:"center",behavior:"smooth"});el.classList.add("flash");setTimeout(function(){el.classList.remove("flash");},2000);}
+  },250);
 }
 // 蒐集所有未完成待辦（按deadline排序）
 function collectTasks(){
@@ -1077,22 +1084,32 @@ function renderTotals(){
     el.querySelectorAll('.prow').forEach(pr=>{const nm=pr.querySelector('.pn').textContent;const p=getPicks(c.id).find(x=>x.name===nm);if(p){const rv=pr.querySelector('.prowrev');if(rv)rv.textContent=p.price?(Math.round(p.qty*p.price/1000)/10)+'萬':'—';}});});
 }
 function renderOverview(){
-  let total=0,totalItems=0;const byProd={};
-  for(const id in PICKS){for(const p of PICKS[id]){const rev=p.qty*p.price;total+=rev;totalItems+=p.qty;
-    if(!byProd[p.name])byProd[p.name]={n:0,qty:0,rev:0};byProd[p.name].n++;byProd[p.name].qty+=p.qty;byProd[p.name].rev+=rev;}}
-  let h=`<div class="gb-row"><div class="gb"><div class="l">全年預估營收</div><div class="v">${wan(total).toFixed(0)}<span> 萬</span></div></div>
-   <div class="gb alt"><div class="l">總備貨件數</div><div class="v">${fmt(totalItems)}<span> 件</span></div></div>
-   <div class="gb alt"><div class="l">已排商品種類</div><div class="v">${Object.keys(byProd).length}<span> 種</span></div></div>
-   <div class="gb alt"><div class="l">已填檔期</div><div class="v">${Object.keys(PICKS).filter(k=>PICKS[k].length>0).length}<span>/${CAMPS.length}</span></div></div></div>`;
-  h+=`<div class="dsec">商品使用次數（看排太多／太少）</div><div class="dnote">用越多檔＝越主打（≥5檔標紅）；只1檔＝點綴。備貨/營收跟排程連動</div>`;
-  const prods=Object.entries(byProd).sort((a,b)=>b[1].n-a[1].n||b[1].rev-a[1].rev);
-  if(prods.length===0)h+=`<div class="empty">還沒排任何品。去排程頁一檔一檔選。</div>`;
-  else{const maxn=prods[0][1].n;h+=`<table class="utable"><thead><tr><th>商品</th><th class="n">用幾檔</th><th class="n">總備貨</th><th class="n">貢獻營收</th></tr></thead><tbody>`;
-    for(const [nm,d] of prods){const tag=d.n>=5?'warn-much':(d.n===1?'warn-few':'');h+=`<tr><td>${nm}</td><td class="n"><span class="usedbar" style="width:${d.n/maxn*40+4}px"></span><span class="${tag}">${d.n}</span></td><td class="n">${fmt(d.qty)}</td><td class="n">${wan(d.rev).toFixed(1)}萬</td></tr>`;}
-    h+=`</tbody></table>`;}
+  let totalItems=0;const byProd={};
+  for(const id in PICKS){for(const p of PICKS[id]){const rev=p.qty*p.price;totalItems+=p.qty;
+    const cat=(PMAP[p.name]&&PMAP[p.name].cat)||"其他";
+    if(!byProd[p.name])byProd[p.name]={n:0,qty:0,rev:0,cat:cat};byProd[p.name].n++;byProd[p.name].qty+=p.qty;byProd[p.name].rev+=rev;}}
+  // 頂部：只留總備貨、已排種類
+  let h=`<div class="gb-row"><div class="gb"><div class="l">總備貨件數</div><div class="v">${fmt(totalItems)}<span> 件</span></div></div>
+   <div class="gb alt"><div class="l">已排商品種類</div><div class="v">${Object.keys(byProd).length}<span> 種</span></div></div></div>`;
+  h+=`<div class="dsec">商品使用次數（看排太多／太少）</div><div class="dnote">用越多檔＝越主打（≥5檔標紅）；只1檔＝點綴</div>`;
+  const prods=Object.entries(byProd);
+  if(prods.length===0){h+=`<div class="empty">還沒排任何品。去排程頁一檔一檔選。</div>`;document.getElementById('p1').innerHTML=h;return;}
+  // 按種類分組
+  const CATORD=["裸石","飾品","水晶能量","訂製","其他"];
+  const groups={};for(const [nm,d] of prods){(groups[d.cat]=groups[d.cat]||[]).push([nm,d]);}
+  const cats=Object.keys(groups).sort((a,b)=>(CATORD.indexOf(a)<0?9:CATORD.indexOf(a))-(CATORD.indexOf(b)<0?9:CATORD.indexOf(b)));
+  const maxn=Math.max(...prods.map(x=>x[1].n));
+  const CATC={"裸石":"#1FA89C","飾品":"#E6007E","水晶能量":"#C5A028","訂製":"#B12468","其他":"#888"};
+  for(const cat of cats){
+    const list=groups[cat].sort((a,b)=>b[1].n-a[1].n||b[1].rev-a[1].rev);
+    const catItems=list.reduce((s,x)=>s+x[1].qty,0);
+    h+=`<div class="catgrp"><div class="catgrp-h"><span class="catgrp-dot" style="background:${CATC[cat]||"#888"}"></span>${cat}<span class="catgrp-n">${list.length} 種 · ${fmt(catItems)} 件</span></div>`;
+    h+=`<table class="utable"><thead><tr><th>商品</th><th class="n">用幾檔</th><th class="n">總備貨</th><th class="n">貢獻營收</th></tr></thead><tbody>`;
+    for(const [nm,d] of list){const tag=d.n>=5?'warn-much':(d.n===1?'warn-few':'');h+=`<tr><td>${nm}</td><td class="n"><span class="usedbar" style="width:${d.n/maxn*40+4}px"></span><span class="${tag}">${d.n}</span></td><td class="n">${fmt(d.qty)}</td><td class="n">${wan(d.rev).toFixed(1)}萬</td></tr>`;}
+    h+=`</tbody></table></div>`;
+  }
   document.getElementById('p1').innerHTML=h;
 }
-
 function exportMonth(m){
   const cs=CAMPS.filter(c=>c.month===m).filter(c=>getPicks(c.id).length>0);
   let total=0,items=0;cs.forEach(c=>{total+=campRev(c.id);getPicks(c.id).forEach(p=>items+=p.qty);});
@@ -1262,7 +1279,7 @@ function renderGantt(){
       const isWk=(c.type==="週檔"||c.type==="寵粉");
       const allDone=done.pick&&done.web&&done.line;
       const thumb='<span class="ythumb" title="全部完成"><svg viewBox="0 0 24 24" width="16" height="16" fill="#1FA89C"><path d="M2 21h2.5V10H2v11zm20-9.5c0-.83-.67-1.5-1.5-1.5h-5.65l.85-4.1.03-.32c0-.41-.17-.79-.44-1.06L14.34 3 8.6 8.76c-.28.28-.44.66-.44 1.07V19c0 .83.67 1.5 1.5 1.5h7.5c.62 0 1.15-.38 1.38-.92l2.34-5.48c.07-.18.12-.37.12-.6v-1z"/></svg></span>';
-      h+='<div class="yrow '+(isWk?"wk":"")+(allDone?" alldone":"")+'" onclick="gotoTask(\'pick\',\''+c.id+'\')">'+
+      h+='<div class="yrow '+(isWk?"wk":"")+(allDone?" alldone":"")+'" onclick="gotoTask((USER_ROLE[(CUR&&CUR.name)]||\'pick\')===\'campaign\'?\'campaign\':(USER_ROLE[(CUR&&CUR.name)]||\'pick\'),\''+c.id+'\')">'+
          '<span class="ytag" style="background:'+col+'">'+c.type+'</span>'+
          '<span class="yname">'+cv(c,"name")+'</span>'+
          (isWk?'':'<span class="ydate">'+cv(c,"date")+'</span>')+
