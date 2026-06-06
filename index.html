@@ -407,6 +407,21 @@ body{color:var(--t1)}
 .task-prev{font-size:11px;padding:3px 9px;border-radius:4px;flex-shrink:0}
 .task-prev.prev-ok{background:#E3F5E8;color:#2E7D32}
 .task-prev.prev-wait{background:#FBF0DD;color:#9A6A1E}
+
+/* 年度月曆卡片 */
+.ycal{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:14px;padding:4px}
+.ycard{border:1px solid var(--b1);border-radius:8px;overflow:hidden;background:#fff}
+.ycard-h{background:#1A1A1A;color:#fff;font-size:14px;font-weight:700;padding:9px 14px;letter-spacing:.04em}
+.ycard-body{padding:8px}
+.yrow{display:flex;align-items:center;gap:8px;padding:9px 8px;border-radius:5px;cursor:pointer;transition:background .1s}
+.yrow:hover{background:#F5F5F5}
+.yrow.wk{opacity:.7}
+.ytag{font-size:10px;color:#fff;padding:2px 7px;border-radius:3px;flex-shrink:0;font-weight:600}
+.yname{flex:1;font-size:13px;color:var(--t1);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.ydate{font-size:11px;color:var(--t3);flex-shrink:0}
+.ydots{display:flex;gap:3px;flex-shrink:0}
+.ydot{font-size:9px;width:20px;height:18px;display:flex;align-items:center;justify-content:center;border-radius:3px;background:#EEE;color:#AAA;border:1px solid #E0E0E0}
+.ydot.on{background:var(--blue);color:#fff;border-color:var(--blue)}
 </style></head><body><div id="loginBox"><div class="lg-card">
 <div class="lg-title">TZG 選品排程</div>
 <div class="lg-sub">請選擇你是誰並輸入密碼</div>
@@ -419,7 +434,7 @@ body{color:var(--t1)}
 <div class="hero"><div class="kicker">泰熙爾札娜 · 選品排程</div><div class="h-title">選品排程 <b>＋ 備貨預估</b></div>
 <div class="h-sub">排程→狀態追蹤→進度看板 ｜ 選品/拍片/行銷/官網/LINE 五關 ｜ 雲端即時共用</div>
 <div id="userBar"></div><div class="tabs"><button class="tab on" onclick="sw(0)">首頁</button><button class="tab" onclick="sw(1)">選品</button><button class="tab" onclick="sw(2)">campaign</button><button class="tab" onclick="sw(3)">官網</button><button class="tab" onclick="sw(4)">lineoa</button><button class="tab" onclick="sw(5)">甘特圖</button><button class="tab" onclick="sw(6)">總覽</button><button class="impb" style="margin-left:auto;align-self:center" onclick="importJune()">⬇ 匯入6月</button><button class="rstopen" style="align-self:center;margin-left:8px" onclick="openRestore()">↩ 還原</button><button class="expb" style="align-self:center;margin-left:8px" onclick="exportYear()">⤓ 全年PDF</button></div></div>
-<div class="wrap"><div class="page on" id="phome"></div><div class="page" id="ppick"></div><div class="page" id="pcamp"></div><div class="page" id="pweb"></div><div class="page" id="pline"></div><div class="page" id="pg"></div><div class="page" id="p1"></div><div class="footer">TZG 泰熙爾札娜珠寶 ｜ 選品排程（雲端即時共用，自動同步） ｜ 版本 06/06 08:24</div></div>
+<div class="wrap"><div class="page on" id="phome"></div><div class="page" id="ppick"></div><div class="page" id="pcamp"></div><div class="page" id="pweb"></div><div class="page" id="pline"></div><div class="page" id="pg"></div><div class="page" id="p1"></div><div class="footer">TZG 泰熙爾札娜珠寶 ｜ 選品排程（雲端即時共用，自動同步） ｜ 版本 06/06 08:34</div></div>
 <div id="restoreBox" style="display:none;position:fixed;inset:0;background:rgba(26,20,16,.45);z-index:200;align-items:center;justify-content:center" onclick="if(event.target===this)this.style.display='none'">
 <div style="background:#fff;border-radius:14px;max-width:460px;width:90%;max-height:80vh;overflow:auto;padding:22px">
 <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px"><div style="font-family:'Cormorant Garamond',serif;font-size:20px;font-weight:700">還原備份</div><button onclick="document.getElementById('restoreBox').style.display='none'" style="border:none;background:none;font-size:22px;cursor:pointer;color:#999999">×</button></div>
@@ -879,21 +894,6 @@ function renderOverview(){
    <div class="gb alt"><div class="l">總備貨件數</div><div class="v">${fmt(totalItems)}<span> 件</span></div></div>
    <div class="gb alt"><div class="l">已排商品種類</div><div class="v">${Object.keys(byProd).length}<span> 種</span></div></div>
    <div class="gb alt"><div class="l">已填檔期</div><div class="v">${Object.keys(PICKS).filter(k=>PICKS[k].length>0).length}<span>/${CAMPS.length}</span></div></div></div>`;
-  // 團隊工作量
-  let totP=0,doneFilm=0,doneMkt=0,doneWeb=0,doneLine=0;
-  for(const id in PICKS){for(const p of PICKS[id]){totP++;const f=p.flags||{};if(f.film)doneFilm++;if(f.mkt)doneMkt++;if(f.web)doneWeb++;if(f.line)doneLine++;}}
-  function wbar(name,role,done,tot){const pct=tot?Math.round(done/tot*100):0;return '<div class="wl-row"><div class="wl-who">'+name+'<span class="wl-role">'+role+'</span></div><div class="wl-track"><div class="wl-fill" style="width:'+pct+'%"></div></div><div class="wl-num">'+done+'/'+tot+' <span>'+pct+'%</span></div></div>';}
-  h+='<div class="dsec">團隊工作量（全年）</div>';
-  h+='<div class="wl-box">';
-  h+='<div class="wl-row"><div class="wl-who">Regina<span class="wl-role">選品</span></div><div class="wl-track"><div class="wl-fill" style="width:100%"></div></div><div class="wl-num">已選 '+totP+' 品</div></div>';
-  h+=wbar('Regina','拍片',doneFilm,totP);
-  h+=wbar('Vito','行銷',doneMkt,totP);
-  h+=wbar('家逸','官網',doneWeb,totP);
-  h+=wbar('Jessica','lineoa',doneLine,totP);
-  h+='</div>';
-  h+=`<div class="dsec">每月預估營收</div>`;
-  const mrevs=MONTHS.map(m=>[m,CAMPS.filter(c=>c.month===m).reduce((s,c)=>s+campRev(c.id),0)]);const mm=Math.max(1,...mrevs.map(x=>x[1]));
-  for(const [m,v] of mrevs)h+=`<div class="mbar"><div class="ml">${ML[m]}</div><div class="mt"><div class="mf" style="width:${v/mm*100}%"></div></div><div class="mv">${wan(v).toFixed(0)}萬</div></div>`;
   h+=`<div class="dsec">商品使用次數（看排太多／太少）</div><div class="dnote">用越多檔＝越主打（≥5檔標紅）；只1檔＝點綴。備貨/營收跟排程連動</div>`;
   const prods=Object.entries(byProd).sort((a,b)=>b[1].n-a[1].n||b[1].rev-a[1].rev);
   if(prods.length===0)h+=`<div class="empty">還沒排任何品。去排程頁一檔一檔選。</div>`;
@@ -1052,28 +1052,35 @@ function resetEditCamp(){
 
 
 function renderGantt(){
-  const totalW=52;const colW=100/totalW;
-  const MW={"2026-06":0,"2026-07":4,"2026-08":8,"2026-09":13,"2026-10":17,"2026-11":22,"2026-12":26,"2027-01":31,"2027-02":35,"2027-03":39,"2027-04":43,"2027-05":47};
-  let head='<div class="gt-head"><div class="gt-lbl"></div><div class="gt-track">';
-  for(const m of MONTHS){const left=MW[m]*colW;head+='<div class="gt-mtick" style="left:'+left+'%">'+ML[m].replace("2026年","").replace("2027年","")+'</div>';}
-  head+='</div></div>';
-  let rows='';const order=["大檔","季檔","週檔","寵粉"];
-  for(const ty of order){
-    const cs=CAMPS.filter(function(c){return c.type===ty;});
+  let h='<div class="ycal">';
+  for(const m of MONTHS){
+    const cs=CAMPS.filter(c=>c.month===m);
     if(cs.length===0)continue;
-    rows+='<div class="gt-group">'+ty+'</div>';
+    const mlbl=(ML[m]||m).replace("2026年","").replace("2027年","'27 ");
+    h+='<div class="ycard"><div class="ycard-h">'+mlbl+'</div><div class="ycard-body">';
+    // 排序：大檔>季檔>週檔>寵粉
+    const ord={"大檔":0,"季檔":1,"週檔":2,"寵粉":3};
+    cs.sort((a,b)=>(ord[a.type]||9)-(ord[b.type]||9));
     for(const c of cs){
-      const sw=c.sw||0,ew=c.ew||(sw+2);
-      const left=sw*colW,width=Math.max(colW*0.8,(ew-sw)*colW);
       const col=TYC[c.type]||"#888";
-      const picks=getPicks(c.id);let totG=picks.length*4,doneG=0;
-      picks.forEach(function(p){const f=p.flags||{};['film','mkt','web','line'].forEach(function(k){if(f[k])doneG++;});});
-      const pct=totG?Math.round(doneG/totG*100):0;
-      const prog=picks.length?(' \u00b7 '+doneG+'/'+totG+'\u95dc '+pct+'%'):' \u00b7 \u672a\u9078\u54c1';
-      rows+='<div class="gt-row"><div class="gt-lbl" title="'+cv(c,'name')+'">'+cv(c,'name')+'</div><div class="gt-track"><div class="gt-bar" style="left:'+left+'%;width:'+width+'%;border-color:'+col+'" onclick="jumpTo(\''+c.id+'\')"><div class="gt-fill" style="width:'+pct+'%;background:'+col+'"></div><span class="gt-txt">'+cv(c,'date')+prog+'</span></div></div></div>';
+      const picks=getPicks(c.id);
+      const done={pick:roleStat("pick",c).ok,web:roleStat("web",c).ok,line:roleStat("line",c).ok};
+      let dots='';
+      [["選",done.pick],["官",done.web],["OA",done.line]].forEach(function(x){
+        dots+='<span class="ydot '+(x[1]?"on":"")+'">'+x[0]+'</span>';
+      });
+      const isWk=(c.type==="週檔"||c.type==="寵粉");
+      h+='<div class="yrow '+(isWk?"wk":"")+'" onclick="gotoTask(\'pick\',\''+c.id+'\')">'+
+         '<span class="ytag" style="background:'+col+'">'+c.type+'</span>'+
+         '<span class="yname">'+cv(c,"name")+'</span>'+
+         (isWk?'':'<span class="ydate">'+cv(c,"date")+'</span>')+
+         (isWk?'':'<span class="ydots">'+dots+'</span>')+
+         '</div>';
     }
+    h+='</div></div>';
   }
-  document.getElementById('pg').innerHTML=head+'<div class="gt-body">'+rows+'</div>';
+  h+='</div>';
+  document.getElementById('pg').innerHTML=h;
 }
 
 function render(){if(typeof applyNav==='function')applyNav();renderHome();renderRole('pick','ppick');renderRole('campaign','pcamp');renderRole('web','pweb');renderRole('line','pline');renderGantt();renderOverview();}
