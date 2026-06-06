@@ -528,7 +528,7 @@ body{color:var(--t1)}
 <div class="hero"><div class="kicker">泰熙爾札娜 · 選品排程</div><div class="h-title">泰熙爾札娜<b>年度企劃表</b></div>
 <div class="h-sub">排程→狀態追蹤→進度看板 ｜ 選品/拍片/行銷/官網/LINE 五關 ｜ 雲端即時共用</div>
 <div id="userBar"></div><div class="tabs"><button class="tab on" onclick="sw(0)">首頁</button><button class="tab" onclick="sw(1)">選品</button><button class="tab" onclick="sw(2)">campaign</button><button class="tab" onclick="sw(3)">官網</button><button class="tab" onclick="sw(4)">lineoa</button><button class="tab" onclick="sw(5)">年度規劃</button><button class="tab" onclick="sw(6)">商品分析</button><button class="impb" style="margin-left:auto;align-self:center" onclick="importJune()">⬇ 匯入6月</button><button class="rstopen" style="align-self:center;margin-left:8px" onclick="openRestore()">↩ 還原</button><button class="expb" style="align-self:center;margin-left:8px" onclick="exportYear()">⤓ 全年PDF</button></div></div>
-<div class="wrap"><div class="page on" id="phome"></div><div class="page" id="ppick"></div><div class="page" id="pcamp"></div><div class="page" id="pweb"></div><div class="page" id="pline"></div><div class="page" id="pg"></div><div class="page" id="p1"></div><div class="footer">TZG 泰熙爾札娜珠寶 ｜ 選品排程（雲端即時共用，自動同步） ｜ 版本 06/06 10:36</div></div>
+<div class="wrap"><div class="page on" id="phome"></div><div class="page" id="ppick"></div><div class="page" id="pcamp"></div><div class="page" id="pweb"></div><div class="page" id="pline"></div><div class="page" id="pg"></div><div class="page" id="p1"></div><div class="footer">TZG 泰熙爾札娜珠寶 ｜ 選品排程（雲端即時共用，自動同步） ｜ 版本 06/06 10:39</div></div>
 <div id="restoreBox" style="display:none;position:fixed;inset:0;background:rgba(26,20,16,.45);z-index:200;align-items:center;justify-content:center" onclick="if(event.target===this)this.style.display='none'">
 <div style="background:#fff;border-radius:14px;max-width:460px;width:90%;max-height:80vh;overflow:auto;padding:22px">
 <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px"><div style="font-family:'Cormorant Garamond',serif;font-size:20px;font-weight:700">還原備份</div><button onclick="document.getElementById('restoreBox').style.display='none'" style="border:none;background:none;font-size:22px;cursor:pointer;color:#999999">×</button></div>
@@ -1000,9 +1000,9 @@ function renderRole(role,cid){
   });
   // 分組：近期要做(大檔季檔,未完成,deadline<=60天) / 每週常態(週檔寵粉,未完成) / 已完成 / 遠期(提示)
   const isWk=function(x){return x.c.type==="週檔"||x.c.type==="寵粉";};
-  const today2=new Date(2026,5,5).getTime();const todo=all.filter(x=>!x.ok&&!isWk(x)&&(x.ad-today2)/86400000<=60);
-  const later=all.filter(x=>!x.ok&&!isWk(x)&&(x.ad-today2)/86400000>60);
-  const weekly=all.filter(x=>!x.ok&&isWk(x));
+  const today2=new Date(2026,5,5).getTime();
+  const todo=all.filter(x=>!x.ok&&(x.ad-today2)/86400000<=90);
+  const later=all.filter(x=>!x.ok&&(x.ad-today2)/86400000>90);
   const done=all.filter(x=>x.ok);
   h+='<div class="rcamp-list">';
   const PREV={pick:null,campaign:null,web:"pick",line:"web"};
@@ -1027,11 +1027,10 @@ function renderRole(role,cid){
     if(v.open===c.id){r+='<div class="rcamp-body">'+((role==="web"||role==="line")?renderViewCamp(c,role):renderOneCamp(c))+'</div>';}
     r+='</div>';return r;
   }
-  if(todo.length){h+='<div class="grp-h grp-todo">近期要做 · 兩個月內（'+todo.length+'）</div>';for(const x of todo)h+=rowHTML(x);}
-  else h+='<div class="grp-h grp-todo">近期要做 · 兩個月內</div><div class="role-empty" style="margin-bottom:8px">近兩個月沒有待辦，輕鬆。</div>';
-  if(weekly.length){h+='<div class="grp-h grp-weekly">每週常態</div>';for(const x of weekly)h+=rowHTML(x);}
+  if(todo.length){h+='<div class="grp-h grp-todo">近期要做 · 三個月內（'+todo.length+'）</div>';for(const x of todo)h+=rowHTML(x);}
+  else h+='<div class="grp-h grp-todo">近期要做 · 三個月內</div><div class="role-empty" style="margin-bottom:8px">近三個月沒有待辦，輕鬆。</div>';
   if(done.length){h+='<div class="grp-h grp-done">已完成（'+done.length+'）</div>';for(const x of done)h+=rowHTML(x);}
-  if(later.length){h+='<div class="later-note">還有 '+later.length+' 個兩個月後的檔。想提早做 → 到「年度規劃」點選</div>';}
+  if(later.length){h+='<div class="later-note">還有 '+later.length+' 個三個月後的檔。想提早做 → 到「年度規劃」點選</div>';}
   h+='</div>';
   document.getElementById(cid).innerHTML=h;
 }
