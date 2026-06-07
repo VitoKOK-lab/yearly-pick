@@ -615,20 +615,21 @@ body{color:var(--t1)}
 .flow-sec{font-family:'Noto Serif TC';font-size:17px;font-weight:700;color:var(--zana);margin:26px 0 4px;display:flex;align-items:center;gap:8px}
 .flow-sec .pill{font-size:10px;color:#fff;padding:2px 9px;border-radius:9px;font-weight:600}
 .flow-sub{font-size:12px;color:var(--t3);margin-bottom:16px}
-/* 時間軸卡片 */
-.tl{display:flex;gap:0;align-items:stretch;overflow-x:auto;padding:4px 2px 14px}
-.tl-node{flex:1 0 200px;min-width:200px;position:relative;display:flex;flex-direction:column}
-.tl-arrow{flex:0 0 26px;display:flex;align-items:center;justify-content:center;color:#C9C9C9;font-size:18px}
-.tl-card{background:#fff;border:1.5px solid var(--b1);border-radius:8px;padding:14px;height:100%;border-top:4px solid var(--zana)}
-.tl-card.go{background:#1A8C82;border-color:#1A8C82;color:#fff}
-.tl-when{display:inline-block;font-size:10.5px;font-weight:700;padding:3px 9px;border-radius:4px;background:#E8F5F4;color:#1A7A72;margin-bottom:9px}
-.tl-card.go .tl-when{background:rgba(255,255,255,.22);color:#fff}
-.tl-ttl{font-family:'Noto Serif TC';font-size:15px;font-weight:700;margin-bottom:6px}
-.tl-desc{font-size:11.5px;line-height:1.6;color:var(--t2);margin-bottom:11px}
-.tl-card.go .tl-desc{color:rgba(255,255,255,.9)}
-.tl-roles{display:flex;flex-wrap:wrap;gap:5px;margin-top:auto}
+/* 直式作業流程 */
+.vflow{max-width:600px;margin:4px 0 4px}
+.vstep{display:flex;gap:11px;align-items:stretch}
+.vstep-num{flex:0 0 28px;width:28px;height:28px;border-radius:50%;color:#fff;font-size:13px;font-weight:700;display:flex;align-items:center;justify-content:center;margin-top:2px}
+.vstep-body{flex:1;border:1px solid var(--b1);border-left:4px solid #ccc;border-radius:8px;padding:11px 13px}
+.vstep-ttl{font-family:'Noto Serif TC';font-size:14.5px;font-weight:700}
+.vstep-desc{font-size:11.5px;line-height:1.55;color:var(--t2);margin-top:4px}
+.vstep-roles{display:flex;flex-wrap:wrap;gap:6px;margin-top:9px}
+.vrole{font-size:10.5px;font-weight:600;padding:3px 9px;border-radius:9px;white-space:nowrap}
+.vrole.on{color:#fff}
+.vrole.off{background:#F1F1F1;color:#C2C2C2}
+.vconn{margin-left:13px;height:14px;border-left:2px dashed #D5D5D5}
+/* 角色任務小標(週檔卡用) */
+.tl-roles{display:flex;flex-wrap:wrap;gap:5px;margin-top:9px}
 .tl-role{font-size:10.5px;font-weight:600;color:#fff;padding:3px 9px;border-radius:9px;white-space:nowrap}
-.tl-card.go .tl-role.ghost{background:rgba(255,255,255,.25)}
 /* 週檔卡 */
 .wkcard{background:#fff;border:1.5px solid var(--b1);border-left:4px solid #C5A028;border-radius:8px;padding:16px 18px;margin-bottom:8px}
 .wkcard b{color:#A07A12}
@@ -662,7 +663,6 @@ body{color:var(--t1)}
 .wk-inline{margin-top:12px;font-size:12px;line-height:1.6;color:var(--t2);background:#FFFDF3;border:1px solid #EFE3C0;border-left:3px solid #C5A028;border-radius:6px;padding:10px 13px}
 .wk-inline b{color:#A07A12}
 @media(max-width:560px){
-  .tl-node{flex-basis:170px;min-width:170px}
   .flow-sec{font-size:15px}
 }
 </style></head><body><div id="loginBox"><div class="lg-card">
@@ -1541,22 +1541,24 @@ function renderFlow(){
   const R={pick:{c:'#C2185B',i:'💎',n:'Regina',r:'選品'},campaign:{c:'#1F7A82',i:'🎯',n:'Vito',r:'行銷·管理'},web:{c:'#2D6CDF',i:'🌐',n:'家逸',r:'官網'},line:{c:'#06A94D',i:'💬',n:'Jessica',r:'lineoa'}};
   let h='<div class="flow">';
   h+='<div class="flow-intro">從活動日回推，掌握每個關卡截止時間，確保各環節環環相扣、準時銜接，每場檔期零漏失。</div>';
-  h+='<div class="flow-sec">大檔 / 季檔 作業時間軸 <span class="pill" style="background:#E6007E">大檔</span><span class="pill" style="background:#1FA89C">季檔</span></div>';
-  h+='<div class="flow-sub">以「活動日 D」為基準，依序在 D 前各週完成關卡 · 前一關未完成即影響後續進度 · 季檔時間規則與大檔相同</div>';
-  const nodes=[
-    {when:'D − 7 週',ttl:'企劃完成',desc:'確定商品清單、訂價策略、活動主題，行銷素材方向定案',roles:['pick','campaign']},
-    {when:'D − 5 週',ttl:'官網上架完成',desc:'商品頁、活動頁建置，SEO 設定、圖文校稿完畢',roles:['web']},
-    {when:'D − 4 週（活動日前整整一個月）',ttl:'lineoa 排程完成',desc:'推播訊息、貼文草稿、分眾排程全數完成',roles:['line']},
-    {when:'活動日 · D',ttl:'檔期正式上線',desc:'所有前置關卡完成，活動正式啟動',go:true,roles:[]},
-    {when:'活動結束後',ttl:'📋 覆盤會議',desc:'數據檢討、成效分析，整理下次活動優化方向',roles:['ALL']}
+  h+='<div class="flow-sec">大檔 / 季檔 作業流程 <span class="pill" style="background:#E6007E">大檔</span><span class="pill" style="background:#1FA89C">季檔</span></div>';
+  h+='<div class="flow-sub">由上往下的作業順序；每一步只標出有參與的人，沒參與的灰色</div>';
+  const ALLR=['pick','campaign','web','line'];
+  const steps=[
+    {ttl:'企劃 ＋ 選品（同時進行）',desc:'Vito 定企劃方向（主題、訂價、行銷策略），Regina 同時選品定清單，兩邊並行開工。',on:['campaign','pick'],col:'#1A8C82'},
+    {ttl:'建官網',desc:'家逸依企劃與選品建立商品頁、活動頁，上架、SEO、圖文校稿。',on:['web'],col:'#2D6CDF'},
+    {ttl:'照企劃拍短影音',desc:'Regina 依企劃方向拍攝短影音素材。',on:['pick'],col:'#C2185B'},
+    {ttl:'導流到官網購物',desc:'Vito 用短影音與行銷導流，把人帶到官網下單購買。',on:['campaign'],col:'#1F7A82'},
+    {ttl:'lineoa 進行 LTV 企劃',desc:'Jessica 經營 LINE OA、回購與分眾，拉長顧客終身價值。',on:['line'],col:'#06A94D'},
+    {ttl:'覆盤會議',desc:'數據檢討、成效分析，整理下次活動優化方向。',on:ALLR,col:'#9A8B6B'}
   ];
-  h+='<div class="tl">';
-  nodes.forEach(function(nd,idx){
-    h+='<div class="tl-node"><div class="tl-card'+(nd.go?' go':'')+'"><span class="tl-when">'+nd.when+'</span><div class="tl-ttl">'+nd.ttl+'</div><div class="tl-desc">'+nd.desc+'</div><div class="tl-roles">';
-    if(nd.roles[0]==='ALL')h+='<span class="tl-role" style="background:#7A7A7A">全員</span>';
-    else nd.roles.forEach(function(rk){h+='<span class="tl-role'+(nd.go?' ghost':'')+'" style="background:'+R[rk].c+'">'+R[rk].i+' '+R[rk].n+'</span>';});
+  h+='<div class="vflow">';
+  steps.forEach(function(st,idx){
+    h+='<div class="vstep"><div class="vstep-num" style="background:'+st.col+'">'+(idx===steps.length-1?'✓':(idx+1))+'</div>';
+    h+='<div class="vstep-body" style="border-left-color:'+st.col+'"><div class="vstep-ttl">'+st.ttl+'</div><div class="vstep-desc">'+st.desc+'</div><div class="vstep-roles">';
+    ALLR.forEach(function(rk){const onx=st.on.indexOf(rk)>=0;h+='<span class="vrole '+(onx?'on':'off')+'"'+(onx?(' style="background:'+R[rk].c+'"'):'')+'>'+R[rk].i+' '+R[rk].n+'</span>';});
     h+='</div></div></div>';
-    if(idx<nodes.length-1)h+='<div class="tl-arrow">▶</div>';
+    if(idx<steps.length-1)h+='<div class="vconn"></div>';
   });
   h+='</div>';
   h+='<div class="flow-sec">週檔作業規則 <span class="pill" style="background:#C5A028">週檔</span></div>';
