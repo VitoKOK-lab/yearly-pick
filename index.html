@@ -1391,10 +1391,10 @@ function renderGantt(){
     const RN={campaign:"企劃",pick:"選品",web:"官網",line:"lineoa"};
     const today2=new Date(2026,5,5).getTime();
     const mine=[];
-    for(const c of CAMPS){if(isWeekly(c)&&!roleSeesWeekly(myr))continue;const s=roleStat(myr,c);const ad=campStartDate(c).getTime();const dd=(ad-today2)/86400000;if(dd<=90){const dl=dlInfoRole(c,myr);mine.push({c:c,dl:dl,ad:ad,ok:s.ok});}}
+    for(const c of CAMPS){if(isWeekly(c)&&!roleSeesWeekly(myr))continue;const s=roleStat(myr,c);const ad=campStartDate(c).getTime();const dd=(ad-today2)/86400000;if(dd<=60){const dl=dlInfoRole(c,myr);mine.push({c:c,dl:dl,ad:ad,ok:s.ok});}}
     mine.sort((a,b)=>{if(a.ok!==b.ok)return a.ok?1:-1;return a.ad-b.ad;});
-    h+='<div class="myurgent"><div class="myurgent-t">你的工作 · 三個月內（'+RN[myr]+'）</div>';
-    if(mine.length===0)h+='<div class="myurgent-empty">三個月內沒有待辦，輕鬆。</div>';
+    h+='<div class="myurgent"><div class="myurgent-t">你的工作 · 兩個月內（'+RN[myr]+'）</div>';
+    if(mine.length===0)h+='<div class="myurgent-empty">兩個月內沒有待辦，輕鬆。</div>';
     else{h+='<div class="myurgent-list">';
       for(const x of mine){
         const op=(GANTTOPEN===x.c.id);
