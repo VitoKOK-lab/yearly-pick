@@ -677,7 +677,7 @@ body{color:var(--t1)}
 
 <div class="hero"><div class="kicker">泰熙爾札娜</div><div class="h-title">年度企劃表</div>
 
-<div id="userBar"></div><div class="tabs"><button class="tab on" onclick="sw(5)">年度規劃</button><button class="tab" onclick="sw(1)">選品</button><button class="tab" onclick="sw(2)">campaign</button><button class="tab" onclick="sw(3)">官網</button><button class="tab" onclick="sw(4)">lineoa</button><button class="tab" onclick="sw(6)">商品分析</button><button class="tab" onclick="sw(7)">流程說明</button><button class="impb" style="align-self:center" onclick="importJune()">⬇ 匯入6月</button><button class="rstopen" style="align-self:center;margin-left:8px" onclick="openRestore()">↩ 還原</button><button class="expb" style="align-self:center;margin-left:8px" onclick="exportYear()">⤓ 全年PDF</button><button class="rstopen" style="align-self:center;margin-left:8px;border-color:#C0392B;color:#C0392B" onclick="wipeAll()">🗑 清空全部</button></div></div>
+<div id="userBar"></div><div class="tabs"><button class="tab on" onclick="sw(5)">年度規劃</button><button class="tab" onclick="sw(1)">選品</button><button class="tab" onclick="sw(2)">campaign</button><button class="tab" onclick="sw(3)">官網</button><button class="tab" onclick="sw(4)">lineoa</button><button class="tab" onclick="sw(6)">商品分析</button><button class="tab" onclick="sw(7)">流程說明</button><button class="impb adminbtn" style="align-self:center" onclick="importJune()">⬇ 匯入6月</button><button class="rstopen adminbtn" style="align-self:center;margin-left:8px" onclick="openRestore()">↩ 還原</button><button class="expb adminbtn" style="align-self:center;margin-left:8px" onclick="exportYear()">⤓ 全年PDF</button><button class="rstopen adminbtn" style="align-self:center;margin-left:8px;border-color:#C0392B;color:#C0392B" onclick="wipeAll()">🗑 清空全部</button></div></div>
 <div class="wrap"><div class="page" id="phome"></div><div class="page" id="ppick"></div><div class="page" id="pcamp"></div><div class="page" id="pweb"></div><div class="page" id="pline"></div><div class="page on" id="pg"></div><div class="page" id="p1"></div><div class="page" id="pflow"></div><div class="footer">版本 06/06 17:50</div></div>
 <div id="restoreBox" style="display:none;position:fixed;inset:0;background:rgba(26,20,16,.45);z-index:200;align-items:center;justify-content:center" onclick="if(event.target===this)this.style.display='none'">
 <div style="background:#fff;border-radius:14px;max-width:460px;width:90%;max-height:80vh;overflow:auto;padding:22px">
@@ -1632,6 +1632,9 @@ function applyNav(){
     var m=t.getAttribute("onclick").match(/sw\((\d)\)/);var idx=m?parseInt(m[1]):-1;
     t.style.display=allow.indexOf(idx)>=0?"":"none";
   });
+  // 匯入/還原/PDF/清空全部：只有 Vito（管理員）看得到
+  var isAdmin=!!(CUR&&CUR.admin);
+  document.querySelectorAll(".adminbtn").forEach(function(b){b.style.display=isAdmin?"":"none";});
 }
 
 function sw(i){document.querySelectorAll(".tab").forEach(function(t){var m=t.getAttribute("onclick").match(/sw\((\d)\)/);var idx=m?parseInt(m[1]):-1;t.classList.toggle("on",idx===i);});document.querySelectorAll(".page").forEach(function(p,n){p.classList.toggle("on",n===i);});if(i===0)renderHome();if(i===5)renderGantt();if(i===6)renderOverview();if(i===7)renderFlow();window.scrollTo(0,0);}
