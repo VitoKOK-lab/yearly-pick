@@ -544,6 +544,7 @@ body{color:var(--t1)}
 .mu.dl-over .mu-dl{color:#D9534F}.mu.dl-near .mu-dl{color:#9A6A1E}
 .mu-tag{font-size:10px;color:#fff;padding:2px 8px;border-radius:3px;flex-shrink:0;font-weight:600}
 .mu-name{font-size:14px;color:var(--t1)}
+.mu-hand{font-size:11px;color:#9A6A1E;background:#FDF6E6;border-top:1px dashed #EADfac;padding:5px 12px}
 .ycal-t{font-size:15px;font-weight:700;color:var(--t1);border-left:3px solid #E6007E;padding-left:12px;margin-bottom:14px}
 
 .mu{display:block;padding:0;overflow:hidden}
@@ -1162,7 +1163,7 @@ function renderRole(role,cid){
   let h='<div class="role-head"><div class="rh-title">'+cfg.title+'<span class="rh-who">'+cfg.who+'</span></div><div class="rh-hint">點檔直接做，做完收起、換下一個</div></div>';
   // 收集該角色所有檔，排序：未完成且緊迫在前 → 已完成在後；週檔/寵粉常態放各組末
   const all=[];
-  for(const c of CAMPS){if(isWeekly(c)&&!roleSeesWeekly(role))continue;const s=roleStat(role,c);const dl=dlInfoRole(c,role);all.push({c:c,ok:s.ok,label:s.label,days:dl.days,dl:dl,ad:campStartDate(c).getTime()});}
+  for(const c of CAMPS){if(!seesCamp(role,c))continue;const s=roleStat(role,c);const dl=dlInfoRole(c,role);all.push({c:c,ok:s.ok,label:s.label,days:dl.days,dl:dl,ad:campStartDate(c).getTime()});}
   all.sort(function(a,b){
     if(a.ok!==b.ok)return a.ok?1:-1; // 未完成在前
     return a.ad-b.ad; // 按活動日期早→晚
@@ -1349,7 +1350,7 @@ function roleDeadline(c,role){
 }
 function dlInfoRole(c,role){
   if(isWeekly(c)){
-    if(roleSeesWeekly(role))return {cls:'dl-near',txt:'提前1週預排',days:7,date:null};
+    if(seesCamp(role,c))return {cls:'dl-near',txt:'提前1週預排',days:7,date:null};
     return {cls:'dl-ok',txt:'—',days:999,date:null};
   }
   const d=roleDeadline(c,role);const today=new Date(2026,5,5);
@@ -1440,6 +1441,26 @@ function toggleGanttOpen(role,cid){
   },100);}
 }
 
+// 角色是否經手此檔：大檔/季檔皆是；寵粉→選品+官網+lineoa；週檔→官網+lineoa(不用選品)
+function seesCamp(role,c){
+  if(!isWeekly(c))return true;
+  if(c.type==='寵粉')return role==='pick'||role==='web'||role==='line';
+  return role==='web'||role==='line';
+}
+// 我的截止日：大檔/季檔=回推(企劃-7/官網-5/lineoa-4)；週檔/寵粉=活動月1號前(前一個月排好)
+function myDeadline(c,role){
+  if(isWeekly(c)){var ym=(c.month||'2026-06').split('-');return new Date(parseInt(ym[0]),parseInt(ym[1])-1,1);}
+  return roleDeadline(c,role);
+}
+// 截止日 chip：含日期 + 剩幾天/逾期
+function dlChip(date){
+  var today=new Date(2026,5,5);var days=Math.round((date-today)/86400000);
+  var md=(date.getMonth()+1)+'/'+date.getDate();
+  var cls='dl-ok',txt=md+' 前 · 剩'+days+'天';
+  if(days<0){cls='dl-over';txt=md+' 前 · 逾期'+(-days)+'天';}
+  else if(days<=7){cls='dl-near';txt=md+' 前 · 剩'+days+'天';}
+  return {cls:cls,txt:txt};
+}
 function renderGantt(){
   let h="";
   // 我的近3個月急迫工作（當前使用者）
@@ -1447,17 +1468,27 @@ function renderGantt(){
   if(myr){
     const RN={campaign:"企劃",pick:"選品",web:"官網",line:"lineoa"};
     const today2=new Date(2026,5,5).getTime();
+    function upDone(c){if(myr==='web')return roleStat('pick',c).ok&&roleStat('campaign',c).ok;if(myr==='line')return roleStat('web',c).ok;return true;}
+    const UPWHO={web:'選品行銷(Regina·Vito)',line:'官網(家逸)'};
     const mine=[];
-    for(const c of CAMPS){if(isWeekly(c)&&!roleSeesWeekly(myr))continue;const s=roleStat(myr,c);const ad=campStartDate(c).getTime();const dd=(ad-today2)/86400000;if(dd<=60){const dl=dlInfoRole(c,myr);mine.push({c:c,dl:dl,ad:ad,ok:s.ok});}}
-    mine.sort((a,b)=>{if(a.ok!==b.ok)return a.ok?1:-1;return a.ad-b.ad;});
+    for(const c of CAMPS){
+      if(!seesCamp(myr,c))continue;
+      const ddl=myDeadline(c,myr);const days=(ddl.getTime()-today2)/86400000;
+      if(days>60||days< -45)continue;      // 兩個月內要交（含近期逾期），依我的截止日
+      const s=roleStat(myr,c);
+      mine.push({c:c,ddl:ddl,dl:dlChip(ddl),ok:s.ok});
+    }
+    mine.sort((a,b)=>{if(a.ok!==b.ok)return a.ok?1:-1;return a.ddl-b.ddl;});
     const TH=USER_THEME[myr]||USER_THEME._default;
-    h+='<div class="myurgent" style="background:'+TH.bg+';border-color:'+TH.bd+';border-left:4px solid '+TH.ac+'"><div class="myurgent-t" style="color:'+TH.ac+'"><span class="mu-ico">'+TH.icon+'</span>'+me+' 的工作 · 兩個月內（'+RN[myr]+'）</div>';
-    if(mine.length===0)h+='<div class="myurgent-empty">兩個月內沒有待辦，輕鬆。</div>';
+    h+='<div class="myurgent" style="background:'+TH.bg+';border-color:'+TH.bd+';border-left:4px solid '+TH.ac+'"><div class="myurgent-t" style="color:'+TH.ac+'"><span class="mu-ico">'+TH.icon+'</span>'+me+' 的工作 · 兩個月內截止（'+RN[myr]+'）</div>';
+    if(mine.length===0)h+='<div class="myurgent-empty">兩個月內沒有要交的工作，輕鬆。</div>';
     else{h+='<div class="myurgent-list">';
       for(const x of mine){
         const op=(GANTTOPEN===x.c.id);
+        const blocked=(!x.ok)&&(myr==='web'||myr==='line')&&!isWeekly(x.c)&&!upDone(x.c);
         h+='<div class="mu '+x.dl.cls+(op?" open":"")+(x.ok?" mu-done":"")+'" data-cid="'+encodeURIComponent(x.c.id)+'"><div class="mu-head" onclick="toggleGanttOpen(\''+myr+'\',\''+x.c.id+'\')">'+
            '<span class="mu-dl">'+(x.ok?'<span class="mu-ok">✓ 完成</span>':x.dl.txt)+'</span><span class="mu-tag" style="background:'+({"大檔":"#E6007E","季檔":"#1FA89C","週檔":"#C5A028","寵粉":"#A98Fb0"}[x.c.type]||"#888")+'">'+x.c.type+'</span><span class="mu-name">'+cv(x.c,"name")+'</span><span class="mu-arrow">'+(op?"▲":"▼")+'</span></div>';
+        if(blocked)h+='<div class="mu-hand">⏳ 等 '+UPWHO[myr]+' 先給你</div>';
         if(op)h+='<div class="mu-body">'+((myr==="web"||myr==="line")?renderViewCamp(x.c,myr):renderOneCamp(x.c))+'</div>';
         h+='</div>';
       }
@@ -1468,7 +1499,7 @@ function renderGantt(){
   h+='<div class="ycal">';
   const vr=(CUR&&USER_ROLE[CUR.name])||null;
   for(const m of MONTHS){
-    const cs=CAMPS.filter(c=>c.month===m&&!(isWeekly(c)&&vr&&!roleSeesWeekly(vr)));
+    const cs=CAMPS.filter(c=>c.month===m&&(!vr||seesCamp(vr,c)));
     if(cs.length===0)continue;
     const mlbl=(ML[m]||m).replace("2026年","").replace("2027年","'27 ");
     h+='<div class="ycard"><div class="ycard-h">'+mlbl+'</div><div class="ycard-body">';
@@ -1577,13 +1608,7 @@ function renderFlow(){
     {ttl:'建官網',desc:'家逸把商品建上官網（官網都要建；週檔不用另外選品）。',on:['web'],col:'#2D6CDF'},
     {ttl:'lineoa 從官網選品推播',desc:'Jessica 從官網既有商品挑（不一定全選），做 LINE OA 推播。',on:['line'],col:'#06A94D'}
   ]);
-  h+='<div class="flow-sec">我的任務 · 截止倒數</div>';
-  h+='<div class="flow-sub">登入後看「你」最晚幾號前要做完每個未來檔的工作（近到遠）；每筆標明截止日、是為了哪個檔；下游的人會多一條「上一關給你了沒」</div>';
-  h+=monthTableHTML();
-  h+='<div class="flow-leg">';
-  ['pick','campaign','web','line'].forEach(function(rk){h+='<div class="lg"><span class="dot" style="background:'+R[rk].c+'"></span>'+R[rk].i+' '+R[rk].n+'（'+R[rk].r+'）</div>';});
-  h+='<div class="lg">🎉 活動日 D</div><div class="lg">📋 覆盤會議</div>';
-  h+='</div></div>';
+  h+='</div>';
   el.innerHTML=h;
 }
 function render(){if(typeof applyNav==='function')applyNav();renderHome();renderRole('pick','ppick');renderRole('campaign','pcamp');renderRole('web','pweb');renderRole('line','pline');renderGantt();renderOverview();renderFlow();}
