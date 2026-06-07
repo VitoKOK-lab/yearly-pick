@@ -1282,8 +1282,8 @@ function toThursday(d){const x=new Date(d);const day=x.getDay();/*0日1一..4四
 // 大檔/季檔：選品行銷 檔前6週、官網 5週、lineoa上線 4週(=一個月)，環環相扣不卡時間
 // 週檔/寵粉：只跟 lineoa 相關，提前1週預排（僅 Vito/Jessica 相關）
 const ROLE_OFFSET={campaign:6,pick:6,web:5,line:4};
-// 哪些角色看得到週檔/寵粉：行銷(Vito)、lineoa(Jessica)
-function roleSeesWeekly(role){return role==="campaign"||role==="line";}
+// 哪些角色看得到週檔/寵粉：選品(Regina)、行銷(Vito)、lineoa(Jessica)；官網(家逸)不含
+function roleSeesWeekly(role){return role==="pick"||role==="campaign"||role==="line";}
 function isWeekly(c){return c.type==="週檔"||c.type==="寵粉";}
 function roleDeadline(c,role){
   const A=campStartDate(c);
