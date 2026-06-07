@@ -637,26 +637,27 @@ body{color:var(--t1)}
 .flow-leg{display:flex;flex-wrap:wrap;gap:14px;margin-top:18px;padding:14px 16px;background:#FAFAFA;border:1px solid var(--b1);border-radius:8px}
 .flow-leg .lg{display:flex;align-items:center;gap:6px;font-size:11.5px;color:var(--t2)}
 .flow-leg .dot{width:11px;height:11px;border-radius:50%;flex:0 0 auto}
-/* 月份專案管理表 */
-.flow-mon{display:flex;align-items:center;justify-content:center;gap:14px;margin:6px 0 14px}
+/* 月份個人任務清單 */
+.flow-mon{display:flex;align-items:center;justify-content:center;gap:14px;margin:6px 0 10px}
 .flow-mon button{border:1px solid var(--b1);background:#fff;border-radius:6px;width:34px;height:34px;font-size:14px;cursor:pointer;color:var(--t2)}
 .flow-mon button:hover:not(:disabled){border-color:var(--zana);color:var(--zana)}
 .flow-mon button:disabled{opacity:.35;cursor:default}
 .flow-mon .fm-cur{font-family:'Noto Serif TC';font-size:18px;font-weight:700;color:var(--zana);min-width:130px;text-align:center}
-.ptbl-wrap{overflow-x:auto;border:1px solid var(--b1);border-radius:8px}
-.ptbl{border-collapse:collapse;width:100%;min-width:680px;font-size:12px}
-.ptbl th{background:#F4F8F7;color:#1A7A72;font-weight:700;padding:9px 8px;text-align:left;border-bottom:2px solid #E3EAE9;white-space:nowrap;font-size:11.5px}
-.ptbl th .arr{color:#BFD8D4;margin-left:5px;font-weight:400}
-.ptbl td{padding:9px 8px;border-bottom:1px solid #F0F0F0;vertical-align:top;border-right:1px solid #F5F5F5}
-.ptbl tbody tr:nth-child(even) td{background:#FCFBFA}
-.ptbl .p-name{font-weight:600;font-family:'Noto Serif TC';min-width:118px}
-.ptbl .p-tag{display:inline-block;font-size:9px;color:#fff;padding:1px 6px;border-radius:3px;margin-right:5px;vertical-align:middle}
-.ptbl .p-date{font-weight:700;color:var(--t1);white-space:nowrap}
-.ptbl .p-who{font-size:10px;color:var(--t3);margin:2px 0 3px}
-.p-st{display:inline-block;font-size:9.5px;padding:1px 7px;border-radius:8px}
-.p-st.done{background:#E3F3E8;color:#1B7A3D}
-.p-st.go{background:#E8F5F4;color:#1A7A72}
-.p-st.wait{background:#F4F1EA;color:#9A8B6B}
+.pt-hd{font-size:12.5px;color:var(--t2);margin:0 0 12px;text-align:center}
+.pt-hd b{color:var(--t1)}
+.ptask{border:1px solid var(--b1);border-left:4px solid #ccc;border-radius:8px;padding:11px 13px;margin-bottom:9px;background:#fff}
+.ptask.done{background:#FAFCFB}
+.pt-top{display:flex;align-items:center;gap:9px;flex-wrap:wrap}
+.pt-when{font-family:'Noto Serif TC';font-size:14.5px;font-weight:700;color:var(--t1)}
+.pt-stage{font-weight:700}
+.pt-for{font-size:12.5px;color:var(--t2);margin-top:7px;line-height:1.5}
+.pt-for b{color:var(--t1)}
+.pt-fortag{display:inline-block;font-size:9.5px;color:#fff;padding:1px 7px;border-radius:4px;margin-right:5px;font-weight:600;vertical-align:middle}
+.pt-hand{margin-top:9px;padding-top:8px;border-top:1px dashed #ECE7DE;font-size:12px;color:var(--t2);display:flex;align-items:center;gap:7px;flex-wrap:wrap}
+.hand{font-size:10.5px;padding:2px 9px;border-radius:9px;font-weight:600;white-space:nowrap}
+.hand.ok{background:#E3F3E8;color:#1B7A3D}
+.hand.no{background:#FBEDE9;color:#C0392B}
+.hand.todo{background:#F4F1EA;color:#9A8B6B}
 .flow-empty{padding:26px;text-align:center;color:var(--t3);font-size:13px;border:1px dashed var(--b1);border-radius:8px}
 .wk-inline{margin-top:12px;font-size:12px;line-height:1.6;color:var(--t2);background:#FFFDF3;border:1px solid #EFE3C0;border-left:3px solid #C5A028;border-radius:6px;padding:10px 13px}
 .wk-inline b{color:#A07A12}
@@ -1503,42 +1504,42 @@ function renderGantt(){
 let FLOWMON=(function(){var i=MONTHS.indexOf('2026-06');return i>=0?i:0;})();
 function flowMonShift(d){FLOWMON=Math.max(0,Math.min(MONTHS.length-1,FLOWMON+d));renderFlow();}
 function fmtMD(dt){return (dt.getMonth()+1)+'/'+dt.getDate();}
-function stPill(done,prevDone,first){
-  if(done)return '<span class="p-st done">✓ 完成</span>';
-  if(first||prevDone)return '<span class="p-st go">● 可進行</span>';
-  return '<span class="p-st wait">⏳ 等前關</span>';
-}
+function monKey(dt){return dt.getFullYear()+'-'+String(dt.getMonth()+1).padStart(2,'0');}
+function qtrTag(c){var mm=parseInt((c.month||'2026-06').split('-')[1]);return 'Q'+(Math.floor((mm-1)/3)+1);}
+function campTag(c){return c.type==='季檔'?('季檔·'+qtrTag(c)):'大檔';}
 function monthTableHTML(){
   const mon=MONTHS[FLOWMON];const lbl=ML[mon]||mon;
-  const TYC={'大檔':'#E6007E','季檔':'#1FA89C','週檔':'#C5A028','寵粉':'#A98Fb0'};
+  const TYC={'大檔':'#E6007E','季檔':'#1FA89C'};
   let h='<div class="flow-mon"><button onclick="flowMonShift(-1)"'+(FLOWMON===0?' disabled':'')+'>◀</button><div class="fm-cur">'+lbl+'</div><button onclick="flowMonShift(1)"'+(FLOWMON===MONTHS.length-1?' disabled':'')+'>▶</button></div>';
-  const big=CAMPS.filter(function(c){return (c.type==='大檔'||c.type==='季檔')&&c.month===mon;}).sort(function(a,b){return campStartDate(a)-campStartDate(b);});
-  if(big.length===0){
-    h+='<div class="flow-empty">本月沒有大檔／季檔。</div>';
+  const myr=(CUR&&USER_ROLE[CUR.name])||null;
+  if(!myr){h+='<div class="flow-empty">登入後，這裡會顯示「你自己」的任務：你幾月幾日的工作，是為了哪一個未來檔期做的。</div>';return h;}
+  const TH=USER_THEME[myr]||USER_THEME._default;
+  const STAGE={pick:'選品行銷',campaign:'選品行銷',web:'官網上架',line:'lineoa 排程'};
+  const UP={web:{lbl:'💎🎯 選品行銷',who:'Regina·Vito'},line:{lbl:'🌐 官網',who:'家逸'}};
+  function myDone(c){return roleStat(myr,c).ok;}
+  function upDone(c){if(myr==='web')return roleStat('pick',c).ok&&roleStat('campaign',c).ok;if(myr==='line')return roleStat('web',c).ok;return true;}
+  h+='<div class="pt-hd">'+TH.icon+' <b>'+CUR.name+'</b>：你在 <b>'+lbl+'</b> 要做的工作（現在做的都是未來檔期）</div>';
+  // 以「我的截止日落在這個月」來篩選——我現在做的是未來檔
+  const mine=CAMPS.filter(function(c){return (c.type==='大檔'||c.type==='季檔')&&monKey(roleDeadline(c,myr))===mon;})
+                  .map(function(c){return {c:c,dd:roleDeadline(c,myr)};})
+                  .sort(function(a,b){return a.dd-b.dd;});
+  if(mine.length===0){
+    h+='<div class="flow-empty">本月你沒有大檔／季檔的截止工作。</div>';
   }else{
-    h+='<div class="ptbl-wrap"><table class="ptbl"><thead><tr>';
-    h+='<th>檔期</th><th>💎🎯 選品行銷<span class="arr">→</span></th><th>🌐 官網<span class="arr">→</span></th><th>💬 lineoa<span class="arr">→</span></th><th>🎉 活動日<span class="arr">→</span></th><th>📋 覆盤</th>';
-    h+='</tr></thead><tbody>';
-    big.forEach(function(c){
-      const D=campStartDate(c);
-      const dPick=roleDeadline(c,'pick'),dWeb=roleDeadline(c,'web'),dLine=roleDeadline(c,'line');
-      const dRev=new Date(D);dRev.setDate(dRev.getDate()+10);
-      const okPick=roleStat('pick',c).ok&&roleStat('campaign',c).ok;
-      const okWeb=roleStat('web',c).ok;const okLine=roleStat('line',c).ok;
-      h+='<tr>';
-      h+='<td class="p-name"><span class="p-tag" style="background:'+(TYC[c.type]||'#888')+'">'+c.type+'</span>'+cv(c,'name')+'</td>';
-      h+='<td><div class="p-date">'+fmtMD(dPick)+' 前</div><div class="p-who">💎Regina · 🎯Vito</div>'+stPill(okPick,true,true)+'</td>';
-      h+='<td><div class="p-date">'+fmtMD(dWeb)+' 前</div><div class="p-who">🌐家逸</div>'+stPill(okWeb,okPick,false)+'</td>';
-      h+='<td><div class="p-date">'+fmtMD(dLine)+' 前</div><div class="p-who">💬Jessica</div>'+stPill(okLine,okWeb,false)+'</td>';
-      h+='<td><div class="p-date">'+cv(c,'date')+'</div><div class="p-who">🎉 上線</div></td>';
-      h+='<td><div class="p-date">'+fmtMD(dRev)+'</div><div class="p-who">📋 全員</div></td>';
-      h+='</tr>';
+    mine.forEach(function(o){
+      const c=o.c;const dl=dlInfoRole(c,myr);const done=myDone(c);
+      h+='<div class="ptask'+(done?' done':'')+'" style="border-left-color:'+TH.c+'">';
+      h+='<div class="pt-top"><span class="pt-when">⏰ '+fmtMD(o.dd)+' 前</span><span class="pt-stage" style="color:'+TH.c+'">'+STAGE[myr]+'</span><span class="dldl '+dl.cls+'">'+dl.txt+'</span>'+(done?'<span class="hand ok">✓ 完成</span>':'<span class="hand todo">待辦</span>')+'</div>';
+      h+='<div class="pt-for">↳ 為了 <span class="pt-fortag" style="background:'+(TYC[c.type]||'#888')+'">'+campTag(c)+'</span><b>'+cv(c,'name')+'</b> · 🎉 活動日 '+cv(c,'date')+'</div>';
+      if(UP[myr]){const ud=upDone(c);h+='<div class="pt-hand">🔗 前一關 '+UP[myr].lbl+'（'+UP[myr].who+'）給你了嗎？ '+(ud?'<span class="hand ok">✓ 已給，可以開工</span>':'<span class="hand no">⏳ 還沒給，先等</span>')+'</div>';}
+      h+='</div>';
     });
-    h+='</tbody></table></div>';
   }
-  const wk=CAMPS.filter(function(c){return (c.type==='週檔'||c.type==='寵粉')&&c.month===mon;});
-  if(wk.length){
-    h+='<div class="wk-inline"><b>本月週檔 '+wk.length+' 檔</b>（💎Regina／🎯Vito／💬Jessica；官網不參與）— 須在<b>前一個月</b>排好：'+wk.map(function(c){return cv(c,'name');}).join('、')+'</div>';
+  // 週檔：本月要先排好「下個月」的週檔
+  if(roleSeesWeekly(myr)&&FLOWMON<MONTHS.length-1){
+    const nm=MONTHS[FLOWMON+1];
+    const wk=CAMPS.filter(function(c){return (c.type==='週檔'||c.type==='寵粉')&&c.month===nm;});
+    if(wk.length){h+='<div class="wk-inline"><b>本月還要排好「'+(ML[nm]||nm)+'」的週檔 '+wk.length+' 檔</b>（你有份；官網不參與）：'+wk.map(function(c){return cv(c,'name');}).join('、')+'</div>';}
   }
   return h;
 }
@@ -1568,8 +1569,8 @@ function renderFlow(){
   h+='<div class="flow-sec">週檔作業規則 <span class="pill" style="background:#C5A028">週檔</span></div>';
   h+='<div class="flow-sub">獨立流程，無大檔回推時間軸</div>';
   h+='<div class="wkcard"><b>每月排程，前一個月完成</b><div class="wk-note">每個月的週檔，須在<b>前一個月</b>全部排好。例：一月份的所有週檔，需在十二月完成選品確認、訊息推播排程與行銷素材準備。<br>官網不參與週檔流程，以社群貼文與 LINE OA 推播為主要渠道。</div><div class="tl-roles" style="margin-top:11px"><span class="tl-role" style="background:#C2185B">💎 Regina</span><span class="tl-role" style="background:#1F7A82">🎯 Vito</span><span class="tl-role" style="background:#06A94D">💬 Jessica</span></div></div>';
-  h+='<div class="flow-sec">月份專案管理表 · 四人交接</div>';
-  h+='<div class="flow-sub">切換月份看該月活動的檔期：選品行銷(−7週) → 官網(−5週) → lineoa(−4週) → 活動日 → 覆盤，狀態顯示前一關完成沒、輪到誰</div>';
+  h+='<div class="flow-sec">我的任務 · 依月份</div>';
+  h+='<div class="flow-sub">切換月份，看「你」這個月要做的工作——每筆標明截止日、是為了哪個未來檔期；下游的人會多一條「上一關給你了沒」</div>';
   h+=monthTableHTML();
   h+='<div class="flow-leg">';
   ['pick','campaign','web','line'].forEach(function(rk){h+='<div class="lg"><span class="dot" style="background:'+R[rk].c+'"></span>'+R[rk].i+' '+R[rk].n+'（'+R[rk].r+'）</div>';});
