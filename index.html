@@ -533,6 +533,7 @@ body{color:var(--t1)}
 
 .myurgent{background:#FFF8F8;border:1px solid #F3D5D5;border-radius:10px;padding:16px 18px;margin-bottom:22px}
 .myurgent-t{font-size:15px;font-weight:700;color:#C0392B;margin-bottom:12px}
+.mu-ico{margin-right:6px;font-size:16px}
 .myurgent-empty{color:var(--t3);font-size:14px}
 .myurgent-list{display:flex;flex-direction:column;gap:8px}
 .mu{display:flex;align-items:center;gap:12px;padding:10px 12px;background:#fff;border-radius:6px;cursor:pointer;border-left:3px solid #ccc}
@@ -681,7 +682,7 @@ function doLogin(){
   sw(DEFTAB[sel]!==undefined?DEFTAB[sel]:0);
 }
 function doLogout(){CUR=null;try{localStorage.removeItem("tzg_user");}catch(e){}document.getElementById("loginBox").style.display="flex";showUserBar();}
-function showUserBar(){const b=document.getElementById("userBar");if(b)b.innerHTML=CUR?('目前：<b>'+CUR.label+'</b> <span class="logout" onclick="doLogout()">登出</span>'):'';}
+function showUserBar(){const b=document.getElementById("userBar");if(!b)return;if(!CUR){b.innerHTML='';return;}const th=(typeof USER_THEME!=='undefined')?userTheme():null;const ico=th?('<span class="mu-ico">'+th.icon+'</span>'):'';b.innerHTML=ico+'目前：<b'+(th?(' style="color:'+th.ac+'"'):'')+'>'+CUR.label+'</b> <span class="logout" onclick="doLogout()">登出</span>';}
 
 document.addEventListener("click",function(e){
   var el=e.target.closest("[data-act]");
@@ -1393,7 +1394,8 @@ function renderGantt(){
     const mine=[];
     for(const c of CAMPS){if(isWeekly(c)&&!roleSeesWeekly(myr))continue;const s=roleStat(myr,c);const ad=campStartDate(c).getTime();const dd=(ad-today2)/86400000;if(dd<=60){const dl=dlInfoRole(c,myr);mine.push({c:c,dl:dl,ad:ad,ok:s.ok});}}
     mine.sort((a,b)=>{if(a.ok!==b.ok)return a.ok?1:-1;return a.ad-b.ad;});
-    h+='<div class="myurgent"><div class="myurgent-t">你的工作 · 兩個月內（'+RN[myr]+'）</div>';
+    const TH=USER_THEME[myr]||USER_THEME._default;
+    h+='<div class="myurgent" style="background:'+TH.bg+';border-color:'+TH.bd+';border-left:4px solid '+TH.ac+'"><div class="myurgent-t" style="color:'+TH.ac+'"><span class="mu-ico">'+TH.icon+'</span>'+me+' 的工作 · 兩個月內（'+RN[myr]+'）</div>';
     if(mine.length===0)h+='<div class="myurgent-empty">兩個月內沒有待辦，輕鬆。</div>';
     else{h+='<div class="myurgent-list">';
       for(const x of mine){
@@ -1445,6 +1447,15 @@ function renderGantt(){
 function render(){if(typeof applyNav==='function')applyNav();renderHome();renderRole('pick','ppick');renderRole('campaign','pcamp');renderRole('web','pweb');renderRole('line','pline');renderGantt();renderOverview();}
 
 const USER_ROLE={Regina:"pick",Vito:"campaign",家逸:"web",Jessica:"line"};
+// 每個角色的個人色系與小圖示（讓四個人第一畫面有差異）
+const USER_THEME={
+  pick:{ac:'#C2185B',bg:'#FFF5F8',bd:'#F1CCDD',icon:'💎'},
+  campaign:{ac:'#1F7A82',bg:'#F0FAFA',bd:'#CBE8E8',icon:'🎯'},
+  web:{ac:'#2D6CDF',bg:'#F2F6FF',bd:'#D3E1FB',icon:'🌐'},
+  line:{ac:'#06A94D',bg:'#F1FBF4',bd:'#CCEBD7',icon:'💬'},
+  _default:{ac:'#C0392B',bg:'#FFF8F8',bd:'#F3D5D5',icon:'📋'}
+};
+function userTheme(){const r=CUR&&USER_ROLE[CUR.name];return (r&&USER_THEME[r])||USER_THEME._default;}
 const USER_TABS={
   Regina:[5,6], Vito:[5,6], 家逸:[5,6], Jessica:[5,6]
 };
