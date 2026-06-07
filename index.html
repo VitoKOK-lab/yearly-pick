@@ -637,24 +637,29 @@ body{color:var(--t1)}
 .flow-leg{display:flex;flex-wrap:wrap;gap:14px;margin-top:18px;padding:14px 16px;background:#FAFAFA;border:1px solid var(--b1);border-radius:8px}
 .flow-leg .lg{display:flex;align-items:center;gap:6px;font-size:11.5px;color:var(--t2)}
 .flow-leg .dot{width:11px;height:11px;border-radius:50%;flex:0 0 auto}
-/* 全年甘特圖 */
-.gantt{overflow-x:auto;border:1px solid var(--b1);border-radius:8px;background:#fff;margin-top:6px}
-.gantt-inner{min-width:760px}
-.gantt-axis{display:grid;grid-template-columns:150px 1fr;border-bottom:2px solid var(--b1);position:sticky;top:0;background:#fff;z-index:2}
-.gantt-axis .ax-l{padding:8px 10px;font-size:11px;font-weight:700;color:var(--t3)}
-.gantt-months{position:relative;height:30px}
-.gantt-months .gm{position:absolute;top:0;height:100%;border-left:1px solid #ECECEC;font-size:10px;color:var(--t3);padding:8px 0 0 5px;box-sizing:border-box}
-.gantt-row{display:grid;grid-template-columns:150px 1fr;border-bottom:1px solid #F0F0F0;align-items:center}
-.gantt-row:nth-child(even){background:#FCFBFA}
-.gantt-row .g-name{padding:9px 10px;font-size:11.5px;line-height:1.3;border-right:1px solid #F0F0F0}
-.gantt-row .g-name .g-tag{display:inline-block;font-size:9px;color:#fff;padding:1px 6px;border-radius:3px;margin-right:5px;vertical-align:middle}
-.gantt-track{position:relative;height:34px}
-.gantt-track .g-grid{position:absolute;top:0;height:100%;border-left:1px solid #F4F4F4}
-.gantt-bar{position:absolute;top:50%;transform:translateY(-50%);height:7px;border-radius:4px;background:#E7E3DC}
-.gantt-mk{position:absolute;top:50%;transform:translate(-50%,-50%);width:15px;height:15px;border-radius:50%;border:2px solid #fff;box-shadow:0 0 0 1px rgba(0,0,0,.06);font-size:8px;display:flex;align-items:center;justify-content:center;z-index:2}
-.gantt-flag{position:absolute;top:50%;transform:translate(-50%,-50%);font-size:13px;z-index:3}
-.gantt-pill{position:absolute;top:50%;transform:translate(-50%,-50%);height:16px;border-radius:8px;display:flex;align-items:center;padding:0 5px;font-size:9px;color:#fff;z-index:2;white-space:nowrap;background:linear-gradient(90deg,#C2185B 50%,#1F7A82 50%);box-shadow:0 0 0 1px rgba(0,0,0,.06)}
-.gantt-mhead{grid-column:1/3;background:#F4F8F7;color:#1A7A72;font-size:11px;font-weight:700;padding:5px 10px;border-bottom:1px solid #E3EAE9}
+/* 月份專案管理表 */
+.flow-mon{display:flex;align-items:center;justify-content:center;gap:14px;margin:6px 0 14px}
+.flow-mon button{border:1px solid var(--b1);background:#fff;border-radius:6px;width:34px;height:34px;font-size:14px;cursor:pointer;color:var(--t2)}
+.flow-mon button:hover:not(:disabled){border-color:var(--zana);color:var(--zana)}
+.flow-mon button:disabled{opacity:.35;cursor:default}
+.flow-mon .fm-cur{font-family:'Noto Serif TC';font-size:18px;font-weight:700;color:var(--zana);min-width:130px;text-align:center}
+.ptbl-wrap{overflow-x:auto;border:1px solid var(--b1);border-radius:8px}
+.ptbl{border-collapse:collapse;width:100%;min-width:680px;font-size:12px}
+.ptbl th{background:#F4F8F7;color:#1A7A72;font-weight:700;padding:9px 8px;text-align:left;border-bottom:2px solid #E3EAE9;white-space:nowrap;font-size:11.5px}
+.ptbl th .arr{color:#BFD8D4;margin-left:5px;font-weight:400}
+.ptbl td{padding:9px 8px;border-bottom:1px solid #F0F0F0;vertical-align:top;border-right:1px solid #F5F5F5}
+.ptbl tbody tr:nth-child(even) td{background:#FCFBFA}
+.ptbl .p-name{font-weight:600;font-family:'Noto Serif TC';min-width:118px}
+.ptbl .p-tag{display:inline-block;font-size:9px;color:#fff;padding:1px 6px;border-radius:3px;margin-right:5px;vertical-align:middle}
+.ptbl .p-date{font-weight:700;color:var(--t1);white-space:nowrap}
+.ptbl .p-who{font-size:10px;color:var(--t3);margin:2px 0 3px}
+.p-st{display:inline-block;font-size:9.5px;padding:1px 7px;border-radius:8px}
+.p-st.done{background:#E3F3E8;color:#1B7A3D}
+.p-st.go{background:#E8F5F4;color:#1A7A72}
+.p-st.wait{background:#F4F1EA;color:#9A8B6B}
+.flow-empty{padding:26px;text-align:center;color:var(--t3);font-size:13px;border:1px dashed var(--b1);border-radius:8px}
+.wk-inline{margin-top:12px;font-size:12px;line-height:1.6;color:var(--t2);background:#FFFDF3;border:1px solid #EFE3C0;border-left:3px solid #C5A028;border-radius:6px;padding:10px 13px}
+.wk-inline b{color:#A07A12}
 @media(max-width:560px){
   .tl-node{flex-basis:170px;min-width:170px}
   .flow-sec{font-size:15px}
@@ -1495,32 +1500,46 @@ function renderGantt(){
 }
 
 // ===== 流程說明頁 + 全年四人甘特圖 =====
-function ganttHTML(){
-  const Y0=new Date(2026,5,1).getTime();const Y1=new Date(2027,5,1).getTime();const span=Y1-Y0;
-  const xp=function(t){return Math.max(0,Math.min(100,((t-Y0)/span)*100));};
-  let gridLines='';for(let i=0;i<MONTHS.length;i++){const ym=MONTHS[i].split('-');const t=new Date(parseInt(ym[0]),parseInt(ym[1])-1,1).getTime();gridLines+='<div class="g-grid" style="left:'+xp(t)+'%"></div>';}
-  let months='';for(let i=0;i<MONTHS.length;i++){const ym=MONTHS[i].split('-');const t=new Date(parseInt(ym[0]),parseInt(ym[1])-1,1).getTime();months+='<div class="gm" style="left:'+xp(t)+'%">'+parseInt(ym[1])+'月</div>';}
-  let h='<div class="gantt"><div class="gantt-inner">';
-  h+='<div class="gantt-axis"><div class="ax-l">檔期</div><div class="gantt-months">'+months+'</div></div>';
-  const TYC={'大檔':'#E6007E','季檔':'#1FA89C'};
-  const big=CAMPS.filter(function(c){return c.type==='大檔'||c.type==='季檔';}).map(function(c){return {c:c,D:campStartDate(c)};}).sort(function(a,b){return a.D-b.D;});
-  let curMon='';
-  big.forEach(function(o){
-    const c=o.c,D=o.D;
-    if(c.month!==curMon){curMon=c.month;h+='<div class="gantt-row"><div class="gantt-mhead">'+(ML[c.month]||c.month)+'</div></div>';}
-    const dPick=roleDeadline(c,'pick'),dWeb=roleDeadline(c,'web'),dLine=roleDeadline(c,'line');
-    const xs=xp(dPick.getTime()),xe=xp(D.getTime());
-    const dRev=new Date(D);dRev.setDate(dRev.getDate()+10);
-    h+='<div class="gantt-row"><div class="g-name"><span class="g-tag" style="background:'+(TYC[c.type]||'#888')+'">'+c.type+'</span>'+cv(c,'name')+'</div><div class="gantt-track">'+gridLines;
-    h+='<div class="gantt-bar" style="left:'+xs+'%;width:'+Math.max(0.5,xe-xs)+'%"></div>';
-    h+='<div class="gantt-pill" style="left:'+xp(dPick.getTime())+'%" title="選品行銷 −7週（Regina+Vito）">💎🎯</div>';
-    h+='<div class="gantt-mk" style="left:'+xp(dWeb.getTime())+'%;background:#2D6CDF" title="官網 −5週（家逸）">🌐</div>';
-    h+='<div class="gantt-mk" style="left:'+xp(dLine.getTime())+'%;background:#06A94D" title="lineoa −4週（Jessica）">💬</div>';
-    h+='<div class="gantt-flag" style="left:'+xp(D.getTime())+'%" title="活動日 '+cv(c,"date")+'">🎉</div>';
-    h+='<div class="gantt-flag" style="left:'+xp(dRev.getTime())+'%;font-size:12px" title="覆盤會議">📋</div>';
-    h+='</div></div>';
-  });
-  h+='</div></div>';
+let FLOWMON=(function(){var i=MONTHS.indexOf('2026-06');return i>=0?i:0;})();
+function flowMonShift(d){FLOWMON=Math.max(0,Math.min(MONTHS.length-1,FLOWMON+d));renderFlow();}
+function fmtMD(dt){return (dt.getMonth()+1)+'/'+dt.getDate();}
+function stPill(done,prevDone,first){
+  if(done)return '<span class="p-st done">✓ 完成</span>';
+  if(first||prevDone)return '<span class="p-st go">● 可進行</span>';
+  return '<span class="p-st wait">⏳ 等前關</span>';
+}
+function monthTableHTML(){
+  const mon=MONTHS[FLOWMON];const lbl=ML[mon]||mon;
+  const TYC={'大檔':'#E6007E','季檔':'#1FA89C','週檔':'#C5A028','寵粉':'#A98Fb0'};
+  let h='<div class="flow-mon"><button onclick="flowMonShift(-1)"'+(FLOWMON===0?' disabled':'')+'>◀</button><div class="fm-cur">'+lbl+'</div><button onclick="flowMonShift(1)"'+(FLOWMON===MONTHS.length-1?' disabled':'')+'>▶</button></div>';
+  const big=CAMPS.filter(function(c){return (c.type==='大檔'||c.type==='季檔')&&c.month===mon;}).sort(function(a,b){return campStartDate(a)-campStartDate(b);});
+  if(big.length===0){
+    h+='<div class="flow-empty">本月沒有大檔／季檔。</div>';
+  }else{
+    h+='<div class="ptbl-wrap"><table class="ptbl"><thead><tr>';
+    h+='<th>檔期</th><th>💎🎯 選品行銷<span class="arr">→</span></th><th>🌐 官網<span class="arr">→</span></th><th>💬 lineoa<span class="arr">→</span></th><th>🎉 活動日<span class="arr">→</span></th><th>📋 覆盤</th>';
+    h+='</tr></thead><tbody>';
+    big.forEach(function(c){
+      const D=campStartDate(c);
+      const dPick=roleDeadline(c,'pick'),dWeb=roleDeadline(c,'web'),dLine=roleDeadline(c,'line');
+      const dRev=new Date(D);dRev.setDate(dRev.getDate()+10);
+      const okPick=roleStat('pick',c).ok&&roleStat('campaign',c).ok;
+      const okWeb=roleStat('web',c).ok;const okLine=roleStat('line',c).ok;
+      h+='<tr>';
+      h+='<td class="p-name"><span class="p-tag" style="background:'+(TYC[c.type]||'#888')+'">'+c.type+'</span>'+cv(c,'name')+'</td>';
+      h+='<td><div class="p-date">'+fmtMD(dPick)+' 前</div><div class="p-who">💎Regina · 🎯Vito</div>'+stPill(okPick,true,true)+'</td>';
+      h+='<td><div class="p-date">'+fmtMD(dWeb)+' 前</div><div class="p-who">🌐家逸</div>'+stPill(okWeb,okPick,false)+'</td>';
+      h+='<td><div class="p-date">'+fmtMD(dLine)+' 前</div><div class="p-who">💬Jessica</div>'+stPill(okLine,okWeb,false)+'</td>';
+      h+='<td><div class="p-date">'+cv(c,'date')+'</div><div class="p-who">🎉 上線</div></td>';
+      h+='<td><div class="p-date">'+fmtMD(dRev)+'</div><div class="p-who">📋 全員</div></td>';
+      h+='</tr>';
+    });
+    h+='</tbody></table></div>';
+  }
+  const wk=CAMPS.filter(function(c){return (c.type==='週檔'||c.type==='寵粉')&&c.month===mon;});
+  if(wk.length){
+    h+='<div class="wk-inline"><b>本月週檔 '+wk.length+' 檔</b>（💎Regina／🎯Vito／💬Jessica；官網不參與）— 須在<b>前一個月</b>排好：'+wk.map(function(c){return cv(c,'name');}).join('、')+'</div>';
+  }
   return h;
 }
 function renderFlow(){
@@ -1549,9 +1568,9 @@ function renderFlow(){
   h+='<div class="flow-sec">週檔作業規則 <span class="pill" style="background:#C5A028">週檔</span></div>';
   h+='<div class="flow-sub">獨立流程，無大檔回推時間軸</div>';
   h+='<div class="wkcard"><b>每月排程，前一個月完成</b><div class="wk-note">每個月的週檔，須在<b>前一個月</b>全部排好。例：一月份的所有週檔，需在十二月完成選品確認、訊息推播排程與行銷素材準備。<br>官網不參與週檔流程，以社群貼文與 LINE OA 推播為主要渠道。</div><div class="tl-roles" style="margin-top:11px"><span class="tl-role" style="background:#C2185B">💎 Regina</span><span class="tl-role" style="background:#1F7A82">🎯 Vito</span><span class="tl-role" style="background:#06A94D">💬 Jessica</span></div></div>';
-  h+='<div class="flow-sec">全年檔期甘特圖 · 四人時間軸</div>';
-  h+='<div class="flow-sub">每個大檔/季檔：💎🎯選品行銷(−7週) → 🌐官網(−5週) → 💬lineoa(−4週) → 🎉活動日 → 📋覆盤</div>';
-  h+=ganttHTML();
+  h+='<div class="flow-sec">月份專案管理表 · 四人交接</div>';
+  h+='<div class="flow-sub">切換月份看該月活動的檔期：選品行銷(−7週) → 官網(−5週) → lineoa(−4週) → 活動日 → 覆盤，狀態顯示前一關完成沒、輪到誰</div>';
+  h+=monthTableHTML();
   h+='<div class="flow-leg">';
   ['pick','campaign','web','line'].forEach(function(rk){h+='<div class="lg"><span class="dot" style="background:'+R[rk].c+'"></span>'+R[rk].i+' '+R[rk].n+'（'+R[rk].r+'）</div>';});
   h+='<div class="lg">🎉 活動日 D</div><div class="lg">📋 覆盤會議</div>';
