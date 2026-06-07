@@ -1500,46 +1500,39 @@ function renderGantt(){
   document.getElementById('pg').innerHTML=h;
 }
 
-// ===== 流程說明頁 + 全年四人甘特圖 =====
-let FLOWMON=(function(){var i=MONTHS.indexOf('2026-06');return i>=0?i:0;})();
-function flowMonShift(d){FLOWMON=Math.max(0,Math.min(MONTHS.length-1,FLOWMON+d));renderFlow();}
+// ===== 流程說明頁 + 個人截止倒數清單 =====
 function fmtMD(dt){return (dt.getMonth()+1)+'/'+dt.getDate();}
-function monKey(dt){return dt.getFullYear()+'-'+String(dt.getMonth()+1).padStart(2,'0');}
 function qtrTag(c){var mm=parseInt((c.month||'2026-06').split('-')[1]);return 'Q'+(Math.floor((mm-1)/3)+1);}
 function campTag(c){return c.type==='季檔'?('季檔·'+qtrTag(c)):'大檔';}
 function monthTableHTML(){
-  const mon=MONTHS[FLOWMON];const lbl=ML[mon]||mon;
   const TYC={'大檔':'#E6007E','季檔':'#1FA89C'};
-  let h='<div class="flow-mon"><button onclick="flowMonShift(-1)"'+(FLOWMON===0?' disabled':'')+'>◀</button><div class="fm-cur">'+lbl+'</div><button onclick="flowMonShift(1)"'+(FLOWMON===MONTHS.length-1?' disabled':'')+'>▶</button></div>';
+  let h='';
   const myr=(CUR&&USER_ROLE[CUR.name])||null;
-  if(!myr){h+='<div class="flow-empty">登入後，這裡會顯示「你自己」的任務：你幾月幾日的工作，是為了哪一個未來檔期做的。</div>';return h;}
+  if(!myr){h+='<div class="flow-empty">登入後，這裡會顯示「你自己」的截止倒數：你最晚幾號前要把每個未來檔的工作做完。</div>';return h;}
   const TH=USER_THEME[myr]||USER_THEME._default;
   const STAGE={pick:'選品行銷',campaign:'選品行銷',web:'官網上架',line:'lineoa 排程'};
   const UP={web:{lbl:'💎🎯 選品行銷',who:'Regina·Vito'},line:{lbl:'🌐 官網',who:'家逸'}};
-  function myDone(c){return roleStat(myr,c).ok;}
   function upDone(c){if(myr==='web')return roleStat('pick',c).ok&&roleStat('campaign',c).ok;if(myr==='line')return roleStat('web',c).ok;return true;}
-  h+='<div class="pt-hd">'+TH.icon+' <b>'+CUR.name+'</b>：你在 <b>'+lbl+'</b> 要做的工作（現在做的都是未來檔期）</div>';
-  // 以「我的截止日落在這個月」來篩選——我現在做的是未來檔
-  const mine=CAMPS.filter(function(c){return (c.type==='大檔'||c.type==='季檔')&&monKey(roleDeadline(c,myr))===mon;})
+  const today=new Date(2026,5,5).getTime();
+  h+='<div class="pt-hd">'+TH.icon+' <b>'+CUR.name+'</b> 的截止倒數 — 你最晚幾號前要把每個<b>未來檔</b>的工作做完（近 → 遠）</div>';
+  const mine=CAMPS.filter(function(c){return c.type==='大檔'||c.type==='季檔';})
                   .map(function(c){return {c:c,dd:roleDeadline(c,myr)};})
+                  .filter(function(o){return o.dd.getTime()>=today;})
                   .sort(function(a,b){return a.dd-b.dd;});
   if(mine.length===0){
-    h+='<div class="flow-empty">本月你沒有大檔／季檔的截止工作。</div>';
+    h+='<div class="flow-empty">目前沒有未完成的未來檔任務。</div>';
   }else{
     mine.forEach(function(o){
-      const c=o.c;const dl=dlInfoRole(c,myr);const done=myDone(c);
+      const c=o.c;const dl=dlInfoRole(c,myr);const done=roleStat(myr,c).ok;
       h+='<div class="ptask'+(done?' done':'')+'" style="border-left-color:'+TH.c+'">';
-      h+='<div class="pt-top"><span class="pt-when">⏰ '+fmtMD(o.dd)+' 前</span><span class="pt-stage" style="color:'+TH.c+'">'+STAGE[myr]+'</span><span class="dldl '+dl.cls+'">'+dl.txt+'</span>'+(done?'<span class="hand ok">✓ 完成</span>':'<span class="hand todo">待辦</span>')+'</div>';
-      h+='<div class="pt-for">↳ 為了 <span class="pt-fortag" style="background:'+(TYC[c.type]||'#888')+'">'+campTag(c)+'</span><b>'+cv(c,'name')+'</b> · 🎉 活動日 '+cv(c,'date')+'</div>';
+      h+='<div class="pt-top"><span class="pt-when">📌 最晚 '+fmtMD(o.dd)+' 前完成</span><span class="dldl '+dl.cls+'">'+dl.txt+'</span>'+(done?'<span class="hand ok">✓ 完成</span>':'<span class="hand todo">待辦</span>')+'</div>';
+      h+='<div class="pt-for">↳ <span class="pt-stage" style="color:'+TH.c+'">'+STAGE[myr]+'</span>　為了 <span class="pt-fortag" style="background:'+(TYC[c.type]||'#888')+'">'+campTag(c)+'</span><b>'+cv(c,'name')+'</b> · 🎉 活動日 '+cv(c,'date')+'</div>';
       if(UP[myr]){const ud=upDone(c);h+='<div class="pt-hand">🔗 前一關 '+UP[myr].lbl+'（'+UP[myr].who+'）給你了嗎？ '+(ud?'<span class="hand ok">✓ 已給，可以開工</span>':'<span class="hand no">⏳ 還沒給，先等</span>')+'</div>';}
       h+='</div>';
     });
   }
-  // 週檔：本月要先排好「下個月」的週檔
-  if(roleSeesWeekly(myr)&&FLOWMON<MONTHS.length-1){
-    const nm=MONTHS[FLOWMON+1];
-    const wk=CAMPS.filter(function(c){return (c.type==='週檔'||c.type==='寵粉')&&c.month===nm;});
-    if(wk.length){h+='<div class="wk-inline"><b>本月還要排好「'+(ML[nm]||nm)+'」的週檔 '+wk.length+' 檔</b>（你有份；官網不參與）：'+wk.map(function(c){return cv(c,'name');}).join('、')+'</div>';}
+  if(roleSeesWeekly(myr)){
+    h+='<div class="wk-inline">🟡 <b>週檔</b>：每個月的週檔要在<b>前一個月</b>就排好（你有份；官網不參與）。</div>';
   }
   return h;
 }
@@ -1569,8 +1562,8 @@ function renderFlow(){
   h+='<div class="flow-sec">週檔作業規則 <span class="pill" style="background:#C5A028">週檔</span></div>';
   h+='<div class="flow-sub">獨立流程，無大檔回推時間軸</div>';
   h+='<div class="wkcard"><b>每月排程，前一個月完成</b><div class="wk-note">每個月的週檔，須在<b>前一個月</b>全部排好。例：一月份的所有週檔，需在十二月完成選品確認、訊息推播排程與行銷素材準備。<br>官網不參與週檔流程，以社群貼文與 LINE OA 推播為主要渠道。</div><div class="tl-roles" style="margin-top:11px"><span class="tl-role" style="background:#C2185B">💎 Regina</span><span class="tl-role" style="background:#1F7A82">🎯 Vito</span><span class="tl-role" style="background:#06A94D">💬 Jessica</span></div></div>';
-  h+='<div class="flow-sec">我的任務 · 依月份</div>';
-  h+='<div class="flow-sub">切換月份，看「你」這個月要做的工作——每筆標明截止日、是為了哪個未來檔期；下游的人會多一條「上一關給你了沒」</div>';
+  h+='<div class="flow-sec">我的任務 · 截止倒數</div>';
+  h+='<div class="flow-sub">登入後看「你」最晚幾號前要做完每個未來檔的工作（近到遠）；每筆標明截止日、是為了哪個檔；下游的人會多一條「上一關給你了沒」</div>';
   h+=monthTableHTML();
   h+='<div class="flow-leg">';
   ['pick','campaign','web','line'].forEach(function(rk){h+='<div class="lg"><span class="dot" style="background:'+R[rk].c+'"></span>'+R[rk].i+' '+R[rk].n+'（'+R[rk].r+'）</div>';});
