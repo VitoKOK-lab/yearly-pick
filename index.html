@@ -1544,26 +1544,39 @@ function renderFlow(){
   h+='<div class="flow-sec">大檔 / 季檔 作業流程 <span class="pill" style="background:#E6007E">大檔</span><span class="pill" style="background:#1FA89C">季檔</span></div>';
   h+='<div class="flow-sub">由上往下的作業順序；每一步只標出有參與的人，沒參與的灰色</div>';
   const ALLR=['pick','campaign','web','line'];
+  function vflowHTML(arr){
+    var s='<div class="vflow">';
+    arr.forEach(function(st,idx){
+      s+='<div class="vstep"><div class="vstep-num" style="background:'+st.col+'">'+(st.num||(idx+1))+'</div>';
+      s+='<div class="vstep-body" style="border-left-color:'+st.col+'"><div class="vstep-ttl">'+st.ttl+'</div><div class="vstep-desc">'+st.desc+'</div><div class="vstep-roles">';
+      ALLR.forEach(function(rk){var onx=st.on.indexOf(rk)>=0;s+='<span class="vrole '+(onx?'on':'off')+'"'+(onx?(' style="background:'+R[rk].c+'"'):'')+'>'+R[rk].i+' '+R[rk].n+'</span>';});
+      s+='</div></div></div>';
+      if(idx<arr.length-1)s+='<div class="vconn"></div>';
+    });
+    return s+'</div>';
+  }
   const steps=[
     {ttl:'企劃 ＋ 選品（同時進行）',desc:'Vito 定企劃方向（主題、訂價、行銷策略），Regina 同時選品定清單，兩邊並行開工。',on:['campaign','pick'],col:'#1A8C82'},
     {ttl:'建官網',desc:'家逸依企劃與選品建立商品頁、活動頁，上架、SEO、圖文校稿。',on:['web'],col:'#2D6CDF'},
-    {ttl:'照企劃拍短影音',desc:'Regina 依企劃方向拍攝短影音素材。',on:['pick'],col:'#C2185B'},
-    {ttl:'導流到官網購物',desc:'Vito 用短影音與行銷導流，把人帶到官網下單購買。',on:['campaign'],col:'#1F7A82'},
+    {ttl:'照企劃拍短影音',desc:'影音內容部門（Regina）依企劃方向拍攝短影音素材。',on:['pick'],col:'#C2185B'},
+    {ttl:'導流到官網購物',desc:'影音內容部門（Regina）用短影音導流，把人帶到官網下單購買。',on:['pick'],col:'#C2185B'},
     {ttl:'lineoa 進行 LTV 企劃',desc:'Jessica 經營 LINE OA、回購與分眾，拉長顧客終身價值。',on:['line'],col:'#06A94D'},
-    {ttl:'覆盤會議',desc:'數據檢討、成效分析，整理下次活動優化方向。',on:ALLR,col:'#9A8B6B'}
+    {ttl:'覆盤會議',desc:'數據檢討、成效分析，整理下次活動優化方向。',on:ALLR,col:'#9A8B6B',num:'✓'}
   ];
-  h+='<div class="vflow">';
-  steps.forEach(function(st,idx){
-    h+='<div class="vstep"><div class="vstep-num" style="background:'+st.col+'">'+(idx===steps.length-1?'✓':(idx+1))+'</div>';
-    h+='<div class="vstep-body" style="border-left-color:'+st.col+'"><div class="vstep-ttl">'+st.ttl+'</div><div class="vstep-desc">'+st.desc+'</div><div class="vstep-roles">';
-    ALLR.forEach(function(rk){const onx=st.on.indexOf(rk)>=0;h+='<span class="vrole '+(onx?'on':'off')+'"'+(onx?(' style="background:'+R[rk].c+'"'):'')+'>'+R[rk].i+' '+R[rk].n+'</span>';});
-    h+='</div></div></div>';
-    if(idx<steps.length-1)h+='<div class="vconn"></div>';
-  });
-  h+='</div>';
-  h+='<div class="flow-sec">週檔作業規則 <span class="pill" style="background:#C5A028">週檔</span></div>';
-  h+='<div class="flow-sub">獨立流程，無大檔回推時間軸</div>';
-  h+='<div class="wkcard"><b>每月排程，前一個月完成</b><div class="wk-note">每個月的週檔，須在<b>前一個月</b>全部排好。例：一月份的所有週檔，需在十二月完成選品確認、訊息推播排程與行銷素材準備。<br>官網不參與週檔流程，以社群貼文與 LINE OA 推播為主要渠道。</div><div class="tl-roles" style="margin-top:11px"><span class="tl-role" style="background:#C2185B">💎 Regina</span><span class="tl-role" style="background:#1F7A82">🎯 Vito</span><span class="tl-role" style="background:#06A94D">💬 Jessica</span></div></div>';
+  h+=vflowHTML(steps);
+  h+='<div class="flow-sec">週檔 / 寵粉 作業規則 <span class="pill" style="background:#C5A028">週檔</span><span class="pill" style="background:#A98Fb0">寵粉</span></div>';
+  h+='<div class="flow-sub">獨立流程、無回推時間軸；每個月的週檔／寵粉都要在「前一個月」排好</div>';
+  h+='<div style="font-family:\'Noto Serif TC\';font-weight:700;font-size:13px;margin:10px 0 8px;color:#7E5C92">🟣 寵粉（需先選品）</div>';
+  h+=vflowHTML([
+    {ttl:'Regina 先選品',desc:'寵粉要先由 Regina 選好商品。',on:['pick'],col:'#C2185B'},
+    {ttl:'建官網',desc:'家逸把商品建上官網（官網都要建）。',on:['web'],col:'#2D6CDF'},
+    {ttl:'lineoa 從官網選品推播',desc:'Jessica 從官網既有商品挑（不一定全選），做 LINE OA 推播。',on:['line'],col:'#06A94D'}
+  ]);
+  h+='<div style="font-family:\'Noto Serif TC\';font-weight:700;font-size:13px;margin:16px 0 8px;color:#A07A12">🟡 週檔（不用選品）</div>';
+  h+=vflowHTML([
+    {ttl:'建官網',desc:'家逸把商品建上官網（官網都要建；週檔不用另外選品）。',on:['web'],col:'#2D6CDF'},
+    {ttl:'lineoa 從官網選品推播',desc:'Jessica 從官網既有商品挑（不一定全選），做 LINE OA 推播。',on:['line'],col:'#06A94D'}
+  ]);
   h+='<div class="flow-sec">我的任務 · 截止倒數</div>';
   h+='<div class="flow-sub">登入後看「你」最晚幾號前要做完每個未來檔的工作（近到遠）；每筆標明截止日、是為了哪個檔；下游的人會多一條「上一關給你了沒」</div>';
   h+=monthTableHTML();
