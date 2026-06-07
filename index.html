@@ -609,6 +609,56 @@ body{color:var(--t1)}
 .hero .tabs{justify-content:center;flex-wrap:wrap;align-items:center}
 .hero #userBar{margin:6px 0}
 .hero .kicker,.hero .h-title,.hero .h-sub{text-align:center}
+/* ===== 流程說明頁 ===== */
+.flow{max-width:1180px;margin:0 auto}
+.flow-intro{font-size:13px;color:var(--t2);line-height:1.7;background:#FAFAFA;border:1px solid var(--b1);border-radius:8px;padding:14px 16px;margin:6px 0 22px}
+.flow-sec{font-family:'Noto Serif TC';font-size:17px;font-weight:700;color:var(--zana);margin:26px 0 4px;display:flex;align-items:center;gap:8px}
+.flow-sec .pill{font-size:10px;color:#fff;padding:2px 9px;border-radius:9px;font-weight:600}
+.flow-sub{font-size:12px;color:var(--t3);margin-bottom:16px}
+/* 時間軸卡片 */
+.tl{display:flex;gap:0;align-items:stretch;overflow-x:auto;padding:4px 2px 14px}
+.tl-node{flex:1 0 200px;min-width:200px;position:relative;display:flex;flex-direction:column}
+.tl-arrow{flex:0 0 26px;display:flex;align-items:center;justify-content:center;color:#C9C9C9;font-size:18px}
+.tl-card{background:#fff;border:1.5px solid var(--b1);border-radius:8px;padding:14px;height:100%;border-top:4px solid var(--zana)}
+.tl-card.go{background:#1A8C82;border-color:#1A8C82;color:#fff}
+.tl-when{display:inline-block;font-size:10.5px;font-weight:700;padding:3px 9px;border-radius:4px;background:#E8F5F4;color:#1A7A72;margin-bottom:9px}
+.tl-card.go .tl-when{background:rgba(255,255,255,.22);color:#fff}
+.tl-ttl{font-family:'Noto Serif TC';font-size:15px;font-weight:700;margin-bottom:6px}
+.tl-desc{font-size:11.5px;line-height:1.6;color:var(--t2);margin-bottom:11px}
+.tl-card.go .tl-desc{color:rgba(255,255,255,.9)}
+.tl-roles{display:flex;flex-wrap:wrap;gap:5px;margin-top:auto}
+.tl-role{font-size:10.5px;font-weight:600;color:#fff;padding:3px 9px;border-radius:9px;white-space:nowrap}
+.tl-card.go .tl-role.ghost{background:rgba(255,255,255,.25)}
+/* 週檔卡 */
+.wkcard{background:#fff;border:1.5px solid var(--b1);border-left:4px solid #C5A028;border-radius:8px;padding:16px 18px;margin-bottom:8px}
+.wkcard b{color:#A07A12}
+.wkcard .wk-note{font-size:12px;color:var(--t2);line-height:1.7;margin-top:7px}
+/* 圖例 */
+.flow-leg{display:flex;flex-wrap:wrap;gap:14px;margin-top:18px;padding:14px 16px;background:#FAFAFA;border:1px solid var(--b1);border-radius:8px}
+.flow-leg .lg{display:flex;align-items:center;gap:6px;font-size:11.5px;color:var(--t2)}
+.flow-leg .dot{width:11px;height:11px;border-radius:50%;flex:0 0 auto}
+/* 全年甘特圖 */
+.gantt{overflow-x:auto;border:1px solid var(--b1);border-radius:8px;background:#fff;margin-top:6px}
+.gantt-inner{min-width:760px}
+.gantt-axis{display:grid;grid-template-columns:150px 1fr;border-bottom:2px solid var(--b1);position:sticky;top:0;background:#fff;z-index:2}
+.gantt-axis .ax-l{padding:8px 10px;font-size:11px;font-weight:700;color:var(--t3)}
+.gantt-months{position:relative;height:30px}
+.gantt-months .gm{position:absolute;top:0;height:100%;border-left:1px solid #ECECEC;font-size:10px;color:var(--t3);padding:8px 0 0 5px;box-sizing:border-box}
+.gantt-row{display:grid;grid-template-columns:150px 1fr;border-bottom:1px solid #F0F0F0;align-items:center}
+.gantt-row:nth-child(even){background:#FCFBFA}
+.gantt-row .g-name{padding:9px 10px;font-size:11.5px;line-height:1.3;border-right:1px solid #F0F0F0}
+.gantt-row .g-name .g-tag{display:inline-block;font-size:9px;color:#fff;padding:1px 6px;border-radius:3px;margin-right:5px;vertical-align:middle}
+.gantt-track{position:relative;height:34px}
+.gantt-track .g-grid{position:absolute;top:0;height:100%;border-left:1px solid #F4F4F4}
+.gantt-bar{position:absolute;top:50%;transform:translateY(-50%);height:7px;border-radius:4px;background:#E7E3DC}
+.gantt-mk{position:absolute;top:50%;transform:translate(-50%,-50%);width:15px;height:15px;border-radius:50%;border:2px solid #fff;box-shadow:0 0 0 1px rgba(0,0,0,.06);font-size:8px;display:flex;align-items:center;justify-content:center;z-index:2}
+.gantt-flag{position:absolute;top:50%;transform:translate(-50%,-50%);font-size:13px;z-index:3}
+.gantt-pill{position:absolute;top:50%;transform:translate(-50%,-50%);height:16px;border-radius:8px;display:flex;align-items:center;padding:0 5px;font-size:9px;color:#fff;z-index:2;white-space:nowrap;background:linear-gradient(90deg,#C2185B 50%,#1F7A82 50%);box-shadow:0 0 0 1px rgba(0,0,0,.06)}
+.gantt-mhead{grid-column:1/3;background:#F4F8F7;color:#1A7A72;font-size:11px;font-weight:700;padding:5px 10px;border-bottom:1px solid #E3EAE9}
+@media(max-width:560px){
+  .tl-node{flex-basis:170px;min-width:170px}
+  .flow-sec{font-size:15px}
+}
 </style></head><body><div id="loginBox"><div class="lg-card">
 <div class="lg-title">泰熙爾札娜<br>選品行銷系統</div>
 <div class="lg-sub">請選擇你是誰</div>
@@ -620,8 +670,8 @@ body{color:var(--t1)}
 
 <div class="hero"><div class="kicker">泰熙爾札娜</div><div class="h-title">年度企劃表</div>
 
-<div id="userBar"></div><div class="tabs"><button class="tab on" onclick="sw(5)">年度規劃</button><button class="tab" onclick="sw(1)">選品</button><button class="tab" onclick="sw(2)">campaign</button><button class="tab" onclick="sw(3)">官網</button><button class="tab" onclick="sw(4)">lineoa</button><button class="tab" onclick="sw(6)">商品分析</button><button class="impb" style="align-self:center" onclick="importJune()">⬇ 匯入6月</button><button class="rstopen" style="align-self:center;margin-left:8px" onclick="openRestore()">↩ 還原</button><button class="expb" style="align-self:center;margin-left:8px" onclick="exportYear()">⤓ 全年PDF</button><button class="rstopen" style="align-self:center;margin-left:8px;border-color:#C0392B;color:#C0392B" onclick="wipeAll()">🗑 清空全部</button></div></div>
-<div class="wrap"><div class="page" id="phome"></div><div class="page" id="ppick"></div><div class="page" id="pcamp"></div><div class="page" id="pweb"></div><div class="page" id="pline"></div><div class="page on" id="pg"></div><div class="page" id="p1"></div><div class="footer">版本 06/06 17:50</div></div>
+<div id="userBar"></div><div class="tabs"><button class="tab on" onclick="sw(5)">年度規劃</button><button class="tab" onclick="sw(1)">選品</button><button class="tab" onclick="sw(2)">campaign</button><button class="tab" onclick="sw(3)">官網</button><button class="tab" onclick="sw(4)">lineoa</button><button class="tab" onclick="sw(6)">商品分析</button><button class="tab" onclick="sw(7)">流程說明</button><button class="impb" style="align-self:center" onclick="importJune()">⬇ 匯入6月</button><button class="rstopen" style="align-self:center;margin-left:8px" onclick="openRestore()">↩ 還原</button><button class="expb" style="align-self:center;margin-left:8px" onclick="exportYear()">⤓ 全年PDF</button><button class="rstopen" style="align-self:center;margin-left:8px;border-color:#C0392B;color:#C0392B" onclick="wipeAll()">🗑 清空全部</button></div></div>
+<div class="wrap"><div class="page" id="phome"></div><div class="page" id="ppick"></div><div class="page" id="pcamp"></div><div class="page" id="pweb"></div><div class="page" id="pline"></div><div class="page on" id="pg"></div><div class="page" id="p1"></div><div class="page" id="pflow"></div><div class="footer">版本 06/06 17:50</div></div>
 <div id="restoreBox" style="display:none;position:fixed;inset:0;background:rgba(26,20,16,.45);z-index:200;align-items:center;justify-content:center" onclick="if(event.target===this)this.style.display='none'">
 <div style="background:#fff;border-radius:14px;max-width:460px;width:90%;max-height:80vh;overflow:auto;padding:22px">
 <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px"><div style="font-family:'Cormorant Garamond',serif;font-size:20px;font-weight:700">還原備份</div><button onclick="document.getElementById('restoreBox').style.display='none'" style="border:none;background:none;font-size:22px;cursor:pointer;color:#999999">×</button></div>
@@ -1444,7 +1494,71 @@ function renderGantt(){
   document.getElementById('pg').innerHTML=h;
 }
 
-function render(){if(typeof applyNav==='function')applyNav();renderHome();renderRole('pick','ppick');renderRole('campaign','pcamp');renderRole('web','pweb');renderRole('line','pline');renderGantt();renderOverview();}
+// ===== 流程說明頁 + 全年四人甘特圖 =====
+function ganttHTML(){
+  const Y0=new Date(2026,5,1).getTime();const Y1=new Date(2027,5,1).getTime();const span=Y1-Y0;
+  const xp=function(t){return Math.max(0,Math.min(100,((t-Y0)/span)*100));};
+  let gridLines='';for(let i=0;i<MONTHS.length;i++){const ym=MONTHS[i].split('-');const t=new Date(parseInt(ym[0]),parseInt(ym[1])-1,1).getTime();gridLines+='<div class="g-grid" style="left:'+xp(t)+'%"></div>';}
+  let months='';for(let i=0;i<MONTHS.length;i++){const ym=MONTHS[i].split('-');const t=new Date(parseInt(ym[0]),parseInt(ym[1])-1,1).getTime();months+='<div class="gm" style="left:'+xp(t)+'%">'+parseInt(ym[1])+'月</div>';}
+  let h='<div class="gantt"><div class="gantt-inner">';
+  h+='<div class="gantt-axis"><div class="ax-l">檔期</div><div class="gantt-months">'+months+'</div></div>';
+  const TYC={'大檔':'#E6007E','季檔':'#1FA89C'};
+  const big=CAMPS.filter(function(c){return c.type==='大檔'||c.type==='季檔';}).map(function(c){return {c:c,D:campStartDate(c)};}).sort(function(a,b){return a.D-b.D;});
+  let curMon='';
+  big.forEach(function(o){
+    const c=o.c,D=o.D;
+    if(c.month!==curMon){curMon=c.month;h+='<div class="gantt-row"><div class="gantt-mhead">'+(ML[c.month]||c.month)+'</div></div>';}
+    const dPick=roleDeadline(c,'pick'),dWeb=roleDeadline(c,'web'),dLine=roleDeadline(c,'line');
+    const xs=xp(dPick.getTime()),xe=xp(D.getTime());
+    const dRev=new Date(D);dRev.setDate(dRev.getDate()+10);
+    h+='<div class="gantt-row"><div class="g-name"><span class="g-tag" style="background:'+(TYC[c.type]||'#888')+'">'+c.type+'</span>'+cv(c,'name')+'</div><div class="gantt-track">'+gridLines;
+    h+='<div class="gantt-bar" style="left:'+xs+'%;width:'+Math.max(0.5,xe-xs)+'%"></div>';
+    h+='<div class="gantt-pill" style="left:'+xp(dPick.getTime())+'%" title="選品行銷 −7週（Regina+Vito）">💎🎯</div>';
+    h+='<div class="gantt-mk" style="left:'+xp(dWeb.getTime())+'%;background:#2D6CDF" title="官網 −5週（家逸）">🌐</div>';
+    h+='<div class="gantt-mk" style="left:'+xp(dLine.getTime())+'%;background:#06A94D" title="lineoa −4週（Jessica）">💬</div>';
+    h+='<div class="gantt-flag" style="left:'+xp(D.getTime())+'%" title="活動日 '+cv(c,"date")+'">🎉</div>';
+    h+='<div class="gantt-flag" style="left:'+xp(dRev.getTime())+'%;font-size:12px" title="覆盤會議">📋</div>';
+    h+='</div></div>';
+  });
+  h+='</div></div>';
+  return h;
+}
+function renderFlow(){
+  const el=document.getElementById('pflow');if(!el)return;
+  const R={pick:{c:'#C2185B',i:'💎',n:'Regina',r:'選品'},campaign:{c:'#1F7A82',i:'🎯',n:'Vito',r:'行銷·管理'},web:{c:'#2D6CDF',i:'🌐',n:'家逸',r:'官網'},line:{c:'#06A94D',i:'💬',n:'Jessica',r:'lineoa'}};
+  let h='<div class="flow">';
+  h+='<div class="flow-intro">從活動日回推，掌握每個關卡截止時間，確保各環節環環相扣、準時銜接，每場檔期零漏失。</div>';
+  h+='<div class="flow-sec">大檔 / 季檔 作業時間軸 <span class="pill" style="background:#E6007E">大檔</span><span class="pill" style="background:#1FA89C">季檔</span></div>';
+  h+='<div class="flow-sub">以「活動日 D」為基準，依序在 D 前各週完成關卡 · 前一關未完成即影響後續進度 · 季檔時間規則與大檔相同</div>';
+  const nodes=[
+    {when:'D − 7 週',ttl:'企劃完成',desc:'確定商品清單、訂價策略、活動主題，行銷素材方向定案',roles:['pick','campaign']},
+    {when:'D − 5 週',ttl:'官網上架完成',desc:'商品頁、活動頁建置，SEO 設定、圖文校稿完畢',roles:['web']},
+    {when:'D − 4 週（活動日前整整一個月）',ttl:'lineoa 排程完成',desc:'推播訊息、貼文草稿、分眾排程全數完成',roles:['line']},
+    {when:'活動日 · D',ttl:'檔期正式上線',desc:'所有前置關卡完成，活動正式啟動',go:true,roles:[]},
+    {when:'活動結束後',ttl:'📋 覆盤會議',desc:'數據檢討、成效分析，整理下次活動優化方向',roles:['ALL']}
+  ];
+  h+='<div class="tl">';
+  nodes.forEach(function(nd,idx){
+    h+='<div class="tl-node"><div class="tl-card'+(nd.go?' go':'')+'"><span class="tl-when">'+nd.when+'</span><div class="tl-ttl">'+nd.ttl+'</div><div class="tl-desc">'+nd.desc+'</div><div class="tl-roles">';
+    if(nd.roles[0]==='ALL')h+='<span class="tl-role" style="background:#7A7A7A">全員</span>';
+    else nd.roles.forEach(function(rk){h+='<span class="tl-role'+(nd.go?' ghost':'')+'" style="background:'+R[rk].c+'">'+R[rk].i+' '+R[rk].n+'</span>';});
+    h+='</div></div></div>';
+    if(idx<nodes.length-1)h+='<div class="tl-arrow">▶</div>';
+  });
+  h+='</div>';
+  h+='<div class="flow-sec">週檔作業規則 <span class="pill" style="background:#C5A028">週檔</span></div>';
+  h+='<div class="flow-sub">獨立流程，無大檔回推時間軸</div>';
+  h+='<div class="wkcard"><b>每月排程，前一個月完成</b><div class="wk-note">每個月的週檔，須在<b>前一個月</b>全部排好。例：一月份的所有週檔，需在十二月完成選品確認、訊息推播排程與行銷素材準備。<br>官網不參與週檔流程，以社群貼文與 LINE OA 推播為主要渠道。</div><div class="tl-roles" style="margin-top:11px"><span class="tl-role" style="background:#C2185B">💎 Regina</span><span class="tl-role" style="background:#1F7A82">🎯 Vito</span><span class="tl-role" style="background:#06A94D">💬 Jessica</span></div></div>';
+  h+='<div class="flow-sec">全年檔期甘特圖 · 四人時間軸</div>';
+  h+='<div class="flow-sub">每個大檔/季檔：💎🎯選品行銷(−7週) → 🌐官網(−5週) → 💬lineoa(−4週) → 🎉活動日 → 📋覆盤</div>';
+  h+=ganttHTML();
+  h+='<div class="flow-leg">';
+  ['pick','campaign','web','line'].forEach(function(rk){h+='<div class="lg"><span class="dot" style="background:'+R[rk].c+'"></span>'+R[rk].i+' '+R[rk].n+'（'+R[rk].r+'）</div>';});
+  h+='<div class="lg">🎉 活動日 D</div><div class="lg">📋 覆盤會議</div>';
+  h+='</div></div>';
+  el.innerHTML=h;
+}
+function render(){if(typeof applyNav==='function')applyNav();renderHome();renderRole('pick','ppick');renderRole('campaign','pcamp');renderRole('web','pweb');renderRole('line','pline');renderGantt();renderOverview();renderFlow();}
 
 const USER_ROLE={Regina:"pick",Vito:"campaign",家逸:"web",Jessica:"line"};
 // 每個角色的個人色系與小圖示（讓四個人第一畫面有差異）
@@ -1457,7 +1571,7 @@ const USER_THEME={
 };
 function userTheme(){const r=CUR&&USER_ROLE[CUR.name];return (r&&USER_THEME[r])||USER_THEME._default;}
 const USER_TABS={
-  Regina:[5,6], Vito:[5,6], 家逸:[5,6], Jessica:[5,6]
+  Regina:[5,6,7], Vito:[5,6,7], 家逸:[5,6,7], Jessica:[5,6,7]
 };
 function applyNav(){
   const u=(CUR&&CUR.name)||"Vito";const allow=USER_TABS[u]||[0,1,2,3,4,5,6];
@@ -1467,7 +1581,7 @@ function applyNav(){
   });
 }
 
-function sw(i){document.querySelectorAll(".tab").forEach(function(t){var m=t.getAttribute("onclick").match(/sw\((\d)\)/);var idx=m?parseInt(m[1]):-1;t.classList.toggle("on",idx===i);});document.querySelectorAll(".page").forEach(function(p,n){p.classList.toggle("on",n===i);});if(i===0)renderHome();if(i===5)renderGantt();if(i===6)renderOverview();window.scrollTo(0,0);}
+function sw(i){document.querySelectorAll(".tab").forEach(function(t){var m=t.getAttribute("onclick").match(/sw\((\d)\)/);var idx=m?parseInt(m[1]):-1;t.classList.toggle("on",idx===i);});document.querySelectorAll(".page").forEach(function(p,n){p.classList.toggle("on",n===i);});if(i===0)renderHome();if(i===5)renderGantt();if(i===6)renderOverview();if(i===7)renderFlow();window.scrollTo(0,0);}
 render();
 initAuth();
 </script></body></html>
