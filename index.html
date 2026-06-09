@@ -744,6 +744,12 @@ body{font-size:14px;color:var(--t1);background:var(--bg)}
 .skc-x{margin-left:auto;background:none;border:none;color:#fff;font-size:25px;cursor:pointer;line-height:1;opacity:.8}
 .skc-x:hover{opacity:1}
 .skc-filters{padding:13px 22px;border-bottom:1px solid var(--b1);background:var(--paper);flex-shrink:0}
+.skc-sugg{display:flex;flex-wrap:wrap;align-items:center;gap:6px;margin-bottom:12px;padding:9px 12px;background:var(--gold-soft);border:1px solid #E6DCC2;border-radius:6px}
+.skc-sugg-l{font-size:11.5px;font-weight:700;color:var(--gold-d);margin-right:4px;letter-spacing:.03em}
+.skc-skw{font-size:12px;padding:3px 11px;border:1px solid #DFD3B4;border-radius:13px;background:#fff;color:var(--t2);cursor:pointer;white-space:nowrap}
+.skc-skw:hover{border-color:var(--gold);color:var(--gold-d)}
+.skc-skw.note{cursor:default;border-style:dashed;color:var(--t3)}
+.skc-skw.note:hover{border-color:#DFD3B4;color:var(--t3)}
 .skc-fgrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(290px,1fr));gap:10px 22px}
 .skc-fg label{display:block;font-size:10.5px;letter-spacing:.1em;color:var(--t3);margin-bottom:5px;font-weight:700}
 .skc-chips{display:flex;flex-wrap:wrap;gap:5px}
@@ -822,9 +828,10 @@ body{font-size:14px;color:var(--t1);background:var(--bg)}
 <div id="skuConsole" onclick="if(event.target===this)closeSkuConsole()"><div class="skc">
   <div class="skc-head"><div><div class="t">策略選品 · <b id="skc_camp">—</b></div><div class="sub" id="skc_sub"></div></div><button class="skc-x" onclick="closeSkuConsole()">×</button></div>
   <div class="skc-filters">
+    <div class="skc-sugg" id="skc_sugg" style="display:none"></div>
     <div class="skc-fgrid">
       <div class="skc-fg"><label>品類</label><div class="skc-chips" id="skf_c"></div></div>
-      <div class="skc-fg"><label>生命週期</label><div class="skc-chips" id="skf_lc"></div></div>
+      <div class="skc-fg"><label>銷售狀態</label><div class="skc-chips" id="skf_lcg"></div></div>
       <div class="skc-fg"><label>價格帶</label><div class="skc-chips" id="skf_pb"></div></div>
       <div class="skc-fg"><label>寶石色</label><div class="skc-chips" id="skf_gc"></div></div>
       <div class="skc-fg"><label>金工方式</label><div class="skc-chips" id="skf_mw"></div></div>
@@ -1785,19 +1792,24 @@ initAuth();
 /* ============================================================
    策略選品台 — 六維篩選 + 搜尋 + 營收排序，選入當前檔期
    ============================================================ */
-const SKFKEYS=["c","lc","pb","gc","mw","ps"];
+const SKFKEYS=["c","lcg","pb","gc","mw","ps"];
 const SKF_ORDER={
   c:["裸石原石","訂製珠寶","戒指","主題項鍊吊墜","寶石水晶單品","能量手串","耳飾","水晶擺件晶體","加值服務","其他"],
-  lc:["常青主力","新星(新品高動能)","穩定動銷","新品試水","長尾低頻","已退役/停售"],
+  lcg:["主力熱賣","新品觀察","冷門退役"],
   pb:["低價","中價","中高價","高價","頂級"],
   gc:["紅粉","藍","綠","紫","黃橙","白透","黑灰","多彩","—"],
   mw:["裸石/原礦","銀","K金/貴金屬","鑲鑽","訂製","未標工法"],
-  ps:["札娜之家","輕奢藏家","彩寶玩家"]
+  ps:["輕奢藏家","彩寶玩家","札娜之家"]
 };
+function lcGroup(lc){
+  if(lc==="常青主力"||lc==="穩定動銷"||lc==="新星(新品高動能)")return "主力熱賣";
+  if(lc==="新品試水")return "新品觀察";
+  return "冷門退役"; // 長尾低頻 / 已退役停售
+}
 const SKCOLS=[
   {k:"n",t:"商品名稱"},
   {k:"c",t:"品類"},
-  {k:"lc",t:"生命週期",hidem:true},
+  {k:"lcg",t:"銷售狀態",hidem:true},
   {k:"ps",t:"客群",hidem:true},
   {k:"rev",t:"營收",num:true},
   {k:"cnt",t:"售出次數",num:true,hidem:true},
@@ -1805,16 +1817,19 @@ const SKCOLS=[
   {k:"ords",t:"訂單",num:true,hidem:true},
   {k:"days",t:"未售天",num:true,hidem:true}
 ];
-let SKSTATE={c:{},lc:{},pb:{},gc:{},mw:{},ps:{}};
+let SKSTATE={c:{},lcg:{},pb:{},gc:{},mw:{},ps:{}};
 let SKSORT={k:"rev",dir:-1};
 let SKC_CID=null;
 
 function openSkuConsole(cid){
   if(!canAddPick()){toast("只有 Regina 或管理員能選品");return;}
   if(!window.SKU){toast("商品資料載入中，請稍候再點一次");return;}
+  if(!window.SKU[0].lcg){window.SKU.forEach(function(s){s.lcg=lcGroup(s.lc);});}
   SKC_CID=cid;const c=CAMP[cid];
+  SKSTATE={c:{},lcg:{},pb:{},gc:{},mw:{},ps:{}};var q=document.getElementById("skf_q");if(q)q.value="";
   document.getElementById("skc_camp").textContent=c?c.name:"";
   document.getElementById("skc_sub").textContent=c?(cv(c,'goal')+" · "+cv(c,'date')):"";
+  skcBuildSugg(c);
   skcBuildFacets();skcBuildHead();skcRender();
   document.getElementById("skuConsole").classList.add("on");
 }
@@ -1831,7 +1846,24 @@ function skcBuildFacets(){
   }
 }
 function skcChip(key,val){const cur=SKSTATE[key][val]||0;const nx=cur===0?1:cur===1?-1:0;if(nx===0)delete SKSTATE[key][val];else SKSTATE[key][val]=nx;skcBuildFacets();skcRender();}
-function skcReset(){SKSTATE={c:{},lc:{},pb:{},gc:{},mw:{},ps:{}};var q=document.getElementById("skf_q");if(q)q.value="";skcBuildFacets();skcRender();}
+function skcReset(){SKSTATE={c:{},lcg:{},pb:{},gc:{},mw:{},ps:{}};var q=document.getElementById("skf_q");if(q)q.value="";skcBuildFacets();skcRender();}
+function skcBuildSugg(c){
+  const el=document.getElementById("skc_sugg");if(!el)return;
+  if(!c){el.style.display="none";el.innerHTML="";return;}
+  const txt=(c.kw?c.kw.join(""):"")+(cv(c,'goal')||"")+(cv(c,'brief')||"");
+  const colorMap=[["紅粉",/紅|粉|桃花|玫瑰|石榴|愛情|情/],["藍",/藍|海藍|拓帕|青/],["綠",/綠|祖母綠|幽靈/],["紫",/紫|舒俱/],["黃橙",/黃|橙|琥珀|金/],["白透",/白|透|月光|珍珠|蛋白|歐泊/],["黑灰",/黑|曜|超七|灰/]];
+  const colors=colorMap.filter(function(m){return m[1].test(txt);}).map(function(m){return m[0];}).slice(0,4);
+  let parts=[];
+  if(c.kw&&c.kw.length){parts=parts.concat(c.kw.slice(0,8).map(function(k){return '<span class="skc-skw" onclick="skcSearchKw(this.dataset.k)" data-k="'+k.replace(/"/g,'&quot;')+'">🔍 '+k+'</span>';}));}
+  parts=parts.concat(colors.map(function(cc){return '<span class="skc-skw" onclick="skcApplyFilter(\'gc\',this.dataset.v)" data-v="'+cc+'">💎 '+cc+'</span>';}));
+  if(!c.kw||!c.kw.length){parts.unshift('<span class="skc-skw" onclick="skcApplyFilter(\'lcg\',\'主力熱賣\')">🔥 主力熱賣</span>');}
+  if(c.maxp){parts.push('<span class="skc-skw note">客單上限約 $'+c.maxp.toLocaleString()+'</span>');}
+  if(!parts.length){el.style.display="none";el.innerHTML="";return;}
+  el.style.display="";
+  el.innerHTML='<span class="skc-sugg-l">💡 企劃建議 · 點即套用</span>'+parts.join("");
+}
+function skcSearchKw(kw){var q=document.getElementById("skf_q");if(q)q.value=kw;skcRender();}
+function skcApplyFilter(key,val){SKSTATE[key]=SKSTATE[key]||{};SKSTATE[key][val]=1;skcBuildFacets();skcRender();}
 function skcMatch(s){
   for(const key of SKFKEYS){
     const st=SKSTATE[key];const incs=[],excs=[];for(const v in st){if(st[v]===1)incs.push(v);else if(st[v]===-1)excs.push(v);}
@@ -1861,7 +1893,7 @@ function skcRender(){
     return '<tr>'+
       '<td class="skc-nm">'+s.n+'</td>'+
       '<td><span class="skc-tag">'+s.c+'</span></td>'+
-      '<td class="hidem">'+s.lc+'</td>'+
+      '<td class="hidem">'+s.lcg+'</td>'+
       '<td class="hidem">'+(Array.isArray(s.ps)?s.ps.join("、"):s.ps)+'</td>'+
       '<td class="num skc-rev">'+(s.rev>=10000?(s.rev/10000).toFixed(1)+"萬":(s.rev||0).toLocaleString())+'</td>'+
       '<td class="num hidem">'+s.cnt+'</td>'+
