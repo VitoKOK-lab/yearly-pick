@@ -793,10 +793,46 @@ body{font-size:14px;color:var(--t1);background:var(--bg)}
   .skc-tbl .hidem{display:none}
   .skc-tbl td,.skc-tbl thead th{padding:8px 9px}
 }
+/* ===== 工作順序大數字 ===== */
+.wchain{display:flex;align-items:stretch;gap:6px;margin:2px 0 22px;flex-wrap:wrap}
+.wstep{flex:1;min-width:128px;display:flex;align-items:center;gap:11px;padding:11px 14px;border:1px solid var(--b1);border-radius:6px;background:#fff}
+.wstep .wn{font-family:'Cormorant Garamond',serif;font-size:32px;font-weight:700;color:var(--b2);line-height:1;flex-shrink:0}
+.wstep .wt{display:flex;flex-direction:column;gap:2px;min-width:0}
+.wstep .wl{font-size:14px;font-weight:700;color:var(--t2)}
+.wstep .ww{font-size:11px;color:var(--t3)}
+.wstep.me{border:1.5px solid #1A1A1A;background:var(--gold-soft)}
+.wstep.me .wn{color:var(--gold-d)}
+.wstep.me .wl{color:var(--t1)}
+.warr{align-self:center;color:var(--b2);font-size:18px;flex-shrink:0}
+@media(max-width:600px){
+  .wchain{gap:5px}
+  .wstep{min-width:0;flex:1 1 0;flex-direction:column;align-items:flex-start;gap:3px;padding:9px 8px}
+  .wstep .wn{font-size:24px}
+  .wstep .wl{font-size:12px}
+  .wstep .ww{display:none}
+  .warr{display:none}
+}
+/* ===== 官網/lineoa 檢視：選品列 + 網址 ===== */
+.vrow2{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:9px 14px;border-bottom:1px solid #F0F0F0;flex-wrap:wrap}
+.vrow2:last-child{border-bottom:none}
+.vrow2 .vn{font-size:14px;color:var(--t1);flex:1;min-width:120px;word-break:break-word}
+.vmeta{display:flex;align-items:center;gap:9px;flex-shrink:0}
+.vsrc{font-size:10.5px;padding:2px 9px;border-radius:10px;font-weight:600;white-space:nowrap}
+.vsrc.hc{background:var(--ok-bg);color:var(--ok)}
+.vsrc.cn{background:var(--warn-bg);color:var(--warn)}
+.vq{font-size:12.5px;color:var(--t2);font-variant-numeric:tabular-nums}
+.vrow2 .vp{font-size:13px;font-weight:600;color:var(--t1)}
+.vurl-edit{display:flex;gap:8px;align-items:center}
+.vurl-edit input{flex:1;min-width:0;border:1px solid var(--b2);border-radius:4px;padding:9px 12px;font-size:14px;font-family:inherit;outline:none}
+.vurl-edit input:focus{border-color:var(--gold)}
+.vurl-open{flex-shrink:0;padding:9px 16px;border:1px solid #1A1A1A;border-radius:4px;background:#1A1A1A;color:#fff;font-size:13px;text-decoration:none;font-weight:600}
+.vurl-open.off{background:#fff;color:var(--t3);border-color:var(--b2);pointer-events:none}
+.vurl-show{padding:10px 14px;background:var(--paper);border:1px solid var(--b1);border-radius:6px;word-break:break-all}
+.vurl-show a{color:var(--gold-d);font-size:14px}
 </style></head><body><div id="loginBox"><div class="lg-card">
 <div class="lg-title">泰熙爾札娜<br>選品行銷系統</div>
 <div class="lg-sub">請選擇你是誰</div>
-<select id="lg_user"><option value="Regina">Regina（選品·拍片）</option><option value="Vito">Vito（行銷·管理）</option><option value="家逸">家逸（官網）</option><option value="Jessica">Jessica（lineoa）</option></select>
+<select id="lg_user"><option value="Regina">Regina（選品·行銷）</option><option value="Vito">Vito（選品·行銷·管理）</option><option value="江瑩">江瑩（選品·大檔季檔）</option><option value="怡萍">怡萍（選品·週檔寵粉）</option><option value="家逸">家逸（官網）</option><option value="Jessica">Jessica（lineoa）</option></select>
 
 <button class="lg-btn" onclick="doLogin()">登入</button>
 <div class="lg-err" id="lg_err"></div>
@@ -804,8 +840,8 @@ body{font-size:14px;color:var(--t1);background:var(--bg)}
 
 <div class="hero"><div class="kicker">泰熙爾札娜</div><div class="h-title">年度企劃表</div>
 
-<div id="userBar"></div><div class="tabs"><button class="tab on" onclick="sw(5)">年度規劃</button><button class="tab" onclick="sw(1)">選品</button><button class="tab" onclick="sw(2)">campaign</button><button class="tab" onclick="sw(3)">官網</button><button class="tab" onclick="sw(4)">lineoa</button><button class="tab" onclick="sw(6)">商品分析</button><button class="tab" onclick="sw(7)">流程說明</button><button class="impb adminbtn" style="align-self:center" onclick="importJune()">⬇ 匯入6月</button><button class="rstopen adminbtn" style="align-self:center;margin-left:8px" onclick="openRestore()">↩ 還原</button><button class="expb adminbtn" style="align-self:center;margin-left:8px" onclick="exportYear()">⤓ 全年PDF</button><button class="rstopen adminbtn" style="align-self:center;margin-left:8px;border-color:#C0392B;color:#C0392B" onclick="wipeAll()">🗑 清空全部</button></div></div>
-<div class="wrap"><div class="page" id="phome"></div><div class="page" id="ppick"></div><div class="page" id="pcamp"></div><div class="page" id="pweb"></div><div class="page" id="pline"></div><div class="page on" id="pg"></div><div class="page" id="p1"></div><div class="page" id="pflow"></div><div class="footer">版本 06/07 · 墨黑金統一視覺</div></div>
+<div id="userBar"></div><div class="tabs"><button class="tab on" onclick="sw(5)">年度規劃</button><button class="tab" onclick="sw(1)">選品</button><button class="tab" onclick="sw(2)">campaign</button><button class="tab" onclick="sw(3)">官網</button><button class="tab" onclick="sw(4)">lineoa</button><button class="tab" onclick="sw(6)">商品分析</button><button class="impb adminbtn" style="align-self:center" onclick="importJune()">⬇ 匯入6月</button><button class="rstopen adminbtn" style="align-self:center;margin-left:8px" onclick="openRestore()">↩ 還原</button><button class="expb adminbtn" style="align-self:center;margin-left:8px" onclick="exportYear()">⤓ 全年PDF</button><button class="rstopen adminbtn" style="align-self:center;margin-left:8px;border-color:#C0392B;color:#C0392B" onclick="wipeAll()">🗑 清空全部</button></div></div>
+<div class="wrap"><div class="page" id="phome"></div><div class="page" id="ppick"></div><div class="page" id="pcamp"></div><div class="page" id="pweb"></div><div class="page" id="pline"></div><div class="page on" id="pg"></div><div class="page" id="p1"></div><div class="footer">版本 06/10 · 六人分工 · 工作順序</div></div>
 <div id="restoreBox" style="display:none;position:fixed;inset:0;background:rgba(26,20,16,.45);z-index:200;align-items:center;justify-content:center" onclick="if(event.target===this)this.style.display='none'">
 <div style="background:#fff;border-radius:14px;max-width:460px;width:90%;max-height:80vh;overflow:auto;padding:22px">
 <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px"><div style="font-family:'Cormorant Garamond',serif;font-size:20px;font-weight:700">還原備份</div><button onclick="document.getElementById('restoreBox').style.display='none'" style="border:none;background:none;font-size:22px;cursor:pointer;color:#999999">×</button></div>
@@ -857,8 +893,10 @@ const JUNE={"note": "【A·年終慶儲值活動 BN】5萬贈1300｜10萬贈2800
 const FLAGS=[["mkt","銷"],["film","拍"],["web","官"],["line","OA"]];
 let NOTES={};
 const ACCOUNTS={
-  "Regina":{pw:"1234",flag:"film",admin:false,label:"Regina（選品·拍片）"},
-  "Vito":{pw:"1234",flag:"mkt",admin:true,label:"Vito（行銷·管理）"},
+  "Regina":{pw:"1234",flag:"film",admin:false,label:"Regina（選品·行銷）"},
+  "Vito":{pw:"1234",flag:"mkt",admin:true,label:"Vito（選品·行銷·管理）"},
+  "江瑩":{pw:"1234",flag:"film",admin:false,label:"江瑩（選品·大檔季檔）"},
+  "怡萍":{pw:"1234",flag:"film",admin:false,label:"怡萍（選品·週檔寵粉）"},
   "家逸":{pw:"1234",flag:"web",admin:false,label:"家逸（官網）"},
   "Jessica":{pw:"1234",flag:"line",admin:false,label:"Jessica（lineoa）"}
 };
@@ -913,18 +951,18 @@ let COVER={};let DASHF='all';
 const TYC={"大檔":"#1A1A1A","季檔":"#1A1A1A","週檔":"#C5A028","寵粉":"#A98Fb0"};
 const CATC={"主題建議":"#1A8C82","裸石":"#1A1A1A","飾品":"#B89A4E","水晶能量":"#1A8C82","訂製":"#1A1A1A","其他":"#888888"};
 const CATS=["主題建議","裸石","飾品","水晶能量","訂製"];
-let PICKS={},LOCKED={},PWMAP={};
+let PICKS={},LOCKED={},PWMAP={},WEBURL={};
 let _writing=false;        // 自己正在寫入時，忽略一次回拋
 let _loaded=false;
-try{var _c=localStorage.getItem('tzg_cache');if(_c){var _cd=JSON.parse(_c);PICKS=_cd.picks||{};LOCKED=_cd.locked||{};NOTES=_cd.notes||{};COVER=_cd.cover||{};PWMAP=_cd.pwmap||{};}}catch(e){}
+try{var _c=localStorage.getItem('tzg_cache');if(_c){var _cd=JSON.parse(_c);PICKS=_cd.picks||{};LOCKED=_cd.locked||{};NOTES=_cd.notes||{};COVER=_cd.cover||{};PWMAP=_cd.pwmap||{};WEBURL=_cd.weburl||{};}}catch(e){}
 setTimeout(function(){if(!_loaded){_loaded=true;try{render();}catch(e){console.error(e);}}},3000);
 setTimeout(function(){if(!_loaded){_loaded=true;try{render();}catch(e){console.error(e);}}},5000);
 // 即時同步：監聽 Firestore，別人改了這裡自動更新
 DOCREF.onSnapshot(doc=>{
   if(_writing){_writing=false;return;}            // 跳過自己寫入觸發的回拋
   const d=doc.exists?doc.data():{};
-  PICKS=d.picks||{};LOCKED=d.locked||{};NOTES=d.notes||{};COVER=d.cover||{};PWMAP=d.pwmap||{};
-  _loaded=true;try{localStorage.setItem('tzg_cache',JSON.stringify({picks:PICKS,locked:LOCKED,notes:NOTES,cover:COVER,pwmap:PWMAP}));}catch(e){}
+  PICKS=d.picks||{};LOCKED=d.locked||{};NOTES=d.notes||{};COVER=d.cover||{};PWMAP=d.pwmap||{};WEBURL=d.weburl||{};
+  _loaded=true;try{localStorage.setItem('tzg_cache',JSON.stringify({picks:PICKS,locked:LOCKED,notes:NOTES,cover:COVER,pwmap:PWMAP,weburl:WEBURL}));}catch(e){}
   // 若正在編輯備貨輸入框，只更新數字不重繪整頁，避免打斷
   if(document.activeElement&&document.activeElement.tagName==="INPUT"){renderTotals();renderOverview();}
   else render();
@@ -933,7 +971,7 @@ DOCREF.onSnapshot(doc=>{
   _loaded=true;render();
   toast("雲端連線失敗，先用本機顯示");
 });
-function pushCloud(){_writing=true;DOCREF.set({picks:PICKS,locked:LOCKED,notes:NOTES,cover:COVER,pwmap:PWMAP,updated:Date.now()}).catch(e=>{_writing=false;console.error("寫入失敗",e);toast("儲存失敗，請重試");});}
+function pushCloud(){_writing=true;DOCREF.set({picks:PICKS,locked:LOCKED,notes:NOTES,cover:COVER,pwmap:PWMAP,weburl:WEBURL,updated:Date.now()}).catch(e=>{_writing=false;console.error("寫入失敗",e);toast("儲存失敗，請重試");});}
 function saveLock(){pushCloud();}
 function tsLabel(){const d=new Date();const p=n=>String(n).padStart(2,"0");return `${d.getFullYear()}/${p(d.getMonth()+1)}/${p(d.getDate())} ${p(d.getHours())}:${p(d.getMinutes())}`;}
 function tsId(){const d=new Date();const p=n=>String(n).padStart(2,"0");return `backup_${d.getFullYear()}${p(d.getMonth()+1)}${p(d.getDate())}_${p(d.getHours())}${p(d.getMinutes())}${p(d.getSeconds())}`;}
@@ -1284,18 +1322,26 @@ function renderViewCamp(c,role){
   const picks=getPicks(c.id);
   const RN={web:"官網",line:"lineoa"};
   let h='<div class="vcamp">';
-  // 企劃（唯讀）
-  h+='<div class="vplan"><div class="vplan-t">📋 企劃</div><div class="vplan-goal">🎯 '+cv(c,"goal")+'</div><div class="vplan-brief">'+cv(c,"brief")+'</div></div>';
-  // 選了什麼品（唯讀清單）
-  h+='<div class="vsec">選了什麼（'+picks.length+' 品）</div>';
-  if(picks.length===0){h+='<div class="vempty">選品還沒好，等 Regina。</div>';}
+  // 行銷方向（唯讀）
+  h+='<div class="vplan"><div class="vplan-t">🎯 行銷方向</div><div class="vplan-goal">'+cv(c,"goal")+'</div><div class="vplan-brief">'+cv(c,"brief")+'</div></div>';
+  // 選品清單：品名／貨源／數量／價格
+  h+='<div class="vsec">選品清單（'+picks.length+' 品）</div>';
+  if(picks.length===0){h+='<div class="vempty">選品還沒好，等選品同事。</div>';}
   else{h+='<div class="vlist">';
-    for(const p of picks){h+='<div class="vrow"><span class="vn">'+p.name+'</span><span class="vp">$'+(p.price||0).toLocaleString()+'</span></div>';}
+    for(const p of picks){
+      const src=(p.source==='hc')?'<span class="vsrc hc">彰化現貨</span>':'<span class="vsrc cn">大陸叫貨</span>';
+      h+='<div class="vrow2"><span class="vn">'+p.name+'</span><span class="vmeta">'+src+'<span class="vq">×'+(p.qty||0)+'</span><span class="vp">$'+(p.price||0).toLocaleString()+'</span></span></div>';
+    }
     h+='</div>';}
-  // lineoa 額外：官網狀態
-  if(role==="line"){
-    const webok=roleStat("web",c).ok;
-    h+='<div class="vsec">官網圖文</div><div class="vweb '+(webok?"ok":"wait")+'">'+(webok?"✓ 官網已上架，可做私域圖文":"⏳ 官網還沒好，等家逸")+'</div>';
+  // 官網網址
+  const url=(WEBURL[c.id]||'').trim();
+  if(role==="web"){
+    h+='<div class="vsec">官網網址（這檔做好後貼上）</div>';
+    h+='<div class="vurl-edit"><input id="weburl-'+c.id+'" type="url" placeholder="https://… 對應這檔的官網連結" value="'+url.replace(/"/g,'&quot;')+'" onchange="setWebUrl(\''+c.id+'\',this.value)"><a class="vurl-open'+(url?'':' off')+'" '+(url?'href="'+url+'" target="_blank" rel="noopener"':'')+'>開啟</a></div>';
+  }else{ // line
+    h+='<div class="vsec">官網網址</div>';
+    if(url)h+='<div class="vurl-show"><a href="'+url+'" target="_blank" rel="noopener">'+url+'</a></div>';
+    else h+='<div class="vweb wait">⏳ 官網還沒提供網址，等家逸</div>';
   }
   // 完成鈕
   const flag=ROLECFG[role].flag;const allOn=picks.length>0&&picks.every(p=>(p.flags||{})[flag]);
@@ -1305,6 +1351,10 @@ function renderViewCamp(c,role){
   else{h+='<button class="vbtn '+(allOn?"on":"")+'" onclick="toggleAllDone(\''+c.id+'\',\''+role+'\')">'+(allOn?"✓ "+RN[role]+"已完成（點取消）":RN[role]+"完成")+'</button>';}
   h+='</div></div>';
   return h;
+}
+function setWebUrl(cid,val){
+  if(!CUR||(CUR.flag!=='web'&&!CUR.admin)){toast('只有官網（家逸）能設定網址');return;}
+  WEBURL[cid]=(val||'').trim();save();render();toast('已更新官網網址');
 }
 
 function renderRole(role,cid){
@@ -1609,10 +1659,26 @@ function dlChip(date){
   else if(days<=7){cls='dl-near';txt=md+' 前 · 剩'+days+'天';}
   return {cls:cls,txt:txt};
 }
+function workChainHTML(){
+  const me=CUR&&CUR.name;
+  let mine=[];
+  if(me==='Regina'||me==='Vito')mine=[1,2];
+  else if(me==='江瑩'||me==='怡萍')mine=[1];
+  else if(me&&USER_ROLE[me]==='web')mine=[3];
+  else if(me&&USER_ROLE[me]==='line')mine=[4];
+  const steps=[['1','選品','挑商品·定價量'],['2','行銷方向','定企劃方向'],['3','官網','建頁·貼網址'],['4','lineoa','私域推播']];
+  let h='<div class="wchain">';
+  steps.forEach(function(s,i){
+    const meCls=mine.indexOf(parseInt(s[0]))>=0?' me':'';
+    h+='<div class="wstep'+meCls+'"><span class="wn">'+s[0]+'</span><span class="wt"><span class="wl">'+s[1]+'</span><span class="ww">'+s[2]+'</span></span></div>';
+    if(i<steps.length-1)h+='<span class="warr">›</span>';
+  });
+  h+='</div>';return h;
+}
 function renderGantt(){
   let h="";
-  // 我的近3個月急迫工作（當前使用者）
   const me=(CUR&&CUR.name);const myr=me?USER_ROLE[me]:null;
+  h+=workChainHTML();
   if(myr){
     const RN={campaign:"企劃",pick:"選品",web:"官網",line:"lineoa"};
     const today2=new Date(2026,5,5).getTime();
@@ -1620,14 +1686,14 @@ function renderGantt(){
     const UPWHO={web:'選品行銷(Regina·Vito)',line:'官網(家逸)'};
     const mine=[];
     for(const c of CAMPS){
-      if(!seesCamp(myr,c))continue;
+      if(!userSeesCamp(c))continue;
       const ddl=myDeadline(c,myr);const days=(ddl.getTime()-today2)/86400000;
       if(days>60||days< -45)continue;      // 兩個月內要交（含近期逾期），依我的截止日
       const s=roleStat(myr,c);
       mine.push({c:c,ddl:ddl,dl:dlChip(ddl),ok:s.ok});
     }
     mine.sort((a,b)=>{if(a.ok!==b.ok)return a.ok?1:-1;return a.ddl-b.ddl;});
-    const TH=USER_THEME[myr]||USER_THEME._default;
+    const TH=userTheme();
     h+='<div class="myurgent" style="background:'+TH.bg+';border-color:'+TH.bd+';border-left:4px solid '+TH.ac+'"><div class="myurgent-t" style="color:'+TH.ac+'"><span class="mu-ico">'+TH.icon+'</span>'+me+' 的工作 · 兩個月內截止（'+RN[myr]+'）</div>';
     if(mine.length===0)h+='<div class="myurgent-empty">兩個月內沒有要交的工作，輕鬆。</div>';
     else{h+='<div class="myurgent-list">';
@@ -1647,7 +1713,7 @@ function renderGantt(){
   h+='<div class="ycal">';
   const vr=(CUR&&USER_ROLE[CUR.name])||null;
   for(const m of MONTHS){
-    const cs=CAMPS.filter(c=>c.month===m&&(!vr||seesCamp(vr,c)));
+    const cs=CAMPS.filter(c=>c.month===m&&userSeesCamp(c));
     if(cs.length===0)continue;
     const mlbl=(ML[m]||m).replace("2026年","").replace("2027年","'27 ");
     h+='<div class="ycard"><div class="ycard-h">'+mlbl+'</div><div class="ycard-body">';
@@ -1759,20 +1825,35 @@ function renderFlow(){
   h+='</div>';
   el.innerHTML=h;
 }
-function render(){if(typeof applyNav==='function')applyNav();renderHome();renderRole('pick','ppick');renderRole('campaign','pcamp');renderRole('web','pweb');renderRole('line','pline');renderGantt();renderOverview();renderFlow();}
+function render(){if(typeof applyNav==='function')applyNav();renderHome();renderRole('pick','ppick');renderRole('campaign','pcamp');renderRole('web','pweb');renderRole('line','pline');renderGantt();renderOverview();}
 
-const USER_ROLE={Regina:"pick",Vito:"campaign",家逸:"web",Jessica:"line"};
-// 每個角色的個人色系與小圖示（讓四個人第一畫面有差異）
+const USER_ROLE={Regina:"pick",Vito:"pick",江瑩:"pick",怡萍:"pick",家逸:"web",Jessica:"line"};
+// 選品者的檔期範圍（江瑩只大檔季檔、怡萍只週檔寵粉；Regina/Vito 全部）
+const PICK_SCOPE={江瑩:["大檔","季檔"],怡萍:["週檔","寵粉"]};
+function userSeesCamp(c){
+  if(!CUR)return true;
+  const nm=CUR.name;
+  if(PICK_SCOPE[nm])return PICK_SCOPE[nm].indexOf(c.type)>=0;
+  const r=USER_ROLE[nm];
+  if(r==="pick")return true;            // Regina / Vito 看全部
+  return seesCamp(r,c);                 // 官網 / lineoa
+}
+// 每個人的個人色系與小圖示（第一畫面有差異）
 const USER_THEME={
-  pick:{ac:'#C2185B',bg:'#FFF5F8',bd:'#F1CCDD',icon:'💎'},
-  campaign:{ac:'#1F7A82',bg:'#F0FAFA',bd:'#CBE8E8',icon:'🎯'},
+  pick:{ac:'#B23B6E',bg:'#FCF4F7',bd:'#EAD3DD',icon:'💎'},
   web:{ac:'#2D6CDF',bg:'#F2F6FF',bd:'#D3E1FB',icon:'🌐'},
   line:{ac:'#06A94D',bg:'#F1FBF4',bd:'#CCEBD7',icon:'💬'},
-  _default:{ac:'#C0392B',bg:'#FFF8F8',bd:'#F3D5D5',icon:'📋'}
+  _default:{ac:'#1A1A1A',bg:'#F6F5F2',bd:'#E0DCD2',icon:'📋'}
 };
-function userTheme(){const r=CUR&&USER_ROLE[CUR.name];return (r&&USER_THEME[r])||USER_THEME._default;}
+const USER_THEME_NAME={
+  Regina:{ac:'#B23B6E',bg:'#FCF4F7',bd:'#EAD3DD',icon:'💎'},
+  Vito:{ac:'#1A1A1A',bg:'#F6F5F2',bd:'#E0DCD2',icon:'🎯'},
+  江瑩:{ac:'#1F7A82',bg:'#F0FAFA',bd:'#CBE8E8',icon:'💠'},
+  怡萍:{ac:'#B8860B',bg:'#FBF6EA',bd:'#E8DCBF',icon:'🌸'}
+};
+function userTheme(){const nm=CUR&&CUR.name;if(nm&&USER_THEME_NAME[nm])return USER_THEME_NAME[nm];const r=nm&&USER_ROLE[nm];return (r&&USER_THEME[r])||USER_THEME._default;}
 const USER_TABS={
-  Regina:[5,6,7], Vito:[5,6,7], 家逸:[5,6,7], Jessica:[5,6,7]
+  Regina:[5,6], Vito:[5,6], 江瑩:[5,6], 怡萍:[5,6], 家逸:[5], Jessica:[5]
 };
 function applyNav(){
   const u=(CUR&&CUR.name)||"Vito";const allow=USER_TABS[u]||[0,1,2,3,4,5,6];
@@ -1785,7 +1866,7 @@ function applyNav(){
   document.querySelectorAll(".adminbtn").forEach(function(b){b.style.display=isAdmin?"":"none";});
 }
 
-function sw(i){document.querySelectorAll(".tab").forEach(function(t){var m=t.getAttribute("onclick").match(/sw\((\d)\)/);var idx=m?parseInt(m[1]):-1;t.classList.toggle("on",idx===i);});document.querySelectorAll(".page").forEach(function(p,n){p.classList.toggle("on",n===i);});if(i===0)renderHome();if(i===5)renderGantt();if(i===6)renderOverview();if(i===7)renderFlow();window.scrollTo(0,0);}
+function sw(i){document.querySelectorAll(".tab").forEach(function(t){var m=t.getAttribute("onclick").match(/sw\((\d)\)/);var idx=m?parseInt(m[1]):-1;t.classList.toggle("on",idx===i);});document.querySelectorAll(".page").forEach(function(p,n){p.classList.toggle("on",n===i);});if(i===0)renderHome();if(i===5)renderGantt();if(i===6)renderOverview();window.scrollTo(0,0);}
 render();
 initAuth();
 
