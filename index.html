@@ -904,6 +904,7 @@ let CUR=null;
 function canToggle(f){if(!CUR)return false;if(CUR.admin)return true;return CUR.flag===f;}
 function canPlan(){return CUR&&CUR.admin;}
 function canAddPick(){return CUR&&(CUR.admin||USER_ROLE[CUR.name]==="pick");}
+function canEditCamp(){return CUR&&(CUR.admin||CUR.name==="Regina"||CUR.name==="Vito");}
 function whoOwns(f){for(const k in ACCOUNTS){if(ACCOUNTS[k].flag===f)return k;}return "";}
 
 function changePw(){
@@ -1414,7 +1415,7 @@ function renderOneCamp(c){
       let picked=pickedHTML(c);
       h+=`<div class="camp open ${done?'done':''} ${LOCKED[c.month]?'lockedm':''}" id="camp-${c.id}">
         <div class="ch2"><div class="cmeta">${cv(c,'date')}</div><div class="cright"><div class="rev">${rev?wan(rev).toFixed(0):'0'}<span style="font-size:11px"> 萬</span></div><div class="rl">預估</div></div></div>
-        <div class="cbody"><div class="planbox"><div class="planbox-head"><span class="planbox-t">📋 本檔企劃（選品依據）</span><button class="planedit" data-act="editcamp" data-cid="${encodeURIComponent(c.id)}">✎ 編輯企劃</button></div><div class="plan-goal">🎯 ${cv(c,'goal')}</div><div class="plan-brief">${cv(c,'brief')}</div></div>
+        <div class="cbody"><div class="planbox"><div class="planbox-head"><span class="planbox-t">📋 本檔企劃（選品依據）</span>${canEditCamp()?`<button class="planedit" data-act="editcamp" data-cid="${encodeURIComponent(c.id)}">✎ 編輯企劃</button>`:''}</div><div class="plan-goal">🎯 ${cv(c,'goal')}</div><div class="plan-brief">${cv(c,'brief')}</div></div>
         <button class="recBtn" onclick="openSkuConsole('${c.id}')"><span class="recarrow">⊕</span> 策略選品（依數據挑款）</button>
         <div class="picked">${picked}<div class="addrow"><input id="inp-${c.id}" placeholder="商品名（需與官網上架品名一模一樣，才抓得到數據）" onkeydown="if(event.key==='Enter')addCustom('${c.id}')"><select id="cat-${c.id}" class="addcat"><option value="裸石">裸石</option><option value="飾品">飾品</option><option value="水晶能量">水晶能量</option><option value="訂製">訂製</option><option value="其他">其他</option></select><button onclick="addCustom('${c.id}')">加入</button></div></div>
         </div></div>`;
@@ -1606,7 +1607,7 @@ function jumpTo(cid,encName){
 }
 
 
-function openEditCamp(id){if(!canAddPick()){toast('沒有權限');return;}
+function openEditCamp(id){if(!canEditCamp()){toast('只有行銷（Regina／Vito）能改企劃');return;}
   const c=CAMP[id];if(!c)return;
   document.getElementById('ec_id').value=id;
   document.getElementById('ec_name').value=cv(c,'name');
@@ -1617,11 +1618,13 @@ function openEditCamp(id){if(!canAddPick()){toast('沒有權限');return;}
   document.getElementById('editBox').style.display='flex';
 }
 function saveEditCamp(){
+  if(!canEditCamp()){toast('只有行銷（Regina／Vito）能改企劃');return;}
   const id=document.getElementById('ec_id').value;
   COVER[id]={name:document.getElementById('ec_name').value.trim(),date:document.getElementById('ec_date').value.trim(),goal:document.getElementById('ec_goal').value.trim(),brief:document.getElementById('ec_brief').value.trim()};
   pushCloud();render();document.getElementById('editBox').style.display='none';toast('\u4f01\u5283\u5df2\u66f4\u65b0');
 }
 function resetEditCamp(){
+  if(!canEditCamp()){toast('只有行銷（Regina／Vito）能改企劃');return;}
   const id=document.getElementById('ec_id').value;
   if(!confirm('\u9084\u539f\u6210\u9810\u8a2d\u5167\u5bb9\uff1f'))return;
   delete COVER[id];pushCloud();render();document.getElementById('editBox').style.display='none';toast('\u5df2\u9084\u539f\u9810\u8a2d');
