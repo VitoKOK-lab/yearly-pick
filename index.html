@@ -903,7 +903,7 @@ const ACCOUNTS={
 let CUR=null;
 function canToggle(f){if(!CUR)return false;if(CUR.admin)return true;return CUR.flag===f;}
 function canPlan(){return CUR&&CUR.admin;}
-function canAddPick(){return CUR&&(CUR.admin||CUR.name==="Regina");}
+function canAddPick(){return CUR&&(CUR.admin||USER_ROLE[CUR.name]==="pick");}
 function whoOwns(f){for(const k in ACCOUNTS){if(ACCOUNTS[k].flag===f)return k;}return "";}
 
 function changePw(){
@@ -1039,7 +1039,7 @@ function cv(c,field){const o=COVER[c.id];if(o&&o[field]!==undefined&&o[field]!==
 // 備貨初估：月均 × 檔期係數
 function estStock(name,mult){const p=PMAP[name];if(!p)return 10;return Math.max(2,Math.round(p.monthly*mult));}
 
-function addPick(id,name){if(!canAddPick()){toast('只有 Regina 或管理員能加品');return;}
+function addPick(id,name){if(!canAddPick()){toast('只有選品同事能加品');return;}
   PICKS[id]=PICKS[id]||[];
   if(PICKS[id].some(p=>p.name===name)){toast("這檔已加過");return;}
   const pm=PMAP[name];const c=CAMP[id];
@@ -1076,7 +1076,7 @@ function celebrateBtn(id,name,f){
   btns.forEach(function(b){if(decodeURIComponent(b.dataset.n)===name){b.classList.add('fxpulse');setTimeout(function(){b.classList.remove('fxpulse');},700);}});
 }
 function toggleSrc(el){if(!canAddPick()){toast('沒有權限');return;}const id=el.dataset.c;const name=decodeURIComponent(el.dataset.n);const p=getPicks(id).find(x=>x.name===name);if(!p)return;p.source=(p.source==='hc')?'':'hc';save();fineUpdate(id);}
-function addCustom(id){if(!canAddPick()){toast('只有 Regina 或管理員能加品');return;}const inp=document.getElementById('inp-'+id);const v=inp.value.trim();if(!v)return;const catSel=document.getElementById('cat-'+id);const cat=catSel?catSel.value:"其他";PICKS[id]=PICKS[id]||[];if(!PICKS[id].some(p=>p.name===v)){PICKS[id].push({name:v,price:0,qty:10,flags:{},cat:cat});save();fineUpdate(id,v);toast("已加入「"+v+"」（"+cat+"）");}}
+function addCustom(id){if(!canAddPick()){toast('只有選品同事能加品');return;}const inp=document.getElementById('inp-'+id);const v=inp.value.trim();if(!v)return;const catSel=document.getElementById('cat-'+id);const cat=catSel?catSel.value:"其他";PICKS[id]=PICKS[id]||[];if(!PICKS[id].some(p=>p.name===v)){PICKS[id].push({name:v,price:0,qty:10,flags:{},cat:cat});save();fineUpdate(id,v);toast("已加入「"+v+"」（"+cat+"）");}}
 function toggleOpen(id){document.getElementById('camp-'+id).classList.toggle('open');}
 function toggleRec(id){
   const w=document.getElementById('rec-'+id);if(!w)return;
@@ -1903,7 +1903,7 @@ let SKSORT={k:"rev",dir:-1};
 let SKC_CID=null;
 
 function openSkuConsole(cid){
-  if(!canAddPick()){toast("只有 Regina 或管理員能選品");return;}
+  if(!canAddPick()){toast("只有選品同事能選品");return;}
   if(!window.SKU){toast("商品資料載入中，請稍候再點一次");return;}
   if(!window.SKU[0].lcg){window.SKU.forEach(function(s){s.lcg=lcGroup(s.lc);});}
   SKC_CID=cid;const c=CAMP[cid];
